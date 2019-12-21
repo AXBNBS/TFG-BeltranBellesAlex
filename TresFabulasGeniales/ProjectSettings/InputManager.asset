@@ -86,13 +86,13 @@ InputManager:
     axis: 0
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Saltar
+    m_Name: "Centrar c\xE1mara"
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: space
+    positiveButton: c
     altNegativeButton: 
-    altPositiveButton: joystick button 0
+    altPositiveButton: joystick button 9
     gravity: 1000
     dead: 0.001
     sensitivity: 1000
@@ -129,12 +129,12 @@ InputManager:
     dead: 0
     sensitivity: 0.1
     snap: 0
-    invert: 0
+    invert: 1
     type: 1
     axis: 1
     joyNum: 0
   - serializedVersion: 3
-    m_Name: "Rueda del rat\xF3n"
+    m_Name: Stick derecho X
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
@@ -142,10 +142,26 @@ InputManager:
     altNegativeButton: 
     altPositiveButton: 
     gravity: 0
-    dead: 0
-    sensitivity: 0.1
+    dead: 0.19
+    sensitivity: 1
     snap: 0
-    invert: 0
-    type: 1
-    axis: 2
+    invert: 1
+    type: 2
+    axis: 3
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: Stick derecho Y
+    descriptiveName: 
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: 
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 0
+    dead: 0.19
+    sensitivity: 1
+    snap: 0
+    invert: 1
+    type: 2
+    axis: 4
     joyNum: 0
