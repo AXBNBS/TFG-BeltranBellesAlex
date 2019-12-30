@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 0
-    path: Assets/Escenas/Historia2.unity
+    path: Assets/Escenas/Historia2/Historia2.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   m_configObjects: {}
