@@ -29,7 +29,7 @@ public class SeguimientoCamara : MonoBehaviour
     // manera acorde con el input recibido por parte del usuario, ya sea mediande el ratón o el stick derecho del mando, teniendo el cuenta los límites superior e inferior de la cámara.
     private void Update ()
     {
-        if (centrar == false && Input.GetButtonDown ("Centrar cámara") == true) 
+        if (input == true && centrar == false && Input.GetButtonDown ("Centrar cámara") == true) 
         {
             centrar = true;
         }
