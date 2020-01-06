@@ -4,8 +4,11 @@ ModelImporter:
   serializedVersion: 26
   internalIDToNameTable:
   - first:
-      74: -623603649343465320
-    second: Scene
+      74: -7811431589336011050
+    second: correr
+  - first:
+      74: -5252816984213320552
+    second: idle
   externalObjects: {}
   materials:
     importMaterials: 1
