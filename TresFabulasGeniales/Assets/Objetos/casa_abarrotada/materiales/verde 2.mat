@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: verde 1
+  m_Name: verde 2
   m_Shader: {fileID: 4800000, guid: 149a7345b003e6841ae1d339176afbf2, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
@@ -89,6 +89,6 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _ColorBlend: {r: 0.17254902, g: 0.18203509, b: 0.29411766, a: 1}
+    - _ColorBlend: {r: 0.6415094, g: 0.64050627, b: 0.54165184, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _EmissiveBlend: {r: 1, g: 1, b: 1, a: 1}
