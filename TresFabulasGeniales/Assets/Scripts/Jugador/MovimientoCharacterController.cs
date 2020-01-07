@@ -37,8 +37,8 @@ public class MovimientoCharacterController : MonoBehaviour
         }
         else 
         {
-            horizontalInp = Mathf.RoundToInt (Input.GetAxisRaw ("Horizontal"));
-            verticalInp = Mathf.RoundToInt (Input.GetAxisRaw ("Vertical"));
+            horizontalInp = Mathf.RoundToInt (Input.GetAxisRaw ("Movimiento horizontal"));
+            verticalInp = Mathf.RoundToInt (Input.GetAxisRaw ("Movimiento vertical"));
         }
 
         Mover (horizontalInp, verticalInp);

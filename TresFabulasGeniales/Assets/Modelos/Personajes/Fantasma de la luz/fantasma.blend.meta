@@ -6,6 +6,24 @@ ModelImporter:
   - first:
       74: -623603649343465320
     second: Scene
+  - first:
+      74: -9956383017391992
+    second: Esqueleto|agarrado
+  - first:
+      74: -6877751558034246562
+    second: Esqueleto|EsqueletoAction
+  - first:
+      74: 8671736372461246439
+    second: Esqueleto|idle
+  - first:
+      74: -1454109201391568285
+    second: Esqueleto|tumbado
+  - first:
+      74: 278810897576853227
+    second: Cubo.001|idle
+  - first:
+      74: 901038925137399130
+    second: Cubo.001|tumbado
   externalObjects: {}
   materials:
     importMaterials: 1

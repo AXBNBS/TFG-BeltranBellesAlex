@@ -50,10 +50,10 @@ public class SeguimientoCamara : MonoBehaviour
             {
                 float suavizado = sensibilidad * Time.deltaTime;
 
-                ratonX = Mathf.Abs (Input.GetAxis ("Ratón X")) > 0.1f ? Input.GetAxis ("Ratón X") : 0;
-                ratonY = Mathf.Abs (Input.GetAxis ("Ratón Y")) > 0.1f ? Input.GetAxis ("Ratón Y") : 0;
-                stickX = Mathf.Abs (Input.GetAxis ("Stick derecho X")) > 0.1f ? Input.GetAxis ("Stick derecho X") : 0;
-                stickY = Mathf.Abs (Input.GetAxis ("Stick derecho Y")) > 0.1f ? Input.GetAxis ("Stick derecho Y") : 0;
+                ratonX = Mathf.Abs (Input.GetAxis ("Cámara X ratón")) > 0.1f ? Input.GetAxis ("Cámara X ratón") : 0;
+                ratonY = Mathf.Abs (Input.GetAxis ("Cámara Y ratón")) > 0.1f ? Input.GetAxis ("Cámara Y ratón") : 0;
+                stickX = Mathf.Abs (Input.GetAxis ("Cámara X joystick")) > 0.1f ? Input.GetAxis ("Cámara X joystick") : 0;
+                stickY = Mathf.Abs (Input.GetAxis ("Cámara Y joystick")) > 0.1f ? Input.GetAxis ("Cámara Y joystick") : 0;
                 finalX = ratonX + stickX;
                 finalY = ratonY + stickY;
                 rotacionX += finalY * suavizado;

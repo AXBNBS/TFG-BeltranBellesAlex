@@ -6,7 +6,7 @@ InputManager:
   serializedVersion: 2
   m_Axes:
   - serializedVersion: 3
-    m_Name: Horizontal
+    m_Name: Movimiento horizontal
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: a
@@ -22,7 +22,7 @@ InputManager:
     axis: 0
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Vertical
+    m_Name: Movimiento vertical
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: s
@@ -38,7 +38,7 @@ InputManager:
     axis: 0
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Horizontal
+    m_Name: Movimiento horizontal
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
@@ -54,7 +54,7 @@ InputManager:
     axis: 0
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Vertical
+    m_Name: Movimiento vertical
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
@@ -102,7 +102,7 @@ InputManager:
     axis: 0
     joyNum: 0
   - serializedVersion: 3
-    m_Name: "Rat\xF3n X"
+    m_Name: "C\xE1mara X rat\xF3n"
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
@@ -118,7 +118,7 @@ InputManager:
     axis: 0
     joyNum: 0
   - serializedVersion: 3
-    m_Name: "Rat\xF3n Y"
+    m_Name: "C\xE1mara Y rat\xF3n"
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
@@ -134,7 +134,7 @@ InputManager:
     axis: 1
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Stick derecho X
+    m_Name: "C\xE1mara X joystick"
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
@@ -143,14 +143,14 @@ InputManager:
     altPositiveButton: 
     gravity: 0
     dead: 0.19
-    sensitivity: 1
+    sensitivity: 0.1
     snap: 0
     invert: 1
     type: 2
     axis: 3
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Stick derecho Y
+    m_Name: "C\xE1mara Y joystick"
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
