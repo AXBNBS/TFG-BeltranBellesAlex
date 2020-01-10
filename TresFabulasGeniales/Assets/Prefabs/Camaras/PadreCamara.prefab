@@ -49,7 +49,7 @@ MonoBehaviour:
   objetivo: {fileID: 0}
   detras: {fileID: 0}
   movimientoVel: 120
-  abajoLim: -10
+  abajoLim: -5
   arribaLim: 60
   sensibilidad: 370
 --- !u!1 &2900223902310915862
