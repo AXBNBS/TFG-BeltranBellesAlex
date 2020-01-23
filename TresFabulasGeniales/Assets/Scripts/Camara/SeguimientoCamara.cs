@@ -18,7 +18,6 @@ public class SeguimientoCamara : MonoBehaviour
     // Inicialización de variables.
     private void Start ()
     {
-        input = true;
         centrar = false;
         objetivo = GameObject.FindGameObjectWithTag("Jugador").transform;
         detras = objetivo.GetChild (0);

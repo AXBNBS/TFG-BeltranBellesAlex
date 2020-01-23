@@ -20,8 +20,7 @@ public class MovimientoCharacterController : MonoBehaviour
     // Inicialización de variables.
     private void Start ()
     {
-        input = true;
-        gravedad = -8;
+        gravedad = -200;
         characterCtr = this.GetComponent<CharacterController> ();
         camaraTrf = GameObject.FindGameObjectWithTag("CamaraPrincipal").transform;
     }
@@ -42,6 +41,10 @@ public class MovimientoCharacterController : MonoBehaviour
         }
 
         Mover (horizontalInp, verticalInp);
+        if (characterCtr.isGrounded == true && Input.GetButtonDown ("Salto") == true)
+        {
+            Saltar ();
+        }
     }
 
 
@@ -55,14 +58,23 @@ public class MovimientoCharacterController : MonoBehaviour
             float angulo;
             Quaternion rotacion;
 
-            Vector3 relativoCam = (camaraTrf.right * horizontal + camaraTrf.forward * vertical).normalized;
+            Vector3 relativoCam = (camaraTrf.right * horizontal + camaraTrf.forward * vertical).normalized * movimientoVel;
 
-            movimiento += relativoCam * movimientoVel;
+            //movimiento += relativoCam * movimientoVel;
+            movimiento.x = relativoCam.x;
+            movimiento.z = relativoCam.z;
             angulo = Mathf.Atan2 (movimiento.x, movimiento.z) * Mathf.Rad2Deg + 90;
             rotacion = Quaternion.Euler (this.transform.rotation.x, angulo, this.transform.rotation.z);
             this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacion, rotacionVel * Time.deltaTime);
         }
 
         characterCtr.Move (movimiento * Time.deltaTime);
+    }
+
+
+    // Si el personaje está en el suelo y se ha pulsado el botón de salto, haremos que salte.
+    private void Saltar ()
+    {
+        print ("weno");
     }
 }
