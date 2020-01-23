@@ -32,7 +32,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: quim
+  m_Name: Violeta
   serializedVersion: 5
   m_AnimatorParameters: []
   m_AnimatorLayers:
@@ -68,7 +68,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: -623603649343465320, guid: d3008aa6737fa254b8a7664e601cdd46,
+  m_Motion: {fileID: 4781951162920444690, guid: e2e638e044cdbe14b92340e0a4f1881a,
     type: 3}
   m_Tag: 
   m_SpeedParameter: 

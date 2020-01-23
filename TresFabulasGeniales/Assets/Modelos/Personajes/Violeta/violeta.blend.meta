@@ -4,11 +4,32 @@ ModelImporter:
   serializedVersion: 26
   internalIDToNameTable:
   - first:
-      74: -623603649343465320
-    second: Scene
+      74: -960898424075949690
+    second: Armature.001|ArmatureAction
   - first:
-      74: 4781951162920444690
-    second: Armature|ArmatureAction
+      74: -8639993316982285888
+    second: Armature.001|ArmatureAction.001
+  - first:
+      74: -3997514183246978980
+    second: Armature.002|ArmatureAction
+  - first:
+      74: 8368265636151829555
+    second: Armature.002|ArmatureAction.001
+  - first:
+      74: -664916953551355124
+    second: Armature.002|ArmatureAction.002
+  - first:
+      74: 7738622313493689335
+    second: Armature.003|ArmatureAction
+  - first:
+      74: -4892983548465906659
+    second: Armature.003|ArmatureAction.001
+  - first:
+      74: 3661771118344988328
+    second: Armature.003|ArmatureAction.002
+  - first:
+      74: 3821543521657387571
+    second: Armature.003|ArmatureAction.003
   externalObjects: {}
   materials:
     importMaterials: 1
