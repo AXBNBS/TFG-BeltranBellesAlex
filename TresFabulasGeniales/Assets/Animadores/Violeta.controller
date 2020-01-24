@@ -72,7 +72,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 2801719319904536432, guid: e2e638e044cdbe14b92340e0a4f1881a,
+  m_Motion: {fileID: -664916953551355124, guid: e2e638e044cdbe14b92340e0a4f1881a,
     type: 3}
   m_Tag: 
   m_SpeedParameter: 
@@ -101,7 +101,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: -8584437869633751648, guid: e2e638e044cdbe14b92340e0a4f1881a,
+  m_Motion: {fileID: -3997514183246978980, guid: e2e638e044cdbe14b92340e0a4f1881a,
     type: 3}
   m_Tag: 
   m_SpeedParameter: 
@@ -130,7 +130,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7275959300011733335, guid: e2e638e044cdbe14b92340e0a4f1881a,
+  m_Motion: {fileID: 8368265636151829555, guid: e2e638e044cdbe14b92340e0a4f1881a,
     type: 3}
   m_Tag: 
   m_SpeedParameter: 
@@ -148,13 +148,16 @@ AnimatorStateTransition:
   - m_ConditionMode: 1
     m_ConditionEvent: tocandoSuelo
     m_EventTreshold: 0
+  - m_ConditionMode: 1
+    m_ConditionEvent: moviendose
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -1827148513326070945}
   m_Solo: 0
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0
+  m_TransitionDuration: 0.1
   m_TransitionOffset: 0
   m_ExitTime: 0
   m_HasExitTime: 0
@@ -224,7 +227,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 6118976180991136691, guid: e2e638e044cdbe14b92340e0a4f1881a,
+  m_Motion: {fileID: 3656176099244414663, guid: e2e638e044cdbe14b92340e0a4f1881a,
     type: 3}
   m_Tag: 
   m_SpeedParameter: 
@@ -248,7 +251,7 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.25
+  m_TransitionDuration: 0.05
   m_TransitionOffset: 0
   m_ExitTime: 0.68421054
   m_HasExitTime: 0
@@ -267,13 +270,16 @@ AnimatorStateTransition:
   - m_ConditionMode: 1
     m_ConditionEvent: tocandoSuelo
     m_EventTreshold: 0
+  - m_ConditionMode: 2
+    m_ConditionEvent: moviendose
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -5376356519464986661}
   m_Solo: 0
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.25
+  m_TransitionDuration: 0.1
   m_TransitionOffset: 0
   m_ExitTime: 0
   m_HasExitTime: 0

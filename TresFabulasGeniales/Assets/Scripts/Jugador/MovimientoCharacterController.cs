@@ -22,7 +22,7 @@ public class MovimientoCharacterController : MonoBehaviour
     // Inicialización de variables.
     private void Start ()
     {
-        gravedad = -370;
+        gravedad = -600;
         characterCtr = this.GetComponent<CharacterController> ();
         camaraTrf = GameObject.FindGameObjectWithTag("CamaraPrincipal").transform;
         animator = this.GetComponent<Animator> ();
@@ -64,7 +64,10 @@ public class MovimientoCharacterController : MonoBehaviour
     // Le aplicamos gravedad al personaje y, si además está siendo movido por el jugador, lo movemos y rotamos adecuadamente hacia la dirección del movimiento.
     private void Mover (float horizontal, float vertical) 
     {
-        movimiento.y += gravedad * Time.deltaTime;
+        if (characterCtr.isGrounded == false)
+        {
+            movimiento.y += gravedad * Time.deltaTime;
+        }
 
         if (horizontal != 0 || vertical != 0)
         {
@@ -96,10 +99,6 @@ public class MovimientoCharacterController : MonoBehaviour
     {
         animator.SetBool ("moviendose", movimiento.x != 0 || movimiento.z != 0);
         animator.SetBool ("tocandoSuelo", characterCtr.isGrounded);
-        /*if (characterCtr.isGrounded == false && movimiento.y < 0)
-        {
-            animator.SetBool ("tocandoSuelo", Physics.Raycast (this.transform.position, -this.transform.up, 2, sueloMsc));
-        }*/
         animator.SetFloat ("velocidadY", movimiento.y);
     }
 }
