@@ -8286,6 +8286,11 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[1]
       value: 
       objectReference: {fileID: 2100000, guid: 464c62c673f984142bbbc14c451ac934, type: 2}
+    - target: {fileID: 3569172894315941219, guid: ff301ff2d0b4de84ea4908255fd6accb,
+        type: 3}
+      propertyPath: saltoVel
+      value: 450
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ff301ff2d0b4de84ea4908255fd6accb, type: 3}
 --- !u!4 &3998430585314592902
