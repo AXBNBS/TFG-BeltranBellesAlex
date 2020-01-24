@@ -15,6 +15,24 @@ ModelImporter:
   - first:
       74: -960898424075949690
     second: Armature.001|ArmatureAction
+  - first:
+      74: 7709686125681325085
+    second: Armature|Armature.001Action
+  - first:
+      74: 4781951162920444690
+    second: Armature|ArmatureAction
+  - first:
+      74: 6906267723572508546
+    second: Armature.002|Armature.001Action
+  - first:
+      74: 4264612480362930771
+    second: Armature.002|Armature.001Action.001
+  - first:
+      74: -6330207154204098069
+    second: Armature.002|Armature.001Action.002
+  - first:
+      74: -3997514183246978980
+    second: Armature.002|ArmatureAction
   externalObjects: {}
   materials:
     importMaterials: 1
