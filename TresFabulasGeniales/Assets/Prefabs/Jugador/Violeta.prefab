@@ -873,11 +873,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8426950792112203296}
-  - component: {fileID: 3569172894315941220}
   - component: {fileID: 3569172894315941221}
+  - component: {fileID: 3569172894315941220}
   - component: {fileID: 3569172894315941219}
   m_Layer: 0
-  m_Name: violeta
+  m_Name: Violeta
   m_TagString: Jugador
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -900,24 +900,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
---- !u!143 &3569172894315941220
-CharacterController:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4803602200047490099}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Height: 9.5
-  m_Radius: 2.5
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.0001
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 4.7, z: 0}
 --- !u!95 &3569172894315941221
 Animator:
   serializedVersion: 3
@@ -937,6 +919,24 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!143 &3569172894315941220
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4803602200047490099}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Height: 9.5
+  m_Radius: 2.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.0001
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 4.7, z: 0}
 --- !u!114 &3569172894315941219
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -953,9 +953,6 @@ MonoBehaviour:
   movimientoVel: 100
   rotacionVel: 10
   saltoVel: 400
-  sueloMsc:
-    serializedVersion: 2
-    m_Bits: 256
 --- !u!1 &5290027704980002366
 GameObject:
   m_ObjectHideFlags: 0

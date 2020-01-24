@@ -10,9 +10,9 @@ public class MovimientoCharacterController : MonoBehaviour
     public bool input;
 
     [SerializeField] private int movimientoVel, rotacionVel, saltoVel;
-    [SerializeField] private LayerMask sueloMsc;
     private int gravedad;
     private float horizontalInp, verticalInp;
+    private bool saltarInp;
     private Vector3 movimiento;
     private CharacterController characterCtr;
     private Transform camaraTrf;
@@ -36,28 +36,23 @@ public class MovimientoCharacterController : MonoBehaviour
         {
             horizontalInp = 0;
             verticalInp = 0;
+            saltarInp = false;
         }
         else 
         {
             horizontalInp = Mathf.RoundToInt (Input.GetAxisRaw ("Movimiento horizontal"));
             verticalInp = Mathf.RoundToInt (Input.GetAxisRaw ("Movimiento vertical"));
+            saltarInp = Input.GetButtonDown ("Salto");
         }
         movimiento.x = 0;
         movimiento.z = 0;
 
-        if (characterCtr.isGrounded == true && Input.GetButtonDown ("Salto") == true)
+        if (characterCtr.isGrounded == true && saltarInp == true)
         {
             Saltar ();
         }
         Mover (horizontalInp, verticalInp);
         Animar ();
-    }
-
-
-    //
-    private void OnDrawGizmosSelected ()
-    {
-        Gizmos.DrawLine (this.transform.position, this.transform.position - this.transform.up);
     }
 
 
