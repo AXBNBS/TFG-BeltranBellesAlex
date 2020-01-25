@@ -12,7 +12,7 @@ public class MovimientoCharacterController : MonoBehaviour
     [SerializeField] private int movimientoVel, rotacionVel, saltoVel;
     private int gravedad;
     private float horizontalInp, verticalInp;
-    private bool saltarInp;
+    private bool saltarInp, sueleadoUltFrm;
     private Vector3 movimiento;
     private CharacterController characterCtr;
     private Transform camaraTrf;
@@ -23,13 +23,15 @@ public class MovimientoCharacterController : MonoBehaviour
     private void Start ()
     {
         gravedad = -600;
+        sueleadoUltFrm = true;
         characterCtr = this.GetComponent<CharacterController> ();
         camaraTrf = GameObject.FindGameObjectWithTag("CamaraPrincipal").transform;
         animator = this.GetComponent<Animator> ();
     }
 
 
-    // En el caso de que el input esté permitido, obtendremos el relativo al movimiento de las teclas/joysticks correspondiente y moveremos al personaje en consecuencia.
+    // En el caso de que el input esté permitido, obtendremos el relativo al movimiento de las teclas/botones correspondiente y moveremos y animaremos al personaje en 
+    //consecuencia.
     private void Update ()
     {
         if (input == false)
@@ -46,6 +48,10 @@ public class MovimientoCharacterController : MonoBehaviour
         }
         movimiento.x = 0;
         movimiento.z = 0;
+        if (sueleadoUltFrm == true && characterCtr.isGrounded == false)
+        {
+            movimiento.y = 0;
+        }
 
         if (characterCtr.isGrounded == true && saltarInp == true)
         {
@@ -53,6 +59,15 @@ public class MovimientoCharacterController : MonoBehaviour
         }
         Mover (horizontalInp, verticalInp);
         Animar ();
+
+        sueleadoUltFrm = characterCtr.isGrounded;
+    }
+
+
+    // Devuelve "true" si el personaje en cuestión está parado.
+    public bool EstaParado ()
+    {
+        return (animator.GetCurrentAnimatorStateInfo(0).IsName ("Idle"));
     }
 
 
