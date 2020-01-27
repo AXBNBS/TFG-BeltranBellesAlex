@@ -10,21 +10,25 @@ public class MovimientoCharacterController : MonoBehaviour
     public bool input;
 
     [SerializeField] private int movimientoVel, rotacionVel, saltoVel;
+    [SerializeField] private LayerMask capas;
     private int gravedad;
-    private float horizontalInp, verticalInp;
-    private bool saltarInp, sueleadoUltFrm;
-    private Vector3 movimiento;
+    private bool saltarInp;
     private CharacterController characterCtr;
+    private float horizontalInp, verticalInp, offsetY, offsetXZ;
     private Transform camaraTrf;
     private Animator animator;
+    public Vector3 movimiento, empuje;
+    private Vector3[] offsets;
 
-    
+
     // Inicialización de variables.
     private void Start ()
     {
-        gravedad = -600;
-        sueleadoUltFrm = true;
+        gravedad = -10;
         characterCtr = this.GetComponent<CharacterController> ();
+        offsetY = this.transform.localScale.y * characterCtr.height;
+        offsetXZ = this.transform.localScale.x * characterCtr.radius * 3;
+        offsets = new Vector3[] {new Vector3 (+offsetXZ, offsetY, 0), new Vector3 (-offsetXZ, offsetY, 0), new Vector3 (0, offsetY, +offsetXZ), new Vector3 (0, offsetY, -offsetXZ)};
         camaraTrf = GameObject.FindGameObjectWithTag("CamaraPrincipal").transform;
         animator = this.GetComponent<Animator> ();
     }
@@ -48,10 +52,6 @@ public class MovimientoCharacterController : MonoBehaviour
         }
         movimiento.x = 0;
         movimiento.z = 0;
-        if (sueleadoUltFrm == true && characterCtr.isGrounded == false)
-        {
-            movimiento.y = 0;
-        }
 
         if (characterCtr.isGrounded == true && saltarInp == true)
         {
@@ -59,9 +59,55 @@ public class MovimientoCharacterController : MonoBehaviour
         }
         Mover (horizontalInp, verticalInp);
         Animar ();
-
-        sueleadoUltFrm = characterCtr.isGrounded;
     }
+
+
+    // Si el personaje ha caído sobre otro, empujarlo hacia el primer lado de este que se encuentre libre.
+    private void OnControllerColliderHit (ControllerColliderHit hit)
+    {
+        if (hit.transform.tag == "Jugador" && this.transform.position.y > hit.transform.position.y)
+        {
+            Vector3 centroSup = new Vector3(hit.transform.position.x, hit.transform.position.y + offsetY, hit.transform.position.z);
+
+            if (Physics.Raycast(centroSup, hit.transform.right, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
+            {
+                empuje = hit.transform.right;
+
+                return;
+            }
+
+            if (Physics.Raycast(centroSup, hit.transform.forward, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
+            {
+                empuje = hit.transform.forward;
+
+                return;
+            }
+
+            if (Physics.Raycast(centroSup, -hit.transform.forward, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
+            {
+                empuje = -hit.transform.forward;
+
+                return;
+            }
+
+            if (Physics.Raycast(centroSup, -hit.transform.right, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
+            {
+                empuje = -hit.transform.right;
+
+                return;
+            }
+        }
+        else
+        {
+            empuje = Vector3.zero;
+        }
+    }
+
+
+    /*private void OnDrawGizmosSelected ()
+    {
+        Gizmos.DrawLine (new Vector3 (this.transform.position.x, this.transform.position.y + offsetY, this.transform.position.z), this.transform.position + offsets[0]);
+    }*/
 
 
     // Devuelve "true" si el personaje en cuestión está parado.
@@ -76,7 +122,7 @@ public class MovimientoCharacterController : MonoBehaviour
     {
         if (characterCtr.isGrounded == false)
         {
-            movimiento.y += gravedad * Time.deltaTime;
+            movimiento.y += gravedad;
         }
 
         if (horizontal != 0 || vertical != 0)
@@ -92,8 +138,14 @@ public class MovimientoCharacterController : MonoBehaviour
             rotacion = Quaternion.Euler (this.transform.rotation.x, angulo, this.transform.rotation.z);
             this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacion, rotacionVel * Time.deltaTime);
         }
+        movimiento += empuje * movimientoVel / 2;
 
         characterCtr.Move (movimiento * Time.deltaTime);
+
+        if (characterCtr.isGrounded == true)
+        {
+            movimiento.y = -0.1f;
+        }
     }
 
 

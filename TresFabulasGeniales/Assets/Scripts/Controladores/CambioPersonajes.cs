@@ -14,7 +14,7 @@ public class CambioPersonajes : MonoBehaviour
     private SeguimientoCamara camara;
 
 
-    // .
+    // Inicialización de elementos y desactivación del movimiento de uno de los personajes.
     private void Start ()
     {
         personajesMov = GameObject.FindObjectsOfType<MovimientoCharacterController> ();
@@ -25,36 +25,35 @@ public class CambioPersonajes : MonoBehaviour
         personajesTrf[1] = personajesMov[1].transform;
         detrases[0] = personajesTrf[0].GetChild (0);
         detrases[1] = personajesTrf[1].GetChild (0);
-        personajesMov[1].enabled = false;
+        personajesMov[0].input = false;
+        camara.objetivo = personajesTrf[1];
+        camara.detras = detrases[1];
     }
 
 
-    // .
+    // Si se permite el input, y se pulsa el botón/tecla de cambio de personaje, y cambiamos del personaje actual al otro.
     private void Update ()
     {
         if (input == true && Input.GetButtonDown ("Cambio personaje") == true)
         {
-            if (personajesMov[0].enabled == true)
+            if (personajesMov[0].input == true)
             {
-                CambiarA (1);
+                CambiarA (1, 0);
             }
             else
             {
-                CambiarA (0);
+                CambiarA (0, 1);
             }
         }
     }
 
 
-    //
-    private void CambiarA (int personaje)
+    // La cámara pasa a seguir al nuevo personaje y se desactiva el movimiento del otro.
+    private void CambiarA (int nuevo, int anterior)
     {
-        if (personajesMov[personaje].EstaParado () == true)
-        {
-            camara.objetivo = personajesTrf[personaje];
-            camara.detras = detrases[personaje];
-            personajesMov[personaje].enabled = false;
-            personajesMov[personaje].enabled = true;
-        }
+        camara.objetivo = personajesTrf[nuevo];
+        camara.detras = detrases[nuevo];
+        personajesMov[anterior].input = false;
+        personajesMov[nuevo].input = true;
     }
 }
