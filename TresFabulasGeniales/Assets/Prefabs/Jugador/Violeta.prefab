@@ -790,14 +790,14 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 1110233775959259594, guid: e2e638e044cdbe14b92340e0a4f1881a, type: 3}
-  - {fileID: -8583780622465393609, guid: e2e638e044cdbe14b92340e0a4f1881a, type: 3}
-  - {fileID: -1637880222114644024, guid: e2e638e044cdbe14b92340e0a4f1881a, type: 3}
-  - {fileID: 8975480819012031255, guid: e2e638e044cdbe14b92340e0a4f1881a, type: 3}
-  - {fileID: -8705533452240791338, guid: e2e638e044cdbe14b92340e0a4f1881a, type: 3}
-  - {fileID: 8964088591131456171, guid: e2e638e044cdbe14b92340e0a4f1881a, type: 3}
-  - {fileID: 9101280890363022628, guid: e2e638e044cdbe14b92340e0a4f1881a, type: 3}
-  - {fileID: 6133712870518801159, guid: e2e638e044cdbe14b92340e0a4f1881a, type: 3}
+  - {fileID: 2100000, guid: 8f4b6aba8e55063488e0f34b220e84be, type: 2}
+  - {fileID: 2100000, guid: 464c62c673f984142bbbc14c451ac934, type: 2}
+  - {fileID: 2100000, guid: aad8e7fbaf463924197dd1899c92b094, type: 2}
+  - {fileID: 2100000, guid: 4758ed9070c5e1145aeb095a5a3865e7, type: 2}
+  - {fileID: 2100000, guid: 977bd2cbc0a1e49479cf14b020f9d6f5, type: 2}
+  - {fileID: 2100000, guid: c17fee34d5dc2254ab3de147926e40c5, type: 2}
+  - {fileID: 2100000, guid: 121f37dbc347fc74fbeda9cc38d1e08b, type: 2}
+  - {fileID: 2100000, guid: 8f4b6aba8e55063488e0f34b220e84be, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -874,6 +874,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8426950792112203296}
   - component: {fileID: 3569172894315941221}
+  - component: {fileID: 2733339995396723249}
   - component: {fileID: 3569172894315941220}
   - component: {fileID: 3569172894315941219}
   m_Layer: 9
@@ -919,6 +920,20 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!136 &2733339995396723249
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4803602200047490099}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 2.6
+  m_Height: 12.75
+  m_Direction: 0
+  m_Center: {x: 3.75, y: 5, z: 0}
 --- !u!143 &3569172894315941220
 CharacterController:
   m_ObjectHideFlags: 0
@@ -950,12 +965,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   input: 1
+  offsetY: 0
+  offsetXZ: 0
   movimientoVel: 100
   rotacionVel: 10
   saltoVel: 400
   capas:
     serializedVersion: 2
     m_Bits: 311
+  detrasCol: []
 --- !u!1 &5290027704980002366
 GameObject:
   m_ObjectHideFlags: 0
