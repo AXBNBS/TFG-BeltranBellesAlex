@@ -19,8 +19,6 @@ public class SeguimientoCamara : MonoBehaviour
     private void Start ()
     {
         centrar = false;
-        objetivo = GameObject.FindGameObjectWithTag("Jugador").transform;
-        detras = objetivo.GetChild (0);
     }
 
 
