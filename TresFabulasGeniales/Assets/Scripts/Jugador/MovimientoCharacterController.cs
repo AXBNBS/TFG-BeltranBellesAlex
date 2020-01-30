@@ -8,18 +8,21 @@ using UnityEngine;
 public class MovimientoCharacterController : MonoBehaviour
 {
     public bool input;
-    public float offsetY, offsetXZ;
+    [HideInInspector] public float offsetY, offsetXZ;
 
     [SerializeField] private int movimientoVel, rotacionVel, saltoVel;
     [SerializeField] private LayerMask capas;
+    [SerializeField] private MovimientoCharacterController companyero;
     private int gravedad;
     private bool saltarInp, seguir;
     private CharacterController characterCtr;
-    private float horizontalInp, verticalInp;
-    private Transform camaraTrf, seguido;
+    private float horizontalInp, verticalInp, angulo;
+    private Quaternion rotacion;
+    private Transform camaraTrf;
     private Animator animator;
-    private Vector3 movimiento, empuje;
-    public List<Collider> detrasCol;
+    private Vector3 movimiento, empuje, puntoIni, objetivoSeg;
+    private List<Collider> detrasCol;
+    private SphereCollider esferaCol;
 
 
     // Inicialización de variables.
@@ -32,6 +35,8 @@ public class MovimientoCharacterController : MonoBehaviour
         offsetXZ = this.transform.localScale.x * characterCtr.radius * 3;
         camaraTrf = GameObject.FindGameObjectWithTag("CamaraPrincipal").transform;
         animator = this.GetComponent<Animator> ();
+        detrasCol = new List<Collider> ();
+        esferaCol = this.GetComponent<SphereCollider> ();
     }
 
 
@@ -62,22 +67,29 @@ public class MovimientoCharacterController : MonoBehaviour
         if (seguir == true)
         {
             Seguir ();
+            DesagruparSiEso ();
         }
         Animar ();
     }
 
 
-    //
+    // Añadimos el objeto que haya entrado a la lista de colliders traseros.
     private void OnTriggerEnter (Collider other)
     {
-        detrasCol.Add (other);
+        if (other.isTrigger == false)
+        {
+            detrasCol.Add (other);
+        }
     }
 
 
-    //
+    // Eliminamos el objeto que haya entrado de la lista de colliders traseros.
     private void OnTriggerExit (Collider other)
     {
-        detrasCol.Remove (other);
+        if (other.isTrigger == false)
+        {
+            detrasCol.Remove (other);
+        }   
     }
 
 
@@ -123,7 +135,7 @@ public class MovimientoCharacterController : MonoBehaviour
     }
 
 
-    //
+    // .
     private void OnDrawGizmosSelected ()
     {
         
@@ -137,11 +149,15 @@ public class MovimientoCharacterController : MonoBehaviour
     }
 
 
-    //
-    public void MoverDetras (Transform objetivo)
+    // Hacemos que la variable que hace que se siga al compañero sea verdadera.
+    public void GestionarSeguimiento (bool comenzar)
     {
-        seguir = true;
-        seguido = objetivo;
+        seguir = comenzar;
+
+        if (seguir == false)
+        {
+            esferaCol.enabled = false;
+        }
     }
 
 
@@ -155,9 +171,6 @@ public class MovimientoCharacterController : MonoBehaviour
 
         if (horizontal != 0 || vertical != 0)
         {
-            float angulo;
-            Quaternion rotacion;
-
             Vector3 relativoCam = (camaraTrf.right * horizontal + camaraTrf.forward * vertical).normalized * movimientoVel;
 
             movimiento.x = relativoCam.x;
@@ -187,25 +200,46 @@ public class MovimientoCharacterController : MonoBehaviour
     //
     private void Seguir ()
     {
+        puntoIni = new Vector3 (this.transform.position.x, this.transform.position.y + offsetY / 5, this.transform.position.z);
 
-        Vector3 puntoIni1 = new Vector3 (this.transform.position.x, this.transform.position.y + offsetY / 5, this.transform.position.z);
-        Vector3 puntoIni2 = puntoIni1 + this.transform.localScale.x * characterCtr.radius * this.transform.forward;
-        Vector3 puntoIni3 = puntoIni1 - this.transform.localScale.x * characterCtr.radius * this.transform.forward;
-        //Vector3 puntoFin = new Vector3 (seguido.position.x, seguido.position.y + offsetY / 5, seguido.position.z);
-        Vector3 puntoMed = new Vector3 (seguido.position.x, seguido.position.y + offsetY / 5, seguido.position.z) + seguido.right * 15;
-        Vector3 direccion = puntoIni1 - puntoMed;
-        float distancia = Vector3.Distance (this.transform.position, puntoMed) + offsetXZ / 3;
+        Vector3 puntoIni2 = puntoIni + this.transform.localScale.x * characterCtr.radius * this.transform.forward;
+        Vector3 puntoIni3 = puntoIni - this.transform.localScale.x * characterCtr.radius * this.transform.forward;
 
-        if (ColliderChungoAEspaldas () == false && Physics.Raycast (puntoIni1, direccion, distancia, capas, QueryTriggerInteraction.Ignore) == false &&
-            Physics.Raycast (puntoIni2, direccion, distancia, capas, QueryTriggerInteraction.Ignore) == false && Physics.Raycast (puntoIni3, direccion, distancia, capas, QueryTriggerInteraction.Ignore) == false)
+        objetivoSeg = new Vector3 (companyero.transform.position.x, companyero.transform.position.y + offsetY / 5, companyero.transform.position.z) + companyero.transform.right * 15;
+
+        Vector3 direccion = puntoIni - objetivoSeg;
+        float distancia = Vector3.Distance (this.transform.position, objetivoSeg) + offsetXZ / 3;
+        if (direccion != Vector3.zero && companyero.ColliderChungoAEspaldas () == false && 
+            Physics.Raycast (puntoIni, direccion, distancia, capas, QueryTriggerInteraction.Ignore) == false && Physics.Raycast (puntoIni2, direccion, distancia, capas, QueryTriggerInteraction.Ignore) == false 
+            && Physics.Raycast (puntoIni3, direccion, distancia, capas, QueryTriggerInteraction.Ignore) == false)
         {
-            characterCtr.Move ((puntoMed - this.transform.position) * Time.deltaTime);
+            Vector3 offset = objetivoSeg - puntoIni;
 
-            if (Vector3.Distance (puntoIni1, puntoMed) < 0.01f)
+            if (offset.magnitude > 1)
             {
-                seguir = false;
-                input = true;
+                angulo = Mathf.Atan2 (offset.x, offset.z) * Mathf.Rad2Deg + 90;
+                rotacion = Quaternion.Euler (this.transform.rotation.x, angulo, this.transform.rotation.z);
+                this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacion, rotacionVel * 2 * Time.deltaTime);
+
+                characterCtr.Move (offset.normalized * movimientoVel * Time.deltaTime);
             }
+            else
+            {
+                this.transform.position = new Vector3 (objetivoSeg.x, this.transform.position.y, objetivoSeg.z);
+                esferaCol.enabled = true;
+            }
+        }
+    }
+
+
+    //
+    private void DesagruparSiEso ()
+    {
+        if (Mathf.Abs (this.transform.position.y - companyero.transform.position.y) > 5)
+        {
+            GestionarSeguimiento (false);
+
+            CambioDePersonajesYAgrupacion.instancia.juntos = false;
         }
     }
 
@@ -213,9 +247,17 @@ public class MovimientoCharacterController : MonoBehaviour
     // Gestiona las animaciones del personaje de acuerdo a su situación actual.
     private void Animar ()
     {
-        animator.SetBool ("moviendose", movimiento.x != 0 || movimiento.z != 0);
-        animator.SetBool ("tocandoSuelo", characterCtr.isGrounded);
-        animator.SetFloat ("velocidadY", movimiento.y);
+        if (seguir == false)
+        {
+            animator.SetBool ("moviendose", movimiento.x != 0 || movimiento.z != 0);
+            animator.SetBool ("tocandoSuelo", characterCtr.isGrounded);
+            animator.SetFloat ("velocidadY", movimiento.y);
+        }
+        else
+        {
+            animator.SetBool ("moviendose", puntoIni != objetivoSeg);
+            animator.SetBool ("tocandoSuelo", true);
+        }
     }
 
 

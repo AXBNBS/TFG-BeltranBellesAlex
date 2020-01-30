@@ -7,33 +7,44 @@ using UnityEngine;
 
 public class CambioDePersonajesYAgrupacion : MonoBehaviour
 {
-    public bool input;
+    public static CambioDePersonajesYAgrupacion instancia;
+    public bool input, juntos;
 
     [SerializeField] private LayerMask avataresCap;
+    [SerializeField] private MovimientoCharacterController violetaMov;
     private MovimientoCharacterController[] personajesMov;
     private Transform[] personajesTrf, detrases;
     private SeguimientoCamara camara;
     private float agrupacionRad, comprovacionRad;
-    private bool juntos;
 
 
     // Inicialización de elementos y desactivación del movimiento de uno de los personajes.
     private void Start ()
     {
+        instancia = this;
+        juntos = false;
         personajesMov = GameObject.FindObjectsOfType<MovimientoCharacterController> ();
         personajesTrf = new Transform[2];
         detrases = new Transform[2];
         camara = GameObject.FindObjectOfType<SeguimientoCamara> ();
         agrupacionRad = personajesMov[0].offsetXZ * 3;
         comprovacionRad = personajesMov[0].offsetXZ + personajesMov[0].offsetXZ / 3;
-        juntos = false;
         personajesTrf[0] = personajesMov[0].transform;
         personajesTrf[1] = personajesMov[1].transform;
         detrases[0] = personajesTrf[0].GetChild (0);
         detrases[1] = personajesTrf[1].GetChild (0);
-        personajesMov[0].input = false;
-        camara.objetivo = personajesTrf[1];
-        camara.detras = detrases[1];
+        if (personajesMov[0] == violetaMov)
+        {
+            personajesMov[1].input = false;
+            camara.objetivo = personajesTrf[0];
+            camara.detras = detrases[0];
+        }
+        else
+        {
+            personajesMov[0].input = false;
+            camara.objetivo = personajesTrf[1];
+            camara.detras = detrases[1];
+        }
     }
 
 
@@ -50,7 +61,7 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
                 }
                 else
                 {
-                    juntos = false;
+                    Separar ();
                 }
             }
             if (Input.GetButtonDown ("Cambio personaje") == true)
@@ -63,16 +74,17 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
                 {
                     CambiarA (0, 1);
                 }
+                Separar ();
             }
         }
     }
 
 
-    /*
+    //
     private void OnDrawGizmos ()
     {
-        Gizmos.DrawWireSphere (camara.objetivo.position, agrupacionRad);
-    }*/
+        //Gizmos.DrawWireSphere (camara.objetivo.position, agrupacionRad);
+    }
 
 
     // La cámara pasa a seguir al nuevo personaje y se desactiva el movimiento del otro.
@@ -88,7 +100,7 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     }
 
 
-    //
+    // Si en un cierto radio se encuantra el otro avatar, haremos que este comienze a seguir a aquel que esté siendo controlado por el jugador.
     private void Juntar ()
     {
         Collider[] encontrado = Physics.OverlapSphere (camara.objetivo.position, agrupacionRad, avataresCap, QueryTriggerInteraction.Ignore);
@@ -97,14 +109,24 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
         {
             if (personajesMov[0].input == true)
             {
-                personajesMov[1].MoverDetras (personajesTrf[0]);
+                personajesMov[1].GestionarSeguimiento (true);
             }
             else
             {
-                personajesMov[0].MoverDetras (personajesTrf[1]);
+                personajesMov[0].GestionarSeguimiento (true);
             }
             
             juntos = true;
         }
+    }
+
+
+    // .
+    private void Separar ()
+    {
+        personajesMov[0].GestionarSeguimiento (false);
+        personajesMov[1].GestionarSeguimiento (false);
+
+        juntos = false;
     }
 }

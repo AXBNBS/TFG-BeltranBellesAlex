@@ -322,6 +322,8 @@ GameObject:
   m_Component:
   - component: {fileID: 3334141742652679945}
   - component: {fileID: 4670026098275895923}
+  - component: {fileID: 5673471887362695501}
+  - component: {fileID: 4048278680746290576}
   - component: {fileID: 8062391924500440778}
   - component: {fileID: 3834986645888102154}
   m_Layer: 9
@@ -367,6 +369,33 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!136 &5673471887362695501
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1737854986509587738}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 2.6
+  m_Height: 12.75
+  m_Direction: 0
+  m_Center: {x: 3.75, y: 5, z: 0}
+--- !u!135 &4048278680746290576
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1737854986509587738}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 0
+  serializedVersion: 2
+  m_Radius: 1.25
+  m_Center: {x: -3.75, y: 5, z: 0}
 --- !u!143 &8062391924500440778
 CharacterController:
   m_ObjectHideFlags: 0
@@ -398,12 +427,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   input: 1
+  offsetY: 0
+  offsetXZ: 0
   movimientoVel: 100
   rotacionVel: 10
-  saltoVel: 300
+  saltoVel: 220
   capas:
     serializedVersion: 2
     m_Bits: 311
+  companyero: {fileID: 0}
 --- !u!1 &2331625964693175189
 GameObject:
   m_ObjectHideFlags: 0
@@ -1135,17 +1167,17 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 1110233775959259594, guid: b95bfcc4b80f0dc409dbc1ddfe424f94, type: 3}
-  - {fileID: -8583780622465393609, guid: b95bfcc4b80f0dc409dbc1ddfe424f94, type: 3}
-  - {fileID: -1637880222114644024, guid: b95bfcc4b80f0dc409dbc1ddfe424f94, type: 3}
-  - {fileID: -1285507144799149237, guid: b95bfcc4b80f0dc409dbc1ddfe424f94, type: 3}
-  - {fileID: 8975480819012031255, guid: b95bfcc4b80f0dc409dbc1ddfe424f94, type: 3}
-  - {fileID: 2413751341462511734, guid: b95bfcc4b80f0dc409dbc1ddfe424f94, type: 3}
-  - {fileID: 1859426020009997765, guid: b95bfcc4b80f0dc409dbc1ddfe424f94, type: 3}
-  - {fileID: 8964088591131456171, guid: b95bfcc4b80f0dc409dbc1ddfe424f94, type: 3}
-  - {fileID: 9101280890363022628, guid: b95bfcc4b80f0dc409dbc1ddfe424f94, type: 3}
-  - {fileID: 6133712870518801159, guid: b95bfcc4b80f0dc409dbc1ddfe424f94, type: 3}
-  - {fileID: -4192297992474313835, guid: b95bfcc4b80f0dc409dbc1ddfe424f94, type: 3}
+  - {fileID: 2100000, guid: f2dd99a20b9fab744a9c6f22e0ab4fe5, type: 2}
+  - {fileID: 2100000, guid: 464c62c673f984142bbbc14c451ac934, type: 2}
+  - {fileID: 2100000, guid: 82bac58fcab42474f85c2200adec3848, type: 2}
+  - {fileID: 2100000, guid: 37556f6ae693600448657daed32d82dc, type: 2}
+  - {fileID: 2100000, guid: 4758ed9070c5e1145aeb095a5a3865e7, type: 2}
+  - {fileID: 2100000, guid: 82bac58fcab42474f85c2200adec3848, type: 2}
+  - {fileID: 2100000, guid: 4758ed9070c5e1145aeb095a5a3865e7, type: 2}
+  - {fileID: 2100000, guid: c17fee34d5dc2254ab3de147926e40c5, type: 2}
+  - {fileID: 2100000, guid: d17a2308ed3a03f40b9f8ebe55431033, type: 2}
+  - {fileID: 2100000, guid: f2dd99a20b9fab744a9c6f22e0ab4fe5, type: 2}
+  - {fileID: 2100000, guid: 121f37dbc347fc74fbeda9cc38d1e08b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

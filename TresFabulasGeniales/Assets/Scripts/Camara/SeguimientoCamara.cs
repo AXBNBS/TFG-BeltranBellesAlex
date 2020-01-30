@@ -18,6 +18,9 @@ public class SeguimientoCamara : MonoBehaviour
     // Inicialización de variables.
     private void Start ()
     {
+        // ACTIVAR AL FINAL
+        //Cursor.lockState = CursorLockMode.Locked;
+        //Cursor.visible = false;
         centrar = false;
     }
 
