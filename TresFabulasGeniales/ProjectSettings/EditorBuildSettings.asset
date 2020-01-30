@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Escenas/AythamiPruebas.unity
+    guid: 40a6bf92ea9a85b4ca8a281dd36d197c
   m_configObjects: {}
