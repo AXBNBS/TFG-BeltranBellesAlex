@@ -22,8 +22,7 @@ public class MovimientoCharacterController : MonoBehaviour
     private Animator animator;
     private Vector3 movimiento, empuje, puntoIni, objetivoSeg;
     private List<Collider> detrasCol;
-    private SphereCollider esferaCol;
-
+    
 
     // Inicialización de variables.
     private void Start ()
@@ -36,7 +35,6 @@ public class MovimientoCharacterController : MonoBehaviour
         camaraTrf = GameObject.FindGameObjectWithTag("CamaraPrincipal").transform;
         animator = this.GetComponent<Animator> ();
         detrasCol = new List<Collider> ();
-        esferaCol = this.GetComponent<SphereCollider> ();
     }
 
 
@@ -153,11 +151,6 @@ public class MovimientoCharacterController : MonoBehaviour
     public void GestionarSeguimiento (bool comenzar)
     {
         seguir = comenzar;
-
-        if (seguir == false)
-        {
-            esferaCol.enabled = false;
-        }
     }
 
 
@@ -226,7 +219,6 @@ public class MovimientoCharacterController : MonoBehaviour
             else
             {
                 this.transform.position = new Vector3 (objetivoSeg.x, this.transform.position.y, objetivoSeg.z);
-                esferaCol.enabled = true;
             }
         }
     }
