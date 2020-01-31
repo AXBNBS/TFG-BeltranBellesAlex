@@ -190,7 +190,7 @@ public class MovimientoCharacterController : MonoBehaviour
     }
 
 
-    //
+    // Si el personaje que sigue al otro .
     private void Seguir ()
     {
         puntoIni = new Vector3 (this.transform.position.x, this.transform.position.y + offsetY / 5, this.transform.position.z);
@@ -202,9 +202,8 @@ public class MovimientoCharacterController : MonoBehaviour
 
         Vector3 direccion = puntoIni - objetivoSeg;
         float distancia = Vector3.Distance (this.transform.position, objetivoSeg) + offsetXZ / 3;
-        if (direccion != Vector3.zero && companyero.ColliderChungoAEspaldas () == false && 
-            Physics.Raycast (puntoIni, direccion, distancia, capas, QueryTriggerInteraction.Ignore) == false && Physics.Raycast (puntoIni2, direccion, distancia, capas, QueryTriggerInteraction.Ignore) == false 
-            && Physics.Raycast (puntoIni3, direccion, distancia, capas, QueryTriggerInteraction.Ignore) == false)
+        if (direccion != Vector3.zero && companyero.ColliderChungoAEspaldas () == false && Physics.Raycast (puntoIni, direccion, distancia, capas, QueryTriggerInteraction.Ignore) == false && 
+            Physics.Raycast (puntoIni2, direccion, distancia, capas, QueryTriggerInteraction.Ignore) == false && Physics.Raycast (puntoIni3, direccion, distancia, capas, QueryTriggerInteraction.Ignore) == false)
         {
             Vector3 offset = objetivoSeg - puntoIni;
 
