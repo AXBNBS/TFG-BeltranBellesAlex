@@ -415,7 +415,7 @@ MonoBehaviour:
   input: 1
   offsetY: 0
   offsetXZ: 0
-  movimientoVel: 100
+  movimientoVel: 150
   rotacionVel: 10
   saltoVel: 220
   capas:

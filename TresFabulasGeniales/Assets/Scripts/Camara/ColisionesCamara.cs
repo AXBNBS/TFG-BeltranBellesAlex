@@ -10,14 +10,14 @@ public class ColisionesCamara : MonoBehaviour
     
 
 
-    // 
+    // .
     private void Start ()
     {
         
     }
 
 
-    // 
+    // .
     private void Update ()
     {
         

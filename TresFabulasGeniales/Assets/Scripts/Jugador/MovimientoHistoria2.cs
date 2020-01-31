@@ -5,14 +5,14 @@ using UnityEngine;
 
 
 
-public class MovimientoCharacterController : MonoBehaviour
+public class MovimientoHistoria2 : MonoBehaviour
 {
     public bool input;
     [HideInInspector] public float offsetY, offsetXZ;
 
     [SerializeField] private int movimientoVel, rotacionVel, saltoVel;
     [SerializeField] private LayerMask capas;
-    [SerializeField] private MovimientoCharacterController companyero;
+    [SerializeField] private MovimientoHistoria2 companyero;
     private int gravedad;
     private bool saltarInp, seguir;
     private CharacterController characterCtr;
@@ -27,7 +27,7 @@ public class MovimientoCharacterController : MonoBehaviour
     // Inicialización de variables.
     private void Start ()
     {
-        gravedad = -10;
+        gravedad = -11;
         seguir = false;
         characterCtr = this.GetComponent<CharacterController> ();
         offsetY = this.transform.localScale.y * characterCtr.height;
@@ -38,8 +38,7 @@ public class MovimientoCharacterController : MonoBehaviour
     }
 
 
-    // En el caso de que el input esté permitido, obtendremos el relativo al movimiento de las teclas/botones correspondiente y moveremos y animaremos al personaje en 
-    //consecuencia.
+    // En el caso de que el input esté permitido, obtendremos el relativo al movimiento de las teclas/botones correspondiente y moveremos y animaremos al personaje en consecuencia.
     private void Update ()
     {
         if (input == false)
@@ -68,6 +67,16 @@ public class MovimientoCharacterController : MonoBehaviour
             DesagruparSiEso ();
         }
         Animar ();
+    }
+
+
+    // Aplicamos la gravedad al personaje si este está en el aire.
+    private void FixedUpdate ()
+    {
+        if (characterCtr.isGrounded == false)
+        {
+            AplicarGravedad ();
+        }
     }
 
 
@@ -157,11 +166,6 @@ public class MovimientoCharacterController : MonoBehaviour
     // Le aplicamos gravedad al personaje y, si además está siendo movido por el jugador, lo movemos y rotamos adecuadamente hacia la dirección del movimiento.
     private void Mover (float horizontal, float vertical) 
     {
-        if (characterCtr.isGrounded == false)
-        {
-            movimiento.y += gravedad;
-        }
-
         if (horizontal != 0 || vertical != 0)
         {
             Vector3 relativoCam = (camaraTrf.right * horizontal + camaraTrf.forward * vertical).normalized * movimientoVel;
@@ -183,6 +187,13 @@ public class MovimientoCharacterController : MonoBehaviour
     }
 
 
+    // Es que si no flota.
+    private void AplicarGravedad () 
+    {
+        movimiento.y += gravedad;
+    }
+
+
     // Si el personaje está en el suelo y se ha pulsado el botón de salto, haremos que salte.
     private void Saltar ()
     {
@@ -190,7 +201,7 @@ public class MovimientoCharacterController : MonoBehaviour
     }
 
 
-    // Si el personaje que sigue al otro .
+    // Si no hay colliders chungos detrás del personaje seguido, la distancia entre la posición actual y la del punto a seguir es distinta a cero y no hay obstáculos entre el personaje y ese punto, nos movemos hacia ahí.
     private void Seguir ()
     {
         puntoIni = new Vector3 (this.transform.position.x, this.transform.position.y + offsetY / 5, this.transform.position.z);
@@ -223,7 +234,7 @@ public class MovimientoCharacterController : MonoBehaviour
     }
 
 
-    //
+    // Si la distancia en y es mayor a 5, automáticamente desagrupamos a los personajes.
     private void DesagruparSiEso ()
     {
         if (Mathf.Abs (this.transform.position.y - companyero.transform.position.y) > 5)

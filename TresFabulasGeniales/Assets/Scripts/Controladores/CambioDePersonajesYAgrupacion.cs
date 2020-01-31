@@ -11,11 +11,11 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     public bool input, juntos;
 
     [SerializeField] private LayerMask avataresCap;
-    [SerializeField] private MovimientoCharacterController violetaMov;
-    private MovimientoCharacterController[] personajesMov;
+    [SerializeField] private MovimientoHistoria2 violetaMov;
+    private MovimientoHistoria2[] personajesMov;
     private Transform[] personajesTrf, detrases;
     private SeguimientoCamara camara;
-    private float agrupacionRad, comprovacionRad;
+    private float agrupacionRad;
 
 
     // Inicialización de elementos y desactivación del movimiento de uno de los personajes.
@@ -23,12 +23,11 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     {
         instancia = this;
         juntos = false;
-        personajesMov = GameObject.FindObjectsOfType<MovimientoCharacterController> ();
+        personajesMov = GameObject.FindObjectsOfType<MovimientoHistoria2> ();
         personajesTrf = new Transform[2];
         detrases = new Transform[2];
         camara = GameObject.FindObjectOfType<SeguimientoCamara> ();
         agrupacionRad = personajesMov[0].offsetXZ * 3;
-        comprovacionRad = personajesMov[0].offsetXZ + personajesMov[0].offsetXZ / 3;
         personajesTrf[0] = personajesMov[0].transform;
         personajesTrf[1] = personajesMov[1].transform;
         detrases[0] = personajesTrf[0].GetChild (0);
@@ -80,7 +79,7 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     }
 
 
-    //
+    // .
     private void OnDrawGizmos ()
     {
         //Gizmos.DrawWireSphere (camara.objetivo.position, agrupacionRad);
@@ -121,7 +120,7 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     }
 
 
-    // .
+    // Los personajes dejan de estar juntos.
     private void Separar ()
     {
         personajesMov[0].GestionarSeguimiento (false);

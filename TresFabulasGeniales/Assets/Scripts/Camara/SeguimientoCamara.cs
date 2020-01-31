@@ -26,7 +26,7 @@ public class SeguimientoCamara : MonoBehaviour
 
 
     // Si se ha de centrar la cámara, calculamos la diferencia entre la posición del objetivo y la que tendrá la cámara al centrarse respecto al mismo para determinar la rotación que esta ha de realizar. En el caso contrario, rotamos la cámara de
-    // manera acorde con el input recibido por parte del usuario, ya sea mediande el ratón o el stick derecho del mando, teniendo el cuenta los límites superior e inferior de la cámara.
+    //manera acorde con el input recibido por parte del usuario, ya sea mediande el ratón o el stick derecho del mando, teniendo el cuenta los límites superior e inferior de la cámara.
     private void Update ()
     {
         if (input == true && centrar == false && Input.GetButtonDown ("Centrar cámara") == true) 
@@ -56,10 +56,10 @@ public class SeguimientoCamara : MonoBehaviour
                 stickY = Mathf.Abs (Input.GetAxis ("Cámara Y joystick")) > 0.1f ? Input.GetAxis ("Cámara Y joystick") : 0;
                 finalX = ratonX + stickX;
                 finalY = ratonY + stickY;
-                rotacionX += finalY * suavizado;
-                rotacionY += finalX * suavizado;
-                rotacionX = Mathf.Clamp (rotacionX, abajoLim, arribaLim);
-                rotacionLoc = Quaternion.Euler (0, rotacionY, rotacionX);
+                rotacionX += finalX * suavizado;
+                rotacionY += finalY * suavizado;
+                rotacionY = Mathf.Clamp (rotacionY, abajoLim, arribaLim);
+                rotacionLoc = Quaternion.Euler (0, rotacionX, rotacionY);
                 this.transform.rotation = rotacionLoc;
             }
         }
