@@ -40,8 +40,8 @@ public class SeguimientoCamara : MonoBehaviour
             {
                 Vector3 diferencia = objetivo.position - detras.position;
 
-                rotacionX = 0;
-                rotacionY = Mathf.Atan2 (diferencia.x, diferencia.z) * Mathf.Rad2Deg + 90;
+                rotacionX = Mathf.Atan2(diferencia.x, diferencia.z) * Mathf.Rad2Deg + 90;
+                rotacionY = 0;
                 rotacionLoc = Quaternion.Euler (rotacionX, rotacionY, 0);
                 this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacionLoc, Time.deltaTime);
                 centrar = false;
