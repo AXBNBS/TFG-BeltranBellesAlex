@@ -5292,7 +5292,7 @@ MonoBehaviour:
     FresnelScanlineX: 0
     FresnelScanlineY: 0
   FogSettings:
-    Contribution: 0.626
+    Contribution: 0
     DepthLevel: 1
     DepthClippingFar: 1
     FogColor: {r: 0.5800552, g: 0.745283, b: 0.745283, a: 1}
