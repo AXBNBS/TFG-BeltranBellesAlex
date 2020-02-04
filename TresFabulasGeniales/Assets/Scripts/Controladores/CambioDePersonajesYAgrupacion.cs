@@ -11,9 +11,8 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     public bool input, juntos;
 
     [SerializeField] private LayerMask avataresCap;
-    [SerializeField] private MovimientoHistoria2 violetaMov;
     private MovimientoHistoria2[] personajesMov;
-    private Transform[] personajesTrf, detrases;
+    private Transform[] personajesTrf, detrases, puntosSeg;
     private SeguimientoCamara camara;
     private float agrupacionRad;
 
@@ -26,21 +25,23 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
         personajesMov = GameObject.FindObjectsOfType<MovimientoHistoria2> ();
         personajesTrf = new Transform[2];
         detrases = new Transform[2];
+        puntosSeg = new Transform[2];
         camara = GameObject.FindObjectOfType<SeguimientoCamara> ();
         agrupacionRad = personajesMov[0].offsetXZ * 3;
         personajesTrf[0] = personajesMov[0].transform;
         personajesTrf[1] = personajesMov[1].transform;
         detrases[0] = personajesTrf[0].GetChild (0);
         detrases[1] = personajesTrf[1].GetChild (0);
-        if (personajesMov[0] == violetaMov)
+        puntosSeg[0] = personajesTrf[0].GetChild (1);
+        puntosSeg[1] = personajesTrf[1].GetChild (1);
+
+        if (personajesMov[0].input == true)
         {
-            personajesMov[1].input = false;
             camara.objetivo = personajesTrf[0];
             camara.detras = detrases[0];
         }
         else
         {
-            personajesMov[0].input = false;
             camara.objetivo = personajesTrf[1];
             camara.detras = detrases[1];
         }
@@ -79,11 +80,11 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     }
 
 
-    // .
-    private void OnDrawGizmos ()
+    // Para ver el radio de agrupación de los gatos.
+    /*private void OnDrawGizmos ()
     {
-        //Gizmos.DrawWireSphere (camara.objetivo.position, agrupacionRad);
-    }
+        Gizmos.DrawWireSphere (camara.objetivo.position, agrupacionRad);
+    }*/
 
 
     // La cámara pasa a seguir al nuevo personaje y se desactiva el movimiento del otro.
@@ -95,6 +96,8 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
             camara.detras = detrases[nuevo];
             personajesMov[anterior].input = false;
             personajesMov[nuevo].input = true;
+
+            personajesMov[nuevo].GestionarCambio ();
         }
     }
 

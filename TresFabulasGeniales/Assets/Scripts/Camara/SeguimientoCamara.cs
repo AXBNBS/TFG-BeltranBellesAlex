@@ -8,7 +8,7 @@ using UnityEngine;
 public class SeguimientoCamara : MonoBehaviour
 {
     public bool input, centrar;
-    [HideInInspector] public Transform objetivo, detras;
+    public Transform objetivo, detras;
 
     [SerializeField] private int movimientoVel, abajoLim, arribaLim, sensibilidad;
     private float ratonX, ratonY, stickX, stickY, finalX, finalY, rotacionX, rotacionY;

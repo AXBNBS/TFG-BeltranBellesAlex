@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 
 
@@ -12,29 +13,35 @@ public class MovimientoHistoria2 : MonoBehaviour
 
     [SerializeField] private int movimientoVel, rotacionVel, saltoVel;
     [SerializeField] private LayerMask capas;
-    [SerializeField] private MovimientoHistoria2 companyero;
+    [SerializeField] private MovimientoHistoria2 companyeroMov;
     private int gravedad;
-    private bool saltarInp, seguir;
+    private bool saltarInp, seguir, yendo, sueleado;
     private CharacterController characterCtr;
     private float horizontalInp, verticalInp, angulo;
     private Quaternion rotacion;
-    private Transform camaraTrf;
+    private Transform camaraTrf, objetivoSeg, companyeroTrf;
     private Animator animator;
-    private Vector3 movimiento, empuje, puntoIni, objetivoSeg;
+    private Vector3 movimiento, empuje;
     private List<Collider> detrasCol;
-    
+    private NavMeshAgent mallaAgtNav;
+
 
     // Inicialización de variables.
     private void Start ()
     {
         gravedad = -11;
         seguir = false;
+        yendo = false;
+        sueleado = false;
         characterCtr = this.GetComponent<CharacterController> ();
         offsetY = this.transform.localScale.y * characterCtr.height;
         offsetXZ = this.transform.localScale.x * characterCtr.radius * 3;
         camaraTrf = GameObject.FindGameObjectWithTag("CamaraPrincipal").transform;
-        animator = this.GetComponent<Animator> ();
+        objetivoSeg = companyeroMov.transform.GetChild (1);
+        companyeroTrf = companyeroMov.transform;
+        animator = this.transform.GetChild(2).GetComponent<Animator> ();
         detrasCol = new List<Collider> ();
+        mallaAgtNav = this.GetComponent<NavMeshAgent> ();
     }
 
 
@@ -47,7 +54,7 @@ public class MovimientoHistoria2 : MonoBehaviour
             verticalInp = 0;
             saltarInp = false;
         }
-        else 
+        else
         {
             horizontalInp = Mathf.RoundToInt (Input.GetAxisRaw ("Movimiento horizontal"));
             verticalInp = Mathf.RoundToInt (Input.GetAxisRaw ("Movimiento vertical"));
@@ -60,8 +67,11 @@ public class MovimientoHistoria2 : MonoBehaviour
         {
             Saltar ();
         }
-        Mover (horizontalInp, verticalInp);
-        if (seguir == true)
+        if (seguir == false) 
+        {
+            Mover (horizontalInp, verticalInp);
+        }
+        else
         {
             Seguir ();
             DesagruparSiEso ();
@@ -73,7 +83,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     // Aplicamos la gravedad al personaje si este está en el aire.
     private void FixedUpdate ()
     {
-        if (characterCtr.isGrounded == false)
+        if (seguir == false && characterCtr.isGrounded == false)
         {
             AplicarGravedad ();
         }
@@ -96,7 +106,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         if (other.isTrigger == false)
         {
             detrasCol.Remove (other);
-        }   
+        }
     }
 
 
@@ -107,9 +117,9 @@ public class MovimientoHistoria2 : MonoBehaviour
         {
             Vector3 centroSup = new Vector3 (hit.transform.position.x, hit.transform.position.y + offsetY, hit.transform.position.z);
 
-            if (Physics.Raycast (centroSup, hit.transform.right, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
+            if (Physics.Raycast (centroSup, -hit.transform.right, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
             {
-                empuje = hit.transform.right;
+                empuje = -hit.transform.right;
 
                 return;
             }
@@ -128,9 +138,9 @@ public class MovimientoHistoria2 : MonoBehaviour
                 return;
             }
 
-            if (Physics.Raycast (centroSup, -hit.transform.right, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
+            if (Physics.Raycast (centroSup, hit.transform.right, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
             {
-                empuje = -hit.transform.right;
+                empuje = hit.transform.right;
 
                 return;
             }
@@ -142,10 +152,19 @@ public class MovimientoHistoria2 : MonoBehaviour
     }
 
 
-    // .
+    // Pal debug y tal.
     private void OnDrawGizmosSelected ()
     {
-        
+
+    }
+
+
+    // Se pone "sueleado" a "true" durante 0.1 segundos ya que si no puede detectar que está en el aire durante un momento y reproducir la animación equivocada.
+    public void GestionarCambio ()
+    {
+        sueleado = true;
+
+        Invoke ("CambiarSueleado", 0.1f);
     }
 
 
@@ -160,6 +179,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     public void GestionarSeguimiento (bool comenzar)
     {
         seguir = comenzar;
+        mallaAgtNav.enabled = comenzar;
     }
 
 
@@ -172,7 +192,7 @@ public class MovimientoHistoria2 : MonoBehaviour
 
             movimiento.x = relativoCam.x;
             movimiento.z = relativoCam.z;
-            angulo = Mathf.Atan2 (movimiento.x, movimiento.z) * Mathf.Rad2Deg + 90;
+            angulo = Mathf.Atan2 (movimiento.x, movimiento.z) * Mathf.Rad2Deg;
             rotacion = Quaternion.Euler (this.transform.rotation.x, angulo, this.transform.rotation.z);
             this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacion, rotacionVel * Time.deltaTime);
         }
@@ -204,7 +224,30 @@ public class MovimientoHistoria2 : MonoBehaviour
     // Si no hay colliders chungos detrás del personaje seguido, la distancia entre la posición actual y la del punto a seguir es distinta a cero y no hay obstáculos entre el personaje y ese punto, nos movemos hacia ahí.
     private void Seguir ()
     {
-        puntoIni = new Vector3 (this.transform.position.x, this.transform.position.y + offsetY / 5, this.transform.position.z);
+        Vector3 mirarDir, objetivoRot;
+        Quaternion rotacionY;
+        
+        yendo = (this.transform.position - objetivoSeg.position).magnitude > mallaAgtNav.stoppingDistance;
+
+        mallaAgtNav.SetDestination (objetivoSeg.position);
+
+        if (yendo == false)
+        {
+            mirarDir = new Vector3(companyeroTrf.position.x - this.transform.position.x, companyeroTrf.position.y - this.transform.position.y, companyeroTrf.position.z - this.transform.position.z).normalized;
+            objetivoRot = Quaternion.LookRotation(mirarDir).eulerAngles;
+            rotacionY = Quaternion.Euler (this.transform.rotation.eulerAngles.x, objetivoRot.y, this.transform.rotation.eulerAngles.z);
+
+            this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacionY, rotacionVel * Time.deltaTime);
+        }
+        else 
+        {
+            mirarDir = new Vector3(objetivoSeg.position.x - this.transform.position.x, objetivoSeg.position.y - this.transform.position.y, objetivoSeg.position.z - this.transform.position.z).normalized;
+            objetivoRot = Quaternion.LookRotation(mirarDir).eulerAngles;
+            rotacionY = Quaternion.Euler (this.transform.rotation.eulerAngles.x, objetivoRot.y, this.transform.rotation.eulerAngles.z);
+
+            this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacionY, rotacionVel / 2 * Time.deltaTime);
+        }
+        /*puntoIni = new Vector3 (this.transform.position.x, this.transform.position.y + offsetY / 5, this.transform.position.z);
 
         Vector3 puntoIni2 = puntoIni + this.transform.localScale.x * characterCtr.radius * this.transform.forward;
         Vector3 puntoIni3 = puntoIni - this.transform.localScale.x * characterCtr.radius * this.transform.forward;
@@ -212,7 +255,8 @@ public class MovimientoHistoria2 : MonoBehaviour
         objetivoSeg = new Vector3 (companyero.transform.position.x, companyero.transform.position.y + offsetY / 5, companyero.transform.position.z) + companyero.transform.right * 15;
 
         Vector3 direccion = puntoIni - objetivoSeg;
-        float distancia = Vector3.Distance (this.transform.position, objetivoSeg) + offsetXZ / 3;
+        print (direccion);
+        float distancia = direccion.magnitude + offsetXZ / 3;
         if (direccion != Vector3.zero && companyero.ColliderChungoAEspaldas () == false && Physics.Raycast (puntoIni, direccion, distancia, capas, QueryTriggerInteraction.Ignore) == false && 
             Physics.Raycast (puntoIni2, direccion, distancia, capas, QueryTriggerInteraction.Ignore) == false && Physics.Raycast (puntoIni3, direccion, distancia, capas, QueryTriggerInteraction.Ignore) == false)
         {
@@ -230,14 +274,14 @@ public class MovimientoHistoria2 : MonoBehaviour
             {
                 this.transform.position = new Vector3 (objetivoSeg.x, this.transform.position.y, objetivoSeg.z);
             }
-        }
+        }*/
     }
 
 
     // Si la distancia en y es mayor a 5, automáticamente desagrupamos a los personajes.
     private void DesagruparSiEso ()
     {
-        if (Mathf.Abs (this.transform.position.y - companyero.transform.position.y) > 5)
+        if (Mathf.Abs (this.transform.position.y - companyeroMov.transform.position.y) > 5)
         {
             GestionarSeguimiento (false);
 
@@ -249,15 +293,15 @@ public class MovimientoHistoria2 : MonoBehaviour
     // Gestiona las animaciones del personaje de acuerdo a su situación actual.
     private void Animar ()
     {
-        if (seguir == false)
+        if (input == true)
         {
             animator.SetBool ("moviendose", movimiento.x != 0 || movimiento.z != 0);
-            animator.SetBool ("tocandoSuelo", characterCtr.isGrounded);
+            animator.SetBool ("tocandoSuelo", characterCtr.isGrounded || sueleado);
             animator.SetFloat ("velocidadY", movimiento.y);
         }
         else
         {
-            animator.SetBool ("moviendose", puntoIni != objetivoSeg);
+            animator.SetBool ("moviendose", seguir == true && yendo == true);
             animator.SetBool ("tocandoSuelo", true);
         }
     }
@@ -274,5 +318,12 @@ public class MovimientoHistoria2 : MonoBehaviour
             }
         }
         return false;
+    }
+
+
+    // Para evitar que reproduzca la animación de estar en el aire.
+    private void CambiarSueleado () 
+    {
+        sueleado = false;
     }
 }
