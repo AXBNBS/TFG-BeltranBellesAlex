@@ -113,41 +113,44 @@ public class MovimientoHistoria2 : MonoBehaviour
     // Si el personaje ha caído sobre otro, empujarlo hacia el primer lado de este que se encuentre libre.
     private void OnControllerColliderHit (ControllerColliderHit hit)
     {
-        if (hit.transform.tag == this.tag && this.transform.position.y > hit.transform.position.y)
+        Transform tocado = hit.transform;
+        print (this.name + ": " + tocado.name);
+        if (tocado.tag == this.tag && this.transform.position.y > tocado.position.y)
         {
-            Vector3 centroSup = new Vector3 (hit.transform.position.x, hit.transform.position.y + offsetY, hit.transform.position.z);
+            Vector3 centroSup = new Vector3 (tocado.position.x, tocado.position.y + offsetY, tocado.position.z);
 
-            if (Physics.Raycast (centroSup, -hit.transform.right, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
+            if (Physics.Raycast (centroSup, tocado.right, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
             {
-                empuje = -hit.transform.right;
+                empuje = tocado.right;
 
                 return;
             }
 
-            if (Physics.Raycast (centroSup, hit.transform.forward, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
+            if (Physics.Raycast (centroSup, -tocado.right, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
             {
-                empuje = hit.transform.forward;
+                empuje = -tocado.right;
 
                 return;
             }
 
-            if (Physics.Raycast (centroSup, -hit.transform.forward, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
+            if (Physics.Raycast (centroSup, tocado.forward, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
             {
-                empuje = -hit.transform.forward;
+                empuje = tocado.forward;
 
                 return;
             }
 
-            if (Physics.Raycast (centroSup, hit.transform.right, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
+            if (Physics.Raycast (centroSup, -tocado.forward, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
             {
-                empuje = hit.transform.right;
+                empuje = -tocado.forward;
 
                 return;
             }
         }
-        else
+
+        if (tocado.tag != "Tierra")
         {
-            empuje = Vector3.zero;
+            empuje = hit.normal;
         }
     }
 
@@ -155,7 +158,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     // Pal debug y tal.
     private void OnDrawGizmosSelected ()
     {
-
+        //Gizmos.DrawRay ();
     }
 
 
@@ -164,7 +167,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     {
         sueleado = true;
 
-        Invoke ("CambiarSueleado", 0.1f);
+        this.Invoke ("CambiarSueleado", 0.1f);
     }
 
 
@@ -196,7 +199,7 @@ public class MovimientoHistoria2 : MonoBehaviour
             rotacion = Quaternion.Euler (this.transform.rotation.x, angulo, this.transform.rotation.z);
             this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacion, rotacionVel * Time.deltaTime);
         }
-        movimiento += empuje * movimientoVel / 2;
+        movimiento += empuje * movimientoVel;
 
         characterCtr.Move (movimiento * Time.deltaTime);
 
@@ -204,6 +207,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         {
             movimiento.y = -0.1f;
         }
+        empuje = Vector3.zero;
     }
 
 
@@ -226,25 +230,28 @@ public class MovimientoHistoria2 : MonoBehaviour
     {
         Vector3 mirarDir, objetivoRot;
         Quaternion rotacionY;
-        
-        yendo = (this.transform.position - objetivoSeg.position).magnitude > mallaAgtNav.stoppingDistance;
 
-        mallaAgtNav.SetDestination (objetivoSeg.position);
+        Vector3 diferencia = objetivoSeg.position - objetivoSeg.parent.position;
+        Ray rayo = new Ray (objetivoSeg.parent.position, diferencia);
+        
+        yendo = (this.transform.position - objetivoSeg.position).magnitude > mallaAgtNav.stoppingDistance && Physics.Raycast (rayo, diferencia.magnitude, capas, QueryTriggerInteraction.Ignore) == false;
 
         if (yendo == false)
         {
-            mirarDir = new Vector3(companyeroTrf.position.x - this.transform.position.x, companyeroTrf.position.y - this.transform.position.y, companyeroTrf.position.z - this.transform.position.z).normalized;
+            mallaAgtNav.SetDestination (this.transform.position);
+
+            mirarDir = (companyeroTrf.position - this.transform.position).normalized;
             objetivoRot = Quaternion.LookRotation(mirarDir).eulerAngles;
             rotacionY = Quaternion.Euler (this.transform.rotation.eulerAngles.x, objetivoRot.y, this.transform.rotation.eulerAngles.z);
-
             this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacionY, rotacionVel * Time.deltaTime);
         }
         else 
         {
-            mirarDir = new Vector3(objetivoSeg.position.x - this.transform.position.x, objetivoSeg.position.y - this.transform.position.y, objetivoSeg.position.z - this.transform.position.z).normalized;
+            mallaAgtNav.SetDestination (objetivoSeg.position);
+
+            mirarDir = (objetivoSeg.position - this.transform.position).normalized;
             objetivoRot = Quaternion.LookRotation(mirarDir).eulerAngles;
             rotacionY = Quaternion.Euler (this.transform.rotation.eulerAngles.x, objetivoRot.y, this.transform.rotation.eulerAngles.z);
-
             this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacionY, rotacionVel / 2 * Time.deltaTime);
         }
         /*puntoIni = new Vector3 (this.transform.position.x, this.transform.position.y + offsetY / 5, this.transform.position.z);

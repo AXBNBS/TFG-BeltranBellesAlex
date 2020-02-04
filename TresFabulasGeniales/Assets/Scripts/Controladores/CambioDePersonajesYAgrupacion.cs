@@ -34,7 +34,6 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
         detrases[1] = personajesTrf[1].GetChild (0);
         puntosSeg[0] = personajesTrf[0].GetChild (1);
         puntosSeg[1] = personajesTrf[1].GetChild (1);
-
         if (personajesMov[0].input == true)
         {
             camara.objetivo = personajesTrf[0];
@@ -45,6 +44,7 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
             camara.objetivo = personajesTrf[1];
             camara.detras = detrases[1];
         }
+        camara.transform.position = camara.objetivo.position;
     }
 
 

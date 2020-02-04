@@ -6,6 +6,7 @@ TagManager:
   tags:
   - CamaraPrincipal
   - Jugador
+  - Tierra
   layers:
   - Default
   - TransparentFX

@@ -86,7 +86,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8454711757566032774}
-  m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 55, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -109,7 +109,7 @@ CharacterController:
   serializedVersion: 2
   m_Height: 19
   m_Radius: 5
-  m_SlopeLimit: 45
+  m_SlopeLimit: 20
   m_StepOffset: 0.3
   m_SkinWidth: 0.0001
   m_MinMoveDistance: 0.001
@@ -156,7 +156,7 @@ MonoBehaviour:
   saltoVel: 220
   capas:
     serializedVersion: 2
-    m_Bits: 1335
+    m_Bits: 1079
   companyeroMov: {fileID: 0}
 --- !u!1001 &8454711757250629264
 PrefabInstance:
@@ -225,86 +225,7 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3834986645888102154, guid: 38b889271cb0994468552b7454abf369,
-        type: 3}
-      propertyPath: companyero
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 3834986645888102154, guid: 38b889271cb0994468552b7454abf369,
-        type: 3}
-      propertyPath: movimientoVel
-      value: 150
-      objectReference: {fileID: 0}
-    - target: {fileID: 3834986645888102154, guid: 38b889271cb0994468552b7454abf369,
-        type: 3}
-      propertyPath: input
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3834986645888102154, guid: 38b889271cb0994468552b7454abf369,
-        type: 3}
-      propertyPath: capas.m_Bits
-      value: 1335
-      objectReference: {fileID: 0}
-    - target: {fileID: 3834986645888102154, guid: 38b889271cb0994468552b7454abf369,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7319840374050724956, guid: 38b889271cb0994468552b7454abf369,
-        type: 3}
-      propertyPath: m_Speed
-      value: 200
-      objectReference: {fileID: 0}
-    - target: {fileID: 7319840374050724956, guid: 38b889271cb0994468552b7454abf369,
-        type: 3}
-      propertyPath: m_Acceleration
-      value: 1000
-      objectReference: {fileID: 0}
-    - target: {fileID: 7319840374050724956, guid: 38b889271cb0994468552b7454abf369,
-        type: 3}
-      propertyPath: m_StoppingDistance
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7319840374050724956, guid: 38b889271cb0994468552b7454abf369,
-        type: 3}
-      propertyPath: m_AutoBraking
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7319840374050724956, guid: 38b889271cb0994468552b7454abf369,
-        type: 3}
-      propertyPath: m_AngularSpeed
-      value: 200
-      objectReference: {fileID: 0}
-    - target: {fileID: 7319840374050724956, guid: 38b889271cb0994468552b7454abf369,
-        type: 3}
-      propertyPath: m_Radius
-      value: 2.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7319840374050724956, guid: 38b889271cb0994468552b7454abf369,
-        type: 3}
-      propertyPath: m_Height
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 7319840374050724956, guid: 38b889271cb0994468552b7454abf369,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5673471887362695501, guid: 38b889271cb0994468552b7454abf369,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8062391924500440778, guid: 38b889271cb0994468552b7454abf369,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 5673471887362695501, guid: 38b889271cb0994468552b7454abf369, type: 3}
-    - {fileID: 8062391924500440778, guid: 38b889271cb0994468552b7454abf369, type: 3}
-    - {fileID: 7319840374050724956, guid: 38b889271cb0994468552b7454abf369, type: 3}
-    - {fileID: 3834986645888102154, guid: 38b889271cb0994468552b7454abf369, type: 3}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 38b889271cb0994468552b7454abf369, type: 3}
 --- !u!4 &6561863076317194649 stripped
 Transform:
