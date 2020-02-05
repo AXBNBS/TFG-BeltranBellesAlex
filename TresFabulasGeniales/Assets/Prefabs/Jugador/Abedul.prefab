@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3010876643680406003}
   m_Layer: 9
   m_Name: PuntoASeguir
-  m_TagString: Untagged
+  m_TagString: Jugador
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -41,7 +41,7 @@ GameObject:
   - component: {fileID: 4670963797185049615}
   m_Layer: 9
   m_Name: Detras
-  m_TagString: Untagged
+  m_TagString: Jugador
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

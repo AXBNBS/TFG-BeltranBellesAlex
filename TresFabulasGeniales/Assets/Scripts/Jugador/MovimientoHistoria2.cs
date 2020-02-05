@@ -22,7 +22,6 @@ public class MovimientoHistoria2 : MonoBehaviour
     private Transform camaraTrf, objetivoSeg, companyeroTrf;
     private Animator animator;
     private Vector3 movimiento, empuje;
-    private List<Collider> detrasCol;
     private NavMeshAgent mallaAgtNav;
 
 
@@ -40,7 +39,6 @@ public class MovimientoHistoria2 : MonoBehaviour
         objetivoSeg = companyeroMov.transform.GetChild (1);
         companyeroTrf = companyeroMov.transform;
         animator = this.transform.GetChild(2).GetComponent<Animator> ();
-        detrasCol = new List<Collider> ();
         mallaAgtNav = this.GetComponent<NavMeshAgent> ();
     }
 
@@ -91,67 +89,77 @@ public class MovimientoHistoria2 : MonoBehaviour
 
 
     // Añadimos el objeto que haya entrado a la lista de colliders traseros.
-    private void OnTriggerEnter (Collider other)
+    /*private void OnTriggerEnter (Collider other)
     {
         if (other.isTrigger == false)
         {
             detrasCol.Add (other);
         }
-    }
+    }*/
 
 
     // Eliminamos el objeto que haya entrado de la lista de colliders traseros.
-    private void OnTriggerExit (Collider other)
+    /*private void OnTriggerExit (Collider other)
     {
         if (other.isTrigger == false)
         {
             detrasCol.Remove (other);
         }
-    }
+    }*/
 
 
     // Si el personaje ha caído sobre otro, empujarlo hacia el primer lado de este que se encuentre libre.
     private void OnControllerColliderHit (ControllerColliderHit hit)
     {
         Transform tocado = hit.transform;
-        print (this.name + ": " + tocado.name);
-        if (tocado.tag == this.tag && this.transform.position.y > tocado.position.y)
+        float velocidad = movimientoVel * Time.deltaTime * 3;
+        //print (this.name + ": " + tocado.name);
+        /*if (tocado.tag == this.tag && this.transform.position.y > tocado.position.y)
         {
             Vector3 centroSup = new Vector3 (tocado.position.x, tocado.position.y + offsetY, tocado.position.z);
 
             if (Physics.Raycast (centroSup, tocado.right, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
             {
-                empuje = tocado.right;
+                characterCtr.Move (tocado.right * velocidad);
+                //empuje = tocado.right;
 
                 return;
             }
 
             if (Physics.Raycast (centroSup, -tocado.right, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
             {
-                empuje = -tocado.right;
+                characterCtr.Move (-tocado.right * velocidad);
+                //empuje = -tocado.right;
 
                 return;
             }
 
             if (Physics.Raycast (centroSup, tocado.forward, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
             {
-                empuje = tocado.forward;
+                characterCtr.Move (tocado.forward * velocidad);
+                //empuje = tocado.forward;
 
                 return;
             }
 
             if (Physics.Raycast (centroSup, -tocado.forward, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
             {
-                empuje = -tocado.forward;
+                characterCtr.Move (-tocado.forward * velocidad);
+                //empuje = -tocado.forward;
 
                 return;
             }
-        }
+        }*/
 
-        if (tocado.tag != "Tierra")
+        /*if (tocado.tag != "Tierra")
         {
-            empuje = hit.normal;
-        }
+            characterCtr.Move (hit.normal.normalized * velocidad);
+            //empuje = hit.normal;
+        }*/
+        /*else 
+        {
+            empuje = Vector3.zero;
+        }*/
     }
 
 
@@ -199,7 +207,7 @@ public class MovimientoHistoria2 : MonoBehaviour
             rotacion = Quaternion.Euler (this.transform.rotation.x, angulo, this.transform.rotation.z);
             this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacion, rotacionVel * Time.deltaTime);
         }
-        movimiento += empuje * movimientoVel;
+        //movimiento += empuje * movimientoVel;
 
         characterCtr.Move (movimiento * Time.deltaTime);
 
@@ -207,7 +215,6 @@ public class MovimientoHistoria2 : MonoBehaviour
         {
             movimiento.y = -0.1f;
         }
-        empuje = Vector3.zero;
     }
 
 
@@ -315,7 +322,7 @@ public class MovimientoHistoria2 : MonoBehaviour
 
 
     // Devuelve "true" si hay algun collider no ligado a los avatares jugables.
-    private bool ColliderChungoAEspaldas ()
+    /*private bool ColliderChungoAEspaldas ()
     {
         for (int c = detrasCol.Count - 1; c > -1; c -= 1)
         {
@@ -325,7 +332,7 @@ public class MovimientoHistoria2 : MonoBehaviour
             }
         }
         return false;
-    }
+    }*/
 
 
     // Para evitar que reproduzca la animación de estar en el aire.
