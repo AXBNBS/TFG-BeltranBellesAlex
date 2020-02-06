@@ -7,6 +7,9 @@ TagManager:
   - CamaraPrincipal
   - Jugador
   - Tierra
+  - Sueleador
+  - Empujable
+  - CaidaObjeto
   layers:
   - Default
   - TransparentFX
@@ -19,7 +22,7 @@ TagManager:
   - Suelo
   - Avatares
   - Obstaculos
-  - 
+  - Movil
   - 
   - 
   - 

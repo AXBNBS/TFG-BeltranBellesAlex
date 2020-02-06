@@ -14,8 +14,8 @@ public class MovimientoHistoria2 : MonoBehaviour
     [SerializeField] private int movimientoVel, rotacionVel, saltoVel;
     [SerializeField] private LayerMask capas;
     [SerializeField] private MovimientoHistoria2 companyeroMov;
-    private int gravedad;
-    private bool saltarInp, seguir, yendo, sueleado;
+    private int gravedad, empujeVel;
+    private bool saltarInp, seguir, yendo, sueleado, empujando, limitadoX;
     private CharacterController characterCtr;
     private float horizontalInp, verticalInp, angulo;
     private Quaternion rotacion;
@@ -23,22 +23,25 @@ public class MovimientoHistoria2 : MonoBehaviour
     private Animator animator;
     private Vector3 movimiento, empuje;
     private NavMeshAgent mallaAgtNav;
+    private ObjetoMovil empujado;
 
 
     // Inicialización de variables.
     private void Start ()
     {
         gravedad = -11;
+        empujeVel = movimientoVel / 3;
         seguir = false;
         yendo = false;
         sueleado = false;
+        empujando = false;
         characterCtr = this.GetComponent<CharacterController> ();
         offsetY = this.transform.localScale.y * characterCtr.height;
         offsetXZ = this.transform.localScale.x * characterCtr.radius * 3;
         camaraTrf = GameObject.FindGameObjectWithTag("CamaraPrincipal").transform;
         objetivoSeg = companyeroMov.transform.GetChild (1);
         companyeroTrf = companyeroMov.transform;
-        animator = this.transform.GetChild(2).GetComponent<Animator> ();
+        animator = this.GetComponentInChildren<Animator> ();
         mallaAgtNav = this.GetComponent<NavMeshAgent> ();
     }
 
@@ -65,7 +68,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         {
             Saltar ();
         }
-        if (seguir == false) 
+        if (seguir == false)
         {
             Mover (horizontalInp, verticalInp);
         }
@@ -81,92 +84,80 @@ public class MovimientoHistoria2 : MonoBehaviour
     // Aplicamos la gravedad al personaje si este está en el aire.
     private void FixedUpdate ()
     {
-        if (seguir == false && characterCtr.isGrounded == false)
+        if (characterCtr.isGrounded == false)
         {
             AplicarGravedad ();
         }
     }
 
 
-    // Añadimos el objeto que haya entrado a la lista de colliders traseros.
-    /*private void OnTriggerEnter (Collider other)
-    {
-        if (other.isTrigger == false)
-        {
-            detrasCol.Add (other);
-        }
-    }*/
-
-
-    // Eliminamos el objeto que haya entrado de la lista de colliders traseros.
-    /*private void OnTriggerExit (Collider other)
-    {
-        if (other.isTrigger == false)
-        {
-            detrasCol.Remove (other);
-        }
-    }*/
-
-
     // Si el personaje ha caído sobre otro, empujarlo hacia el primer lado de este que se encuentre libre.
     private void OnControllerColliderHit (ControllerColliderHit hit)
     {
         Transform tocado = hit.transform;
-        float velocidad = movimientoVel * Time.deltaTime * 3;
-        //print (this.name + ": " + tocado.name);
-        /*if (tocado.tag == this.tag && this.transform.position.y > tocado.position.y)
+        if (tocado.tag == this.tag && this.transform.position.y > tocado.position.y)
         {
-            Vector3 centroSup = new Vector3 (tocado.position.x, tocado.position.y + offsetY, tocado.position.z);
+            Vector3 centroSup = new Vector3(tocado.position.x, tocado.position.y + offsetY, tocado.position.z);
 
             if (Physics.Raycast (centroSup, tocado.right, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
             {
-                characterCtr.Move (tocado.right * velocidad);
-                //empuje = tocado.right;
+                empuje = tocado.right;
 
                 return;
             }
 
             if (Physics.Raycast (centroSup, -tocado.right, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
             {
-                characterCtr.Move (-tocado.right * velocidad);
-                //empuje = -tocado.right;
+                empuje = -tocado.right;
 
                 return;
             }
 
             if (Physics.Raycast (centroSup, tocado.forward, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
             {
-                characterCtr.Move (tocado.forward * velocidad);
-                //empuje = tocado.forward;
+                empuje = tocado.forward;
 
                 return;
             }
 
             if (Physics.Raycast (centroSup, -tocado.forward, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
             {
-                characterCtr.Move (-tocado.forward * velocidad);
-                //empuje = -tocado.forward;
+                empuje = -tocado.forward;
 
                 return;
             }
-        }*/
-
-        /*if (tocado.tag != "Tierra")
-        {
-            characterCtr.Move (hit.normal.normalized * velocidad);
-            //empuje = hit.normal;
-        }*/
-        /*else 
+        }
+        else 
         {
             empuje = Vector3.zero;
-        }*/
+        }
     }
 
 
     // Pal debug y tal.
     private void OnDrawGizmosSelected ()
     {
-        //Gizmos.DrawRay ();
+        
+    }
+
+
+    // Pone "sueleado" a "true" para evitar que se reproduzca la animación de estar en el aire.
+    private void OnTriggerEnter (Collider other)
+    {
+        if (other.tag == "Sueleador")
+        {
+            sueleado = true;
+        }
+    }
+
+
+    // Pone "sueleado" a "false" para permitir que se reproduzca la animación de estar en el aire una vez se haya salido del rango que ocupa el trigger.
+    private void OnTriggerExit (Collider other)
+    {
+        if (other.tag == "Sueleador") 
+        {
+            sueleado = false;
+        }
     }
 
 
@@ -194,22 +185,59 @@ public class MovimientoHistoria2 : MonoBehaviour
     }
 
 
+    // .
+    public void ComenzarEmpuje (bool enEjeX, ObjetoMovil objeto) 
+    {
+        empujando = true;
+        limitadoX = enEjeX;
+        empujado = objeto;
+    }
+
+
+    // .
+    public void PararEmpuje () 
+    {
+        empujando = false;
+    }
+
+
     // Le aplicamos gravedad al personaje y, si además está siendo movido por el jugador, lo movemos y rotamos adecuadamente hacia la dirección del movimiento.
     private void Mover (float horizontal, float vertical) 
     {
         if (horizontal != 0 || vertical != 0)
         {
-            Vector3 relativoCam = (camaraTrf.right * horizontal + camaraTrf.forward * vertical).normalized * movimientoVel;
+            Vector3 relativoCam;
 
-            movimiento.x = relativoCam.x;
-            movimiento.z = relativoCam.z;
+            if (empujando == false)
+            {
+                relativoCam = (camaraTrf.right * horizontal + camaraTrf.forward * vertical).normalized * movimientoVel;
+                movimiento.x = relativoCam.x;
+                movimiento.z = relativoCam.z;
+            }
+            else 
+            {
+                relativoCam = (camaraTrf.right * horizontal + camaraTrf.forward * vertical);
+                if (limitadoX == true)
+                {
+                    movimiento.z = relativoCam.z;
+                }
+                else 
+                {
+                    movimiento.x = relativoCam.x;
+                }
+                movimiento = movimiento.normalized * empujeVel;
+            }
             angulo = Mathf.Atan2 (movimiento.x, movimiento.z) * Mathf.Rad2Deg;
             rotacion = Quaternion.Euler (this.transform.rotation.x, angulo, this.transform.rotation.z);
             this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacion, rotacionVel * Time.deltaTime);
         }
-        //movimiento += empuje * movimientoVel;
+        movimiento += empuje * movimientoVel / 2;
 
         characterCtr.Move (movimiento * Time.deltaTime);
+        if (empujando == true) 
+        {
+            empujado.Mover (movimiento * Time.deltaTime);
+        }
 
         if (characterCtr.isGrounded == true)
         {
@@ -238,10 +266,13 @@ public class MovimientoHistoria2 : MonoBehaviour
         Vector3 mirarDir, objetivoRot;
         Quaternion rotacionY;
 
-        Vector3 diferencia = objetivoSeg.position - objetivoSeg.parent.position;
+        Vector3 posicionPnt = objetivoSeg.position;
+        Vector3 diferencia = posicionPnt - objetivoSeg.parent.position;
         Ray rayo = new Ray (objetivoSeg.parent.position, diferencia);
+        //NavMeshPath caminito = new NavMeshPath ();
+        //print (mallaAgtNav.CalculatePath (posicionPnt, caminito));
         
-        yendo = (this.transform.position - objetivoSeg.position).magnitude > mallaAgtNav.stoppingDistance && Physics.Raycast (rayo, diferencia.magnitude, capas, QueryTriggerInteraction.Ignore) == false;
+        yendo = (this.transform.position - posicionPnt).magnitude > mallaAgtNav.stoppingDistance && Physics.Raycast (rayo, diferencia.magnitude, capas, QueryTriggerInteraction.Ignore) == false;
 
         if (yendo == false)
         {
@@ -254,9 +285,9 @@ public class MovimientoHistoria2 : MonoBehaviour
         }
         else 
         {
-            mallaAgtNav.SetDestination (objetivoSeg.position);
+            mallaAgtNav.SetDestination (posicionPnt);
 
-            mirarDir = (objetivoSeg.position - this.transform.position).normalized;
+            mirarDir = (posicionPnt - this.transform.position).normalized;
             objetivoRot = Quaternion.LookRotation(mirarDir).eulerAngles;
             rotacionY = Quaternion.Euler (this.transform.rotation.eulerAngles.x, objetivoRot.y, this.transform.rotation.eulerAngles.z);
             this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacionY, rotacionVel / 2 * Time.deltaTime);
@@ -315,24 +346,10 @@ public class MovimientoHistoria2 : MonoBehaviour
         }
         else
         {
-            animator.SetBool ("moviendose", seguir == true && yendo == true);
+            animator.SetBool ("moviendose", yendo);
             animator.SetBool ("tocandoSuelo", true);
         }
     }
-
-
-    // Devuelve "true" si hay algun collider no ligado a los avatares jugables.
-    /*private bool ColliderChungoAEspaldas ()
-    {
-        for (int c = detrasCol.Count - 1; c > -1; c -= 1)
-        {
-            if (detrasCol[c].tag != this.tag)
-            {
-                return true;
-            }
-        }
-        return false;
-    }*/
 
 
     // Para evitar que reproduzca la animación de estar en el aire.

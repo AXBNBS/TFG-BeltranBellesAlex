@@ -72,6 +72,7 @@ GameObject:
   - component: {fileID: 8454711757566032794}
   - component: {fileID: 8454711757566032772}
   - component: {fileID: 8454711757566032795}
+  - component: {fileID: 2026491328868539950}
   m_Layer: 9
   m_Name: Abedul
   m_TagString: Jugador
@@ -110,8 +111,8 @@ CharacterController:
   m_Height: 19
   m_Radius: 5
   m_SlopeLimit: 20
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.0001
+  m_StepOffset: 2
+  m_SkinWidth: 0.5
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 9.4, z: 0}
 --- !u!195 &8454711757566032772
@@ -158,6 +159,19 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1079
   companyeroMov: {fileID: 0}
+--- !u!114 &2026491328868539950
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8454711757566032774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4e6b9305d3468544a3e033879cd53fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  input: 1
 --- !u!1001 &8454711757250629264
 PrefabInstance:
   m_ObjectHideFlags: 0
