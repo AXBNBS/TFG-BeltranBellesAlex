@@ -9,6 +9,7 @@ using UnityEngine.AI;
 public class MovimientoHistoria2 : MonoBehaviour
 {
     public bool input;
+    public Vector3 movimiento;
     [HideInInspector] public float offsetY, offsetXZ;
 
     [SerializeField] private int movimientoVel, rotacionVel, saltoVel;
@@ -21,7 +22,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     private Quaternion rotacion;
     private Transform camaraTrf, objetivoSeg, companyeroTrf;
     private Animator animator;
-    private Vector3 movimiento, empuje;
+    private Vector3 empuje;
     private NavMeshAgent mallaAgtNav;
     private ObjetoMovil empujado;
 
@@ -59,7 +60,10 @@ public class MovimientoHistoria2 : MonoBehaviour
         {
             horizontalInp = Mathf.RoundToInt (Input.GetAxisRaw ("Movimiento horizontal"));
             verticalInp = Mathf.RoundToInt (Input.GetAxisRaw ("Movimiento vertical"));
-            saltarInp = Input.GetButtonDown ("Salto");
+            if (empujando == false) 
+            {
+                saltarInp = Input.GetButtonDown ("Salto");
+            }
         }
         movimiento.x = 0;
         movimiento.z = 0;
@@ -84,10 +88,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     // Aplicamos la gravedad al personaje si este está en el aire.
     private void FixedUpdate ()
     {
-        if (characterCtr.isGrounded == false)
-        {
-            AplicarGravedad ();
-        }
+        AplicarGravedad ();
     }
 
 
@@ -95,41 +96,48 @@ public class MovimientoHistoria2 : MonoBehaviour
     private void OnControllerColliderHit (ControllerColliderHit hit)
     {
         Transform tocado = hit.transform;
-        if (tocado.tag == this.tag && this.transform.position.y > tocado.position.y)
+        switch (tocado.tag) 
         {
-            Vector3 centroSup = new Vector3(tocado.position.x, tocado.position.y + offsetY, tocado.position.z);
+            case "Jugador":
+                if (this.transform.position.y > tocado.position.y) 
+                {
+                    Vector3 centroSup = new Vector3 (tocado.position.x, tocado.position.y + offsetY, tocado.position.z);
 
-            if (Physics.Raycast (centroSup, tocado.right, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
-            {
-                empuje = tocado.right;
+                    if (Physics.Raycast (centroSup, tocado.right, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
+                    {
+                        empuje = tocado.right;
 
-                return;
-            }
+                        return;
+                    }
 
-            if (Physics.Raycast (centroSup, -tocado.right, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
-            {
-                empuje = -tocado.right;
+                    if (Physics.Raycast (centroSup, -tocado.right, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
+                    {
+                        empuje = -tocado.right;
 
-                return;
-            }
+                        return;
+                    }
 
-            if (Physics.Raycast (centroSup, tocado.forward, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
-            {
-                empuje = tocado.forward;
+                    if (Physics.Raycast (centroSup, tocado.forward, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
+                    {
+                        empuje = tocado.forward;
 
-                return;
-            }
+                        return;
+                    }
 
-            if (Physics.Raycast (centroSup, -tocado.forward, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
-            {
-                empuje = -tocado.forward;
+                    if (Physics.Raycast (centroSup, -tocado.forward, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
+                    {
+                        empuje = -tocado.forward;
 
-                return;
-            }
-        }
-        else 
-        {
-            empuje = Vector3.zero;
+                        return;
+                    }
+                }
+
+                break;
+
+            default:
+                empuje = Vector3.zero;
+
+                break;
         }
     }
 
@@ -185,7 +193,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     }
 
 
-    // .
+    // Activamos el booleano que permite el empuje, definimos en que eje se permite y recibimos el objeto sobre el cual se aplicará el empuje.
     public void ComenzarEmpuje (bool enEjeX, ObjetoMovil objeto) 
     {
         empujando = true;
@@ -194,10 +202,17 @@ public class MovimientoHistoria2 : MonoBehaviour
     }
 
 
-    // .
+    // Desactivamos el booleano que nos permite empujar.
     public void PararEmpuje () 
     {
         empujando = false;
+    }
+
+
+    // Si el personaje está en el suelo y se ha pulsado el botón de salto, haremos que salte.
+    public void Saltar ()
+    {
+        movimiento.y = saltoVel;
     }
 
 
@@ -249,18 +264,14 @@ public class MovimientoHistoria2 : MonoBehaviour
     // Es que si no flota.
     private void AplicarGravedad () 
     {
-        movimiento.y += gravedad;
+        if (characterCtr.isGrounded == false)
+        {
+            movimiento.y += gravedad;
+        }
     }
 
 
-    // Si el personaje está en el suelo y se ha pulsado el botón de salto, haremos que salte.
-    private void Saltar ()
-    {
-        movimiento.y = saltoVel;
-    }
-
-
-    // Si no hay colliders chungos detrás del personaje seguido, la distancia entre la posición actual y la del punto a seguir es distinta a cero y no hay obstáculos entre el personaje y ese punto, nos movemos hacia ahí.
+    // Seguimos al personaje si no estamos lo suficientemente cerca de él y el punto a seguir no está en una zona no accesible, también rotamos mirando hacia el punto que estamos siguiendo o hacia el otro personaje según la situación.
     private void Seguir ()
     {
         Vector3 mirarDir, objetivoRot;
@@ -269,8 +280,6 @@ public class MovimientoHistoria2 : MonoBehaviour
         Vector3 posicionPnt = objetivoSeg.position;
         Vector3 diferencia = posicionPnt - objetivoSeg.parent.position;
         Ray rayo = new Ray (objetivoSeg.parent.position, diferencia);
-        //NavMeshPath caminito = new NavMeshPath ();
-        //print (mallaAgtNav.CalculatePath (posicionPnt, caminito));
         
         yendo = (this.transform.position - posicionPnt).magnitude > mallaAgtNav.stoppingDistance && Physics.Raycast (rayo, diferencia.magnitude, capas, QueryTriggerInteraction.Ignore) == false;
 
@@ -292,34 +301,6 @@ public class MovimientoHistoria2 : MonoBehaviour
             rotacionY = Quaternion.Euler (this.transform.rotation.eulerAngles.x, objetivoRot.y, this.transform.rotation.eulerAngles.z);
             this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacionY, rotacionVel / 2 * Time.deltaTime);
         }
-        /*puntoIni = new Vector3 (this.transform.position.x, this.transform.position.y + offsetY / 5, this.transform.position.z);
-
-        Vector3 puntoIni2 = puntoIni + this.transform.localScale.x * characterCtr.radius * this.transform.forward;
-        Vector3 puntoIni3 = puntoIni - this.transform.localScale.x * characterCtr.radius * this.transform.forward;
-
-        objetivoSeg = new Vector3 (companyero.transform.position.x, companyero.transform.position.y + offsetY / 5, companyero.transform.position.z) + companyero.transform.right * 15;
-
-        Vector3 direccion = puntoIni - objetivoSeg;
-        print (direccion);
-        float distancia = direccion.magnitude + offsetXZ / 3;
-        if (direccion != Vector3.zero && companyero.ColliderChungoAEspaldas () == false && Physics.Raycast (puntoIni, direccion, distancia, capas, QueryTriggerInteraction.Ignore) == false && 
-            Physics.Raycast (puntoIni2, direccion, distancia, capas, QueryTriggerInteraction.Ignore) == false && Physics.Raycast (puntoIni3, direccion, distancia, capas, QueryTriggerInteraction.Ignore) == false)
-        {
-            Vector3 offset = objetivoSeg - puntoIni;
-
-            if (offset.magnitude > 1)
-            {
-                angulo = Mathf.Atan2 (offset.x, offset.z) * Mathf.Rad2Deg + 90;
-                rotacion = Quaternion.Euler (this.transform.rotation.x, angulo, this.transform.rotation.z);
-                this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacion, rotacionVel * 2 * Time.deltaTime);
-
-                characterCtr.Move (offset.normalized * movimientoVel * Time.deltaTime);
-            }
-            else
-            {
-                this.transform.position = new Vector3 (objetivoSeg.x, this.transform.position.y, objetivoSeg.z);
-            }
-        }*/
     }
 
 
@@ -338,7 +319,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     // Gestiona las animaciones del personaje de acuerdo a su situación actual.
     private void Animar ()
     {
-        if (input == true)
+        if (seguir == false)
         {
             animator.SetBool ("moviendose", movimiento.x != 0 || movimiento.z != 0);
             animator.SetBool ("tocandoSuelo", characterCtr.isGrounded || sueleado);

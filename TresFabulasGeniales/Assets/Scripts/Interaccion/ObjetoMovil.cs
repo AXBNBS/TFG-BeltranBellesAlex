@@ -12,8 +12,9 @@ public class ObjetoMovil : MonoBehaviour
     [SerializeField] private List<Collider> triggers;
     [SerializeField] private bool[] movimientoX;
     [SerializeField] private bool rueda;
+    [SerializeField] private int rotacionVel;
     private CharacterController characterCtr;
-    public int gravedad, indiceTrg, fuerzaY;
+    private int gravedad, indiceTrg, fuerzaY;
 
 
     // .
@@ -88,17 +89,20 @@ public class ObjetoMovil : MonoBehaviour
         movimiento.y = 0;
 
         characterCtr.Move (movimiento);
+
         if (rueda == true && movimiento != Vector3.zero) 
         {
+            float rotacion = rotacionVel * Time.deltaTime;
+
             if (movimientoX[indiceTrg] == true) 
             {
-                this.transform.rotation = movimiento.x > 0 ? Quaternion.Euler (this.transform.rotation.eulerAngles.x - 0.75f, this.transform.rotation.eulerAngles.y, this.transform.rotation.eulerAngles.z) :
-                    Quaternion.Euler (this.transform.rotation.eulerAngles.x + 0.75f, this.transform.rotation.eulerAngles.y, this.transform.rotation.eulerAngles.z);
+                this.transform.rotation = movimiento.x > 0 ? Quaternion.Euler (this.transform.rotation.eulerAngles.x - rotacion, this.transform.rotation.eulerAngles.y, this.transform.rotation.eulerAngles.z) :
+                    Quaternion.Euler (this.transform.rotation.eulerAngles.x + rotacion, this.transform.rotation.eulerAngles.y, this.transform.rotation.eulerAngles.z);
             }
             else 
             {
-                this.transform.rotation = movimiento.z > 0 ? Quaternion.Euler (this.transform.rotation.eulerAngles.x, this.transform.rotation.eulerAngles.y, this.transform.rotation.eulerAngles.z - 0.75f) :
-                    Quaternion.Euler (this.transform.rotation.eulerAngles.x, this.transform.rotation.eulerAngles.y, this.transform.rotation.eulerAngles.z + 0.75f);
+                this.transform.rotation = movimiento.z > 0 ? Quaternion.Euler (this.transform.rotation.eulerAngles.x, this.transform.rotation.eulerAngles.y, this.transform.rotation.eulerAngles.z - rotacion) :
+                    Quaternion.Euler (this.transform.rotation.eulerAngles.x, this.transform.rotation.eulerAngles.y, this.transform.rotation.eulerAngles.z + rotacion);
             }
         }
     }

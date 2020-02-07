@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3010876643680406003}
   m_Layer: 9
   m_Name: PuntoASeguir
-  m_TagString: Jugador
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -41,7 +41,7 @@ GameObject:
   - component: {fileID: 4670963797185049615}
   m_Layer: 9
   m_Name: Detras
-  m_TagString: Jugador
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -72,6 +72,7 @@ GameObject:
   - component: {fileID: 8454711757566032794}
   - component: {fileID: 8454711757566032772}
   - component: {fileID: 8454711757566032795}
+  - component: {fileID: 9139600075987871173}
   - component: {fileID: 2026491328868539950}
   m_Layer: 9
   m_Name: Abedul
@@ -159,6 +160,21 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1079
   companyeroMov: {fileID: 0}
+--- !u!114 &9139600075987871173
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8454711757566032774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26d61b7f3ecbc1443b031c96d4df3d53, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  input: 0
+  saltoFrz: 1
+  aranyazoFrz: 2
 --- !u!114 &2026491328868539950
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -183,6 +199,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Modelo
+      objectReference: {fileID: 0}
+    - target: {fileID: 1737854986509587738, guid: 38b889271cb0994468552b7454abf369,
+        type: 3}
+      propertyPath: m_TagString
+      value: Untagged
       objectReference: {fileID: 0}
     - target: {fileID: 3334141742652679945, guid: 38b889271cb0994468552b7454abf369,
         type: 3}

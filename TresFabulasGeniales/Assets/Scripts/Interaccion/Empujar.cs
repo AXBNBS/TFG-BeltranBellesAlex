@@ -11,6 +11,7 @@ public class Empujar : MonoBehaviour
 
     private bool cercano, agarrado;
     private LayerMask movilCap;
+    private CharacterController characterCtr;
     private float longitudRay, offsetY;
     private Quaternion nuevaRot;
     private MovimientoHistoria2 movimientoScr;
@@ -23,13 +24,14 @@ public class Empujar : MonoBehaviour
         cercano = false;
         agarrado = false;
         movilCap = LayerMask.GetMask ("Movil");
-        longitudRay = this.GetComponent<CharacterController>().radius * 3;
-        offsetY = this.GetComponent<CharacterController>().height / 2;
+        characterCtr = this.GetComponent<CharacterController> ();
+        longitudRay = characterCtr.radius * 3;
+        offsetY = characterCtr.height / 2;
         movimientoScr = this.GetComponent<MovimientoHistoria2> ();
     }
 
 
-    // Si permitimos input, el objeto está cerca, se está pulsando el botón de interacción y detectamos el objeto lanzando un rayo un poco más adelante, pasamos a empujarlo.
+    // Si no hay un objeto agarrado, comprobamos si se cumplen las condiciones que lo permiten; en caso contrario, miramos si hemos soltado el botón de la interacción o el objeto empieza a caer para soltarlo.
     private void Update ()
     {
         if (agarrado == false)
@@ -38,7 +40,7 @@ public class Empujar : MonoBehaviour
         }
         else 
         {
-            if (Input.GetButtonUp ("Interacción") == true || empujado.caer == true) 
+            if (empujado.caer == true || Input.GetButtonUp ("Interacción") == true) 
             {
                 movimientoScr.PararEmpuje ();
 
@@ -75,19 +77,19 @@ public class Empujar : MonoBehaviour
     }
 
 
-    // .
+    // Si el imput está permitido, estamos cerca del objeto, nuestro personaje está en el suelo, se está pulsando el botón de interacción y el objeto está delante del personaje a poca distancia, rotamos al personaje para que esté perfectamente alineado
+    // con él y a una distancia correcta para evitar que el personaje atraviese el objeto o se quede demasiado lejos del mismo, también ofrecemos los datos necesarios sobre el objeto al personaje para realizar el empuje.
     private void EmpujePermitido () 
     {
-        Vector3 diferencia;
-        float angulo;
-        RaycastHit rayoDat;
-
         Vector3 puntoIni = new Vector3 (this.transform.position.x, this.transform.position.y + offsetY, this.transform.position.z);
 
-        if (input == true && cercano == true && Input.GetButton ("Interacción") == true && Physics.Raycast (puntoIni, this.transform.forward, out rayoDat, longitudRay, movilCap, QueryTriggerInteraction.Ignore) == true)
+        RaycastHit rayoDat;
+        if (input == true && cercano == true && characterCtr.isGrounded == true && Input.GetButton ("Interacción") == true && Physics.Raycast (puntoIni, this.transform.forward, out rayoDat, longitudRay, movilCap, QueryTriggerInteraction.Ignore) == true)
         {
-            empujado = rayoDat.transform.gameObject.GetComponent<ObjetoMovil> ();
+            Vector3 diferencia;
+            float angulo;
 
+            empujado = rayoDat.transform.gameObject.GetComponent<ObjetoMovil> ();
             diferencia = rayoDat.point - puntoIni;
             diferencia.y = 0;
             angulo = Vector3.Angle (this.transform.forward, diferencia);
@@ -95,7 +97,20 @@ public class Empujar : MonoBehaviour
             agarrado = true;
             this.transform.rotation = nuevaRot;
 
-            movimientoScr.ComenzarEmpuje (empujado.EjeDeTrigger (rayoDat.collider), empujado);
+            bool ejeX = empujado.EjeDeTrigger (rayoDat.collider);
+
+            if (ejeX == true)
+            {
+                this.transform.position = this.transform.position.x > rayoDat.point.x ? new Vector3 (this.transform.position.x + characterCtr.radius, this.transform.position.y, this.transform.position.z) :
+                    new Vector3 (this.transform.position.x - characterCtr.radius, this.transform.position.y, this.transform.position.z);
+            }
+            else 
+            {
+                this.transform.position = this.transform.position.z > rayoDat.point.z ? new Vector3 (this.transform.position.x, this.transform.position.y, this.transform.position.z + characterCtr.radius) :
+                    new Vector3 (this.transform.position.x, this.transform.position.y, this.transform.position.z - characterCtr.radius);
+            }
+
+            movimientoScr.ComenzarEmpuje (ejeX, empujado);
         }
     }
 }
