@@ -16,7 +16,7 @@ public class Parpadeo : MonoBehaviour
     // .
     private void Start ()
     {
-        renderer.materials = materialesPrb;
+        //renderer.materials = materialesPrb;
         /*int indice = 0;
 
         materialesIni = new Material[renderer.materials.Length];
@@ -43,10 +43,10 @@ public class Parpadeo : MonoBehaviour
     // .
     private void Update ()
     {
-        if (this.IsInvoking () == false && Input.GetKeyDown (KeyCode.F) == true)
+        /*if (this.IsInvoking () == false && Input.GetKeyDown (KeyCode.F) == true)
         {
             this.InvokeRepeating ("Parpadear", 0, 0.25f);
-        }
+        }*/
     }
 
 
