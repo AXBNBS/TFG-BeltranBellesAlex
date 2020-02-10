@@ -10,13 +10,14 @@ public class MovimientoHistoria2 : MonoBehaviour
 {
     public bool input;
     public Vector3 movimiento;
+    public int saltoVel;
     [HideInInspector] public float offsetY, offsetXZ;
 
-    [SerializeField] private int movimientoVel, rotacionVel, saltoVel;
+    [SerializeField] private int movimientoVel, rotacionVel;
     [SerializeField] private LayerMask capas;
     [SerializeField] private MovimientoHistoria2 companyeroMov;
     private int gravedad, empujeVel;
-    private bool saltarInp, seguir, yendo, sueleado, empujando, limitadoX;
+    private bool saltarInp, seguir, yendo, sueleado, empujando, limitadoX, saltoPen;
     private CharacterController characterCtr;
     private float horizontalInp, verticalInp, angulo;
     private Quaternion rotacion;
@@ -36,6 +37,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         yendo = false;
         sueleado = false;
         empujando = false;
+        saltoPen = false;
         characterCtr = this.GetComponent<CharacterController> ();
         offsetY = this.transform.localScale.y * characterCtr.height;
         offsetXZ = this.transform.localScale.x * characterCtr.radius * 3;
@@ -133,7 +135,6 @@ public class MovimientoHistoria2 : MonoBehaviour
                 }
 
                 break;
-
             default:
                 empuje = Vector3.zero;
 
@@ -213,6 +214,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     public void Saltar ()
     {
         movimiento.y = saltoVel;
+        saltoPen = true;
     }
 
 
@@ -254,19 +256,23 @@ public class MovimientoHistoria2 : MonoBehaviour
             empujado.Mover (movimiento * Time.deltaTime);
         }
 
-        if (characterCtr.isGrounded == true)
-        {
-            movimiento.y = -0.1f;
-        }
+        saltoPen = false;
     }
 
 
     // Es que si no flota.
     private void AplicarGravedad () 
     {
-        if (characterCtr.isGrounded == false)
+        if (saltoPen == false) 
         {
-            movimiento.y += gravedad;
+            if (characterCtr.isGrounded == false)
+            {
+                movimiento.y += gravedad;
+            }
+            else
+            {
+                movimiento.y = -0.1f;
+            }
         }
     }
 

@@ -10,7 +10,8 @@ public class Enemigo : MonoBehaviour
 {
     [SerializeField] private float puntosGol;
     [SerializeField] private int saltoDef, aranyazoDef;
-    private bool perseguir;
+    [SerializeField] private int aleatoriedad;
+    private bool perseguir, reposicionado;
     private NavMeshAgent agente;
     private Transform objetivo;
     private Vector3 posicionIni;
@@ -20,6 +21,7 @@ public class Enemigo : MonoBehaviour
     private void Start ()
     {
         perseguir = false;
+        reposicionado = false;
         agente = this.GetComponent<NavMeshAgent> ();
         posicionIni = this.transform.position;
     }
@@ -28,9 +30,28 @@ public class Enemigo : MonoBehaviour
     // .
     private void Update ()
     {
-        if (perseguir == true) 
+        if (perseguir == true && this.gameObject.activeSelf == true) 
         {
-            agente.SetDestination (objetivo.position);
+            if (objetivo.position.y > this.transform.position.y) 
+            {
+                if (reposicionado == true)
+                {
+                    agente.SetDestination (new Vector3 (objetivo.position.x + Random.Range (-aleatoriedad, +aleatoriedad), objetivo.transform.position.y, objetivo.position.z + Random.Range (-aleatoriedad, +aleatoriedad)));
+
+                    reposicionado = false;
+                }
+                else 
+                {
+                    if (agente.remainingDistance < agente.stoppingDistance && this.IsInvoking () == false) 
+                    {
+                        this.Invoke ("Reposicionado", 1.75f);
+                    }
+                }
+            }
+            else 
+            {
+                agente.SetDestination (objetivo.position);
+            }
         }
     }
 
@@ -39,7 +60,7 @@ public class Enemigo : MonoBehaviour
     public void AtacarA (Transform jugador) 
     {
         perseguir = true;
-        objetivo = jugador.transform;
+        objetivo = jugador;
     }
 
 
@@ -48,7 +69,10 @@ public class Enemigo : MonoBehaviour
     {
         perseguir = false;
 
-        agente.SetDestination (posicionIni);
+        if (this.gameObject.activeSelf == true) 
+        {
+            agente.SetDestination (posicionIni);
+        }
     }
 
 
@@ -61,5 +85,12 @@ public class Enemigo : MonoBehaviour
         {
             this.gameObject.SetActive (false);
         }
+    }
+
+
+    // .
+    private void Reposicionado () 
+    {
+        reposicionado = true;
     }
 }

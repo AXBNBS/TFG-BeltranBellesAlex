@@ -28,12 +28,12 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
         puntosSeg = new Transform[2];
         camara = GameObject.FindObjectOfType<SeguimientoCamara> ();
         agrupacionRad = personajesMov[0].offsetXZ * 3;
-        personajesTrf[0] = personajesMov[0].transform;
-        personajesTrf[1] = personajesMov[1].transform;
-        detrases[0] = personajesTrf[0].GetChild (0);
-        detrases[1] = personajesTrf[1].GetChild (0);
-        puntosSeg[0] = personajesTrf[0].GetChild (1);
-        puntosSeg[1] = personajesTrf[1].GetChild (1);
+        personajesTrf[0] = personajesMov[0].transform.GetChild (2);
+        personajesTrf[1] = personajesMov[1].transform.GetChild (2);
+        detrases[0] = personajesTrf[0].parent.GetChild (0);
+        detrases[1] = personajesTrf[1].parent.GetChild (0);
+        puntosSeg[0] = personajesTrf[0].parent.GetChild (1);
+        puntosSeg[1] = personajesTrf[1].parent.GetChild (1);
         if (personajesMov[0].input == true)
         {
             camara.objetivo = personajesTrf[0];
@@ -106,7 +106,7 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     private void Juntar ()
     {
         Collider[] encontrado = Physics.OverlapSphere (camara.objetivo.position, agrupacionRad, avataresCap, QueryTriggerInteraction.Ignore);
-
+        
         if (encontrado.Length > 1)
         {
             if (personajesMov[0].input == true)

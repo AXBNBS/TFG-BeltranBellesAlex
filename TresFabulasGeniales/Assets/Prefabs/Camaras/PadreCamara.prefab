@@ -44,14 +44,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff905faca33f1a343895f02d9afc9be5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  input: 0
+  input: 1
   centrar: 0
   objetivo: {fileID: 0}
   detras: {fileID: 0}
-  movimientoVel: 120
-  abajoLim: -5
+  movimientoVel: 300
+  abajoLim: -10
   arribaLim: 60
   sensibilidad: 370
+  centradoVel: 10
 --- !u!1 &2900223902310915862
 GameObject:
   m_ObjectHideFlags: 0
@@ -63,8 +64,9 @@ GameObject:
   - component: {fileID: 2900223902310915859}
   - component: {fileID: 2900223902310915860}
   - component: {fileID: 2900223902310915861}
+  - component: {fileID: 897433237}
   m_Layer: 0
-  m_Name: CamaraPrincipal
+  m_Name: Camara principal
   m_TagString: CamaraPrincipal
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -78,7 +80,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2900223902310915862}
   m_LocalRotation: {x: 0, y: 0.7071068, z: -0, w: -0.7071068}
-  m_LocalPosition: {x: 7, y: 0, z: 0}
+  m_LocalPosition: {x: 80, y: 12, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2900223900628438256}
@@ -107,7 +109,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.01
+  near clip plane: 0.1
   far clip plane: 10000
   field of view: 60
   orthographic: 0
@@ -139,3 +141,73 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ddfe13ac26736743a85ff56331058b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  minimoDst: 10
+  maximoDst: 90
+  suavizado: 20
+  capas:
+    serializedVersion: 2
+    m_Bits: 4294967295
+--- !u!114 &897433237
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900223902310915862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bca4eab5005248599f229335afda9e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  material: {fileID: 0}
+  FXAAMat: {fileID: 0}
+  LutContribution: 1
+  LutMode: 3
+  PaintRadius: 0
+  PaintBlurLevel: 0
+  LookupTexture: {fileID: 2800000, guid: be5728ba28171444e8193ce8b7b76ce1, type: 3}
+  PixelSize: 1
+  CelCuts: 227
+  BasicSettings:
+    TintColor: {r: 1, g: 1, b: 1, a: 1}
+    Hue: 0
+    Saturation: 0.392
+    Brightness: 0
+    Contrast: 0
+    Sharpness: 0
+  FresnelSettings:
+    Contribution: 0
+    FresnelPower: 1
+    FresnelColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+    FresnelScanlineX: 0
+    FresnelScanlineY: 0
+  FogSettings:
+    Contribution: 0
+    DepthLevel: 1
+    DepthClippingFar: 1
+    FogColor: {r: 0.5800552, g: 0.745283, b: 0.745283, a: 1}
+    ForegroundColor: {r: 0.65241194, g: 0.764151, b: 0.7533552, a: 1}
+  GrainSettings:
+    Contribution: 0.5
+    Size: 2
+  VignetteSettings:
+    Contribution: 0
+    Color: {r: 0, g: 0, b: 0, a: 1}
+  OutlineSettings:
+    Contribution: 0
+    Color: {r: 0, g: 0, b: 0, a: 1}
+    NormalMult: 1
+    NormalBias: 1
+    DepthMult: 1
+    DepthBias: 1
+  ScanlineSettings:
+    Contribution: 0
+    Color: {r: 0, g: 0, b: 1, a: 1}
+    ScanlineX: 0
+    ScanlineY: 0
+  FXAASettings:
+    Enable: 0
+    SubpixelBlending: 1
+    LowQuality: 0
+  DebugSlider: 0
+  EnableTouchSlider: 0

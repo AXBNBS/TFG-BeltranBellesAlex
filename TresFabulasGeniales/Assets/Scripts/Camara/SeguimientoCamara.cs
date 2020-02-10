@@ -10,9 +10,10 @@ public class SeguimientoCamara : MonoBehaviour
     public bool input, centrar;
     public Transform objetivo, detras;
 
-    [SerializeField] private int movimientoVel, abajoLim, arribaLim, sensibilidad;
+    [SerializeField] private int movimientoVel, abajoLim, arribaLim, sensibilidad, centradoVel;
     private float ratonX, ratonY, stickX, stickY, finalX, finalY, rotacionX, rotacionY;
-    private Quaternion rotacionLoc;
+    private Quaternion rotacionObj;
+    //private Transform camara;
 
 
     // Inicialización de variables.
@@ -22,6 +23,7 @@ public class SeguimientoCamara : MonoBehaviour
         //Cursor.lockState = CursorLockMode.Locked;
         //Cursor.visible = false;
         centrar = false;
+        //camara = this.transform.GetChild (0);
     }
 
 
@@ -40,11 +42,17 @@ public class SeguimientoCamara : MonoBehaviour
             {
                 Vector3 diferencia = objetivo.position - detras.position;
 
-                rotacionX = Mathf.Atan2(diferencia.x, diferencia.z) * Mathf.Rad2Deg + 90;
-                rotacionY = 0;
-                rotacionLoc = Quaternion.Euler (rotacionX, rotacionY, 0);
-                this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacionLoc, Time.deltaTime);
-                centrar = false;
+                rotacionX = 0;
+                rotacionY = Mathf.Atan2 (diferencia.x, diferencia.z) * Mathf.Rad2Deg + 90;
+                //rotacionX = detras.rotation.eulerAngles.x;
+                //rotacionY = detras.rotation.eulerAngles.y;
+                rotacionObj = Quaternion.Euler (rotacionX, rotacionY, 0);
+                this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacionObj, Time.deltaTime * centradoVel);
+                print (Quaternion.Angle (this.transform.rotation, rotacionObj));
+                if (Quaternion.Angle (this.transform.rotation, rotacionObj) < 1) 
+                {
+                    centrar = false;
+                }
             }
             else 
             {
@@ -59,8 +67,8 @@ public class SeguimientoCamara : MonoBehaviour
                 rotacionX += finalX * suavizado;
                 rotacionY += finalY * suavizado;
                 rotacionY = Mathf.Clamp (rotacionY, abajoLim, arribaLim);
-                rotacionLoc = Quaternion.Euler (0, rotacionX, rotacionY);
-                this.transform.rotation = rotacionLoc;
+                rotacionObj = Quaternion.Euler (0, rotacionX, rotacionY);
+                this.transform.rotation = rotacionObj;
             }
         }
     }
