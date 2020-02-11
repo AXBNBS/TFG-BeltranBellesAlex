@@ -17,7 +17,7 @@ public class ObjetoMovil : MonoBehaviour
     private int gravedad, indiceTrg, fuerzaY;
 
 
-    // .
+    // Inicialización de variables.
     private void Start ()
     {
         caer = false;
@@ -27,7 +27,7 @@ public class ObjetoMovil : MonoBehaviour
     }
 
 
-    // .
+    // Si el objeto ha de caer, le aplicamos gravedad y lo movemos de acuerdo a esto; en caso contrario simplemente nos aseguramos de que la fuerza en Y es 0.
     private void FixedUpdate ()
     {
         if (caer == true)
@@ -43,7 +43,7 @@ public class ObjetoMovil : MonoBehaviour
     }
 
 
-    // .
+    // Si el objeto entra en un trigger de caída, ponemos la variable que permite que caiga a "true".
     private void OnTriggerEnter (Collider other)
     {
         if (other.tag == "CaidaObjeto") 
@@ -53,7 +53,7 @@ public class ObjetoMovil : MonoBehaviour
     }
 
 
-    // .
+    // Si el objeto sale de un trigger de caída, ponemos la variable que permite que caiga a "false".
     private void OnTriggerExit (Collider other)
     {
         if (other.tag == "CaidaObjeto")
@@ -63,7 +63,7 @@ public class ObjetoMovil : MonoBehaviour
     }
 
 
-    // .
+    // Recibimos un trigger concreto del objeto y, tras localizarlo en el mismo, devolvemos una variable que indica si este objeto se puede mover en el eje X o en el Z de acuerdo con los parámetros que hemos establecido previamente.
     public bool EjeDeTrigger (Collider trigger) 
     {
         bool resultado = true;
@@ -83,7 +83,7 @@ public class ObjetoMovil : MonoBehaviour
     }
 
 
-    // .
+    // Movemos el objeto de acuerdo con el empuje aplicado con el personaje, si este objeto ha de rotar al moverlo tenemos esto en cuenta y lo rotamos en el eje y sentido correcto.
     public void Mover (Vector3 movimiento) 
     {
         movimiento.y = 0;

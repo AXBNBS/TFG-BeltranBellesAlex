@@ -17,7 +17,7 @@ public class Enemigo : MonoBehaviour
     private Vector3 posicionIni;
 
     
-    // .
+    // Inicialización de variables.
     private void Start ()
     {
         perseguir = false;
@@ -27,7 +27,8 @@ public class Enemigo : MonoBehaviour
     }
 
 
-    // .
+    // Si hay que perseguir a alguien y el enemigo está activo, nos dirigimos directamente al objetivo en caso de que este no esté por encima de nosotros; de lo contrario, el enemigo se mueve de forma aleatoria para tratar de evitar que el jugador
+    //caiga sobre él y le haga daño, la nueva posición se definirá cada cierto tiempo.
     private void Update ()
     {
         if (perseguir == true && this.gameObject.activeSelf == true) 
@@ -42,7 +43,7 @@ public class Enemigo : MonoBehaviour
                 }
                 else 
                 {
-                    if (agente.remainingDistance < agente.stoppingDistance && this.IsInvoking () == false) 
+                    if (this.IsInvoking () == false && agente.remainingDistance < agente.stoppingDistance) 
                     {
                         this.Invoke ("Reposicionado", 1.75f);
                     }
@@ -56,7 +57,7 @@ public class Enemigo : MonoBehaviour
     }
 
 
-    // .
+    // Se indica al enemigo que tiene que perseguir/atacar a alguien.
     public void AtacarA (Transform jugador) 
     {
         perseguir = true;
@@ -64,7 +65,7 @@ public class Enemigo : MonoBehaviour
     }
 
 
-    // .
+    // El enemigo deja de perseguir a su objetivo y vuelve a su posición inicial, en caso de seguir activo.
     public void Parar () 
     {
         perseguir = false;
@@ -76,7 +77,7 @@ public class Enemigo : MonoBehaviour
     }
 
 
-    // .
+    // Se recibe el valor del daño recibido, y si es un salto o no, para tener en cuenta el valor de defensa del enemigo según el tipo de ataque. Además desactivaremos al enemigo en caso de que su salud tras el golpe sea menor de 0.
     public void Danyar (int danyo, bool salto) 
     {
         puntosGol -= salto ? danyo / saltoDef : danyo / aranyazoDef;
@@ -88,7 +89,7 @@ public class Enemigo : MonoBehaviour
     }
 
 
-    // .
+    // Tras cierto tiempo, marcamos como verdadero que el enemigo se ha reposicionado para poder hacerlo de nuevo.
     private void Reposicionado () 
     {
         reposicionado = true;

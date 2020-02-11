@@ -15,7 +15,7 @@ public class Ataque : MonoBehaviour
     private float reboteVel;
 
     
-    // .
+    // Inicialización de variables.
     private void Start ()
     {
         movimientoScr = this.GetComponent<MovimientoHistoria2> ();
@@ -31,21 +31,7 @@ public class Ataque : MonoBehaviour
     }
 
 
-    // .
-    /*private void OnControllerColliderHit (ControllerColliderHit hit)
-    {
-        Transform tocado = hit.transform;
-
-        if (characterCtr.isGrounded == false && tocado.tag == "Enemigo" && movimientoScr.movimiento.y < -50 && this.transform.position.y > tocado.position.y) 
-        {
-            tocado.GetComponent<Enemigo>().Danyar (saltoFrz, true);
-            movimientoScr.Saltar ();
-            print ("llamado");
-        }
-    }*/
-
-
-    // .
+    // Hacemos que el avatar rebote tras tocar la cabeza del enemigo y además le cause daño.
     private void OnTriggerEnter (Collider other)
     {
         if (other.tag == "Rebote" && this.transform.position.y > other.transform.position.y) 

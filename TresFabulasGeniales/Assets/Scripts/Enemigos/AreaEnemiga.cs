@@ -11,7 +11,7 @@ public class AreaEnemiga : MonoBehaviour
     private List<Transform> dentro;
 
 
-    // .
+    // Inicialización de variables.
     private void Start ()
     {
         enemigos = this.GetComponentsInChildren<Enemigo> ();
@@ -26,7 +26,7 @@ public class AreaEnemiga : MonoBehaviour
     }
 
 
-    // .
+    // Cada vez que uno de los avatares entre dentro del área enemiga, hacemos que los enemigos empiecen a atacar, además, se dividirán para atacar en el caso de que haya 2 personajes en la zona.
     private void OnTriggerEnter (Collider other)
     {
         dentro.Add (other.transform);
@@ -45,7 +45,7 @@ public class AreaEnemiga : MonoBehaviour
     }
 
 
-    // .
+    // Si un avatar ha salido del área enemiga, haremos que los enemigos se centren en el que queda o, en caso de que no quede ninguno, simplemente paren de atacar.
     private void OnTriggerExit (Collider other)
     {
         dentro.Remove (other.transform);

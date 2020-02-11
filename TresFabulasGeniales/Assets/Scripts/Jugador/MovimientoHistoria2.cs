@@ -17,7 +17,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     [SerializeField] private LayerMask capas;
     [SerializeField] private MovimientoHistoria2 companyeroMov;
     private int gravedad, empujeVel;
-    private bool saltarInp, seguir, yendo, sueleado, empujando, limitadoX, saltoPen;
+    private bool saltarInp, seguir, yendo, sueleado, empujando, limitadoX;
     private CharacterController characterCtr;
     private float horizontalInp, verticalInp, angulo;
     private Quaternion rotacion;
@@ -37,7 +37,6 @@ public class MovimientoHistoria2 : MonoBehaviour
         yendo = false;
         sueleado = false;
         empujando = false;
-        saltoPen = false;
         characterCtr = this.GetComponent<CharacterController> ();
         offsetY = this.transform.localScale.y * characterCtr.height;
         offsetXZ = this.transform.localScale.x * characterCtr.radius * 3;
@@ -49,7 +48,8 @@ public class MovimientoHistoria2 : MonoBehaviour
     }
 
 
-    // En el caso de que el input esté permitido, obtendremos el relativo al movimiento de las teclas/botones correspondiente y moveremos y animaremos al personaje en consecuencia.
+    // En el caso de que el input esté permitido, obtendremos el relativo al movimiento de las teclas/botones correspondiente y moveremos y animaremos al personaje en consecuencia. Se gestiona también el seguimiento del personaje no controlado en caso
+    //necesario.
     private void Update ()
     {
         if (input == false)
@@ -94,7 +94,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     }
 
 
-    // Si el personaje ha caído sobre otro, empujarlo hacia el primer lado de este que se encuentre libre.
+    // Si el avatar jugable ha caído sobre otro, empujarlo hacia el primer lado de este que se encuentre libre.
     private void OnControllerColliderHit (ControllerColliderHit hit)
     {
         Transform tocado = hit.transform;
@@ -150,7 +150,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     }
 
 
-    // Pone "sueleado" a "true" para evitar que se reproduzca la animación de estar en el aire.
+    // Pone "sueleado" a "true" para evitar que se reproduzca la animación de estar en el aire cuando realmente no lo está.
     private void OnTriggerEnter (Collider other)
     {
         if (other.tag == "Sueleador")
@@ -186,7 +186,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     }
 
 
-    // Hacemos que la variable que hace que se siga al compañero sea verdadera.
+    // Hacemos que la variable que hace que se siga al compañero sea verdadera y activamos el "NavMeshAgent" para poder seguir al otro personaje.
     public void GestionarSeguimiento (bool comenzar)
     {
         seguir = comenzar;
@@ -211,14 +211,14 @@ public class MovimientoHistoria2 : MonoBehaviour
 
 
     // Si el personaje está en el suelo y se ha pulsado el botón de salto, haremos que salte.
-    public void Saltar ()
+    private void Saltar ()
     {
         movimiento.y = saltoVel;
-        saltoPen = true;
     }
 
 
-    // Le aplicamos gravedad al personaje y, si además está siendo movido por el jugador, lo movemos y rotamos adecuadamente hacia la dirección del movimiento.
+    // Le aplicamos gravedad al personaje y, si además está siendo movido por el jugador, lo movemos y rotamos adecuadamente hacia la dirección del movimiento, teniendo en cuenta además la posición de la cámara para que el movimiento sea relativo a la
+    //misma. Movemos también el objeto empujado en caso de que haya alguno.
     private void Mover (float horizontal, float vertical) 
     {
         if (horizontal != 0 || vertical != 0)
@@ -255,24 +255,19 @@ public class MovimientoHistoria2 : MonoBehaviour
         {
             empujado.Mover (movimiento * Time.deltaTime);
         }
-
-        saltoPen = false;
     }
 
 
     // Es que si no flota.
     private void AplicarGravedad () 
     {
-        if (saltoPen == false) 
+        if (characterCtr.isGrounded == false)
         {
-            if (characterCtr.isGrounded == false)
-            {
-                movimiento.y += gravedad;
-            }
-            else
-            {
-                movimiento.y = -0.1f;
-            }
+            movimiento.y += gravedad;
+        }
+        else
+        {
+            movimiento.y = -0.1f;
         }
     }
 
@@ -310,7 +305,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     }
 
 
-    // Si la distancia en y es mayor a 5, automáticamente desagrupamos a los personajes.
+    // Si la distancia en Y entra ambos personajes es mayor a 5, automáticamente los desagrupamos.
     private void DesagruparSiEso ()
     {
         if (Mathf.Abs (this.transform.position.y - companyeroMov.transform.position.y) > 5)

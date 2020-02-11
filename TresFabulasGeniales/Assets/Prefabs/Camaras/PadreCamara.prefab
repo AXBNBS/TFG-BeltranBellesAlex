@@ -48,7 +48,7 @@ MonoBehaviour:
   centrar: 0
   objetivo: {fileID: 0}
   detras: {fileID: 0}
-  movimientoVel: 300
+  movimientoVel: 500
   abajoLim: -10
   arribaLim: 60
   sensibilidad: 370

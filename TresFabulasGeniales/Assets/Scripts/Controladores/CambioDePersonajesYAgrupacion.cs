@@ -48,7 +48,7 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     }
 
 
-    // Si se permite el input, y se pulsa el botón/tecla de cambio de personaje, y cambiamos del personaje actual al otro.
+    // Si se permite el input, y se pulsa el botón/tecla de cambio de personaje, cambiamos del personaje actualmente controlado al otro.
     private void Update ()
     {
         if (input == true)
@@ -87,7 +87,7 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     }*/
 
 
-    // La cámara pasa a seguir al nuevo personaje y se desactiva el movimiento del otro.
+    // La cámara pasa a seguir al nuevo personaje y se desactiva el movimiento del otro, en caso de que el botón de cambio se haya pulsado cuando el personaje desde el que se cambia no está en el aire.
     private void CambiarA (int nuevo, int anterior)
     {
         if (personajesMov[anterior].EstaEnElAire () == false)

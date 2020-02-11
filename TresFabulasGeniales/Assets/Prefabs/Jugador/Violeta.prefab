@@ -136,7 +136,7 @@ NavMeshAgent:
   m_AutoBraking: 1
   m_AutoRepath: 1
   m_Height: 14
-  m_BaseOffset: 0
+  m_BaseOffset: -1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
 --- !u!114 &796876532862441872
@@ -151,11 +151,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fddaf6bc17db32409bf94f76546b366, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  indicesMat: 0300000004000000
   renderer: {fileID: 5945277984305224632}
-  materialAlt: {fileID: 2100000, guid: 8f4b6aba8e55063488e0f34b220e84be, type: 2}
-  materialesIni: []
-  materialesAlt: []
+  materialesIni:
+  - {fileID: 2100000, guid: 8f4b6aba8e55063488e0f34b220e84be, type: 2}
+  - {fileID: 2100000, guid: daf4991c0b23eeb4189b06b585e8a52e, type: 2}
+  - {fileID: 2100000, guid: aad8e7fbaf463924197dd1899c92b094, type: 2}
+  - {fileID: 2100000, guid: 4758ed9070c5e1145aeb095a5a3865e7, type: 2}
+  - {fileID: 2100000, guid: 977bd2cbc0a1e49479cf14b020f9d6f5, type: 2}
+  - {fileID: 2100000, guid: c17fee34d5dc2254ab3de147926e40c5, type: 2}
+  - {fileID: 2100000, guid: 121f37dbc347fc74fbeda9cc38d1e08b, type: 2}
+  - {fileID: 2100000, guid: 8f4b6aba8e55063488e0f34b220e84be, type: 2}
+  materialesAlt:
+  - {fileID: 2100000, guid: 8f4b6aba8e55063488e0f34b220e84be, type: 2}
+  - {fileID: 2100000, guid: daf4991c0b23eeb4189b06b585e8a52e, type: 2}
+  - {fileID: 2100000, guid: aad8e7fbaf463924197dd1899c92b094, type: 2}
+  - {fileID: 2100000, guid: 8f4b6aba8e55063488e0f34b220e84be, type: 2}
+  - {fileID: 2100000, guid: 8f4b6aba8e55063488e0f34b220e84be, type: 2}
+  - {fileID: 2100000, guid: c17fee34d5dc2254ab3de147926e40c5, type: 2}
+  - {fileID: 2100000, guid: 121f37dbc347fc74fbeda9cc38d1e08b, type: 2}
+  - {fileID: 2100000, guid: 8f4b6aba8e55063488e0f34b220e84be, type: 2}
 --- !u!114 &3002010986360654492
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -173,11 +187,11 @@ MonoBehaviour:
   saltoVel: 300
   offsetY: 0
   offsetXZ: 0
-  movimientoVel: 150
+  movimientoVel: 200
   rotacionVel: 10
   capas:
     serializedVersion: 2
-    m_Bits: 1079
+    m_Bits: 7223
   companyeroMov: {fileID: 0}
 --- !u!114 &1105000601539949260
 MonoBehaviour:
@@ -241,6 +255,11 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Untagged
       objectReference: {fileID: 0}
+    - target: {fileID: 8874509940874635377, guid: ff301ff2d0b4de84ea4908255fd6accb,
+        type: 3}
+      propertyPath: m_Materials.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: daf4991c0b23eeb4189b06b585e8a52e, type: 2}
     - target: {fileID: 8426950792112203296, guid: ff301ff2d0b4de84ea4908255fd6accb,
         type: 3}
       propertyPath: m_LocalPosition.x

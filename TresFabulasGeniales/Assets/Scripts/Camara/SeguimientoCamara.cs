@@ -13,7 +13,6 @@ public class SeguimientoCamara : MonoBehaviour
     [SerializeField] private int movimientoVel, abajoLim, arribaLim, sensibilidad, centradoVel;
     private float ratonX, ratonY, stickX, stickY, finalX, finalY, rotacionX, rotacionY;
     private Quaternion rotacionObj;
-    //private Transform camara;
 
 
     // Inicialización de variables.
@@ -23,7 +22,6 @@ public class SeguimientoCamara : MonoBehaviour
         //Cursor.lockState = CursorLockMode.Locked;
         //Cursor.visible = false;
         centrar = false;
-        //camara = this.transform.GetChild (0);
     }
 
 
@@ -42,13 +40,10 @@ public class SeguimientoCamara : MonoBehaviour
             {
                 Vector3 diferencia = objetivo.position - detras.position;
 
-                rotacionX = 0;
-                rotacionY = Mathf.Atan2 (diferencia.x, diferencia.z) * Mathf.Rad2Deg + 90;
-                //rotacionX = detras.rotation.eulerAngles.x;
-                //rotacionY = detras.rotation.eulerAngles.y;
-                rotacionObj = Quaternion.Euler (rotacionX, rotacionY, 0);
+                rotacionX = Mathf.Atan2(diferencia.x, diferencia.z) * Mathf.Rad2Deg + 90;
+                rotacionY = 0;
+                rotacionObj = Quaternion.Euler (0, rotacionX, rotacionY);
                 this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacionObj, Time.deltaTime * centradoVel);
-                print (Quaternion.Angle (this.transform.rotation, rotacionObj));
                 if (Quaternion.Angle (this.transform.rotation, rotacionObj) < 1) 
                 {
                     centrar = false;
@@ -57,11 +52,15 @@ public class SeguimientoCamara : MonoBehaviour
             else 
             {
                 float suavizado = sensibilidad * Time.deltaTime;
+                float ratX = Input.GetAxis ("Cámara X ratón");
+                float ratY = Input.GetAxis ("Cámara Y ratón");
+                float stkX = Input.GetAxis ("Cámara X joystick");
+                float stkY = Input.GetAxis ("Cámara Y joystick");
 
-                ratonX = Mathf.Abs (Input.GetAxis ("Cámara X ratón")) > 0.1f ? Input.GetAxis ("Cámara X ratón") : 0;
-                ratonY = Mathf.Abs (Input.GetAxis ("Cámara Y ratón")) > 0.1f ? Input.GetAxis ("Cámara Y ratón") : 0;
-                stickX = Mathf.Abs (Input.GetAxis ("Cámara X joystick")) > 0.1f ? Input.GetAxis ("Cámara X joystick") : 0;
-                stickY = Mathf.Abs (Input.GetAxis ("Cámara Y joystick")) > 0.1f ? Input.GetAxis ("Cámara Y joystick") : 0;
+                ratonX = Mathf.Abs (ratX) > 0.1f ? ratX : 0;
+                ratonY = Mathf.Abs (ratY) > 0.1f ? ratY : 0;
+                stickX = Mathf.Abs (stkX) > 0.1f ? stkX : 0;
+                stickY = Mathf.Abs (stkY) > 0.1f ? stkY : 0;
                 finalX = ratonX + stickX;
                 finalY = ratonY + stickY;
                 rotacionX += finalX * suavizado;
