@@ -147,6 +147,12 @@ MonoBehaviour:
   capas:
     serializedVersion: 2
     m_Bits: 4294967295
+  capasSinAvt:
+    serializedVersion: 2
+    m_Bits: 7479
+  capaAvt:
+    serializedVersion: 2
+    m_Bits: 512
 --- !u!114 &897433237
 MonoBehaviour:
   m_ObjectHideFlags: 0
