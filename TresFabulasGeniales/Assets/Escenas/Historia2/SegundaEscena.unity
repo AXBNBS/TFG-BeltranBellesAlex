@@ -14924,6 +14924,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: natilla 1 (2)
       objectReference: {fileID: 0}
+    - target: {fileID: -6057140222963153312, guid: fbc1f696631943742b50a3907bf8769d,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: f6b889fa79972bd41bfa4935284d12e1, type: 2}
     - target: {fileID: -4216859302048453862, guid: fbc1f696631943742b50a3907bf8769d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -14994,11 +14999,6 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 232.73314
       objectReference: {fileID: 0}
-    - target: {fileID: -6057140222963153312, guid: fbc1f696631943742b50a3907bf8769d,
-        type: 3}
-      propertyPath: m_Controller
-      value: 
-      objectReference: {fileID: 9100000, guid: f6b889fa79972bd41bfa4935284d12e1, type: 2}
     - target: {fileID: 2489302850876048126, guid: fbc1f696631943742b50a3907bf8769d,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -15371,6 +15371,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: natilla 1
       objectReference: {fileID: 0}
+    - target: {fileID: -6057140222963153312, guid: fbc1f696631943742b50a3907bf8769d,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: f6b889fa79972bd41bfa4935284d12e1, type: 2}
     - target: {fileID: -4216859302048453862, guid: fbc1f696631943742b50a3907bf8769d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -15441,11 +15446,6 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 1609.8353
       objectReference: {fileID: 0}
-    - target: {fileID: -6057140222963153312, guid: fbc1f696631943742b50a3907bf8769d,
-        type: 3}
-      propertyPath: m_Controller
-      value: 
-      objectReference: {fileID: 9100000, guid: f6b889fa79972bd41bfa4935284d12e1, type: 2}
     - target: {fileID: 2489302850876048126, guid: fbc1f696631943742b50a3907bf8769d,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -15453,6 +15453,27 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: e811f59f7f3e7a749abe53ff5bffc3c4, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fbc1f696631943742b50a3907bf8769d, type: 3}
+--- !u!21 &1325860734
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Hidden/FMColor
+  m_Shader: {fileID: 4800000, guid: ff8efdd52694d4f0091d5d6e468fac4c, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs: []
+    m_Floats: []
+    m_Colors: []
 --- !u!4 &1333931163 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: 49e62f16c0dc1664c99bdc54b502882f,
@@ -20768,27 +20789,6 @@ PrefabInstance:
       objectReference: {fileID: 9100000, guid: aeb311ed8063a3d4db7893354f3356c8, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 49e62f16c0dc1664c99bdc54b502882f, type: 3}
---- !u!21 &1655048219
-Material:
-  serializedVersion: 6
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: Hidden/FMColor
-  m_Shader: {fileID: 4800000, guid: ff8efdd52694d4f0091d5d6e468fac4c, type: 3}
-  m_ShaderKeywords: 
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs: []
-    m_Floats: []
-    m_Colors: []
 --- !u!1 &1671975142 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -927199367670048503, guid: b8105e22f2bd95e4186c8fbe66dcdae3,
@@ -25865,6 +25865,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: natilla 1 (1)
       objectReference: {fileID: 0}
+    - target: {fileID: -6057140222963153312, guid: fbc1f696631943742b50a3907bf8769d,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: f6b889fa79972bd41bfa4935284d12e1, type: 2}
     - target: {fileID: -4216859302048453862, guid: fbc1f696631943742b50a3907bf8769d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -25935,11 +25940,6 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 598.77826
       objectReference: {fileID: 0}
-    - target: {fileID: -6057140222963153312, guid: fbc1f696631943742b50a3907bf8769d,
-        type: 3}
-      propertyPath: m_Controller
-      value: 
-      objectReference: {fileID: 9100000, guid: f6b889fa79972bd41bfa4935284d12e1, type: 2}
     - target: {fileID: 2489302850876048126, guid: fbc1f696631943742b50a3907bf8769d,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
