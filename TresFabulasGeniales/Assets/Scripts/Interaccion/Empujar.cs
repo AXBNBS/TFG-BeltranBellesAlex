@@ -71,10 +71,10 @@ public class Empujar : MonoBehaviour
 
 
     // Pal debug.
-    private void OnDrawGizmos ()
+    /*private void OnDrawGizmos ()
     {
-        //Gizmos.DrawLine (puntoIni, puntoIni + this.transform.forward * longitudRay);
-    }
+        Gizmos.DrawLine (puntoIni, puntoIni + this.transform.forward * longitudRay);
+    }*/
 
 
     // Si el imput está permitido, estamos cerca del objeto, nuestro personaje está en el suelo, se está pulsando el botón de interacción y el objeto está delante del personaje a poca distancia, rotamos al personaje para que esté perfectamente alineado
@@ -110,6 +110,7 @@ public class Empujar : MonoBehaviour
                     new Vector3 (this.transform.position.x, this.transform.position.y, this.transform.position.z - characterCtr.radius);
             }
 
+            CambioDePersonajesYAgrupacion.instancia.Separar ();
             movimientoScr.ComenzarEmpuje (ejeX, empujado);
         }
     }

@@ -87,6 +87,16 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     }*/
 
 
+    // Los personajes dejan de estar juntos.
+    public void Separar ()
+    {
+        personajesMov[0].GestionarSeguimiento (false);
+        personajesMov[1].GestionarSeguimiento (false);
+
+        juntos = false;
+    }
+
+
     // La cámara pasa a seguir al nuevo personaje y se desactiva el movimiento del otro, en caso de que el botón de cambio se haya pulsado cuando el personaje desde el que se cambia no está en el aire.
     private void CambiarA (int nuevo, int anterior)
     {
@@ -120,15 +130,5 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
             
             juntos = true;
         }
-    }
-
-
-    // Los personajes dejan de estar juntos.
-    private void Separar ()
-    {
-        personajesMov[0].GestionarSeguimiento (false);
-        personajesMov[1].GestionarSeguimiento (false);
-
-        juntos = false;
     }
 }

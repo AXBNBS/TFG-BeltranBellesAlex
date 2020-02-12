@@ -20,7 +20,6 @@ public class ColisionesCamara : MonoBehaviour
         direccion = this.transform.localPosition.normalized;
         distancia = this.transform.localPosition.magnitude;
         posicionUltFrm = this.transform.position;
-        //movidoUltFrm = false;
     }
 
 
