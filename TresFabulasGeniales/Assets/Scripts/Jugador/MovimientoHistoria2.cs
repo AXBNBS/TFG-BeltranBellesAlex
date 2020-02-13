@@ -17,7 +17,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     [SerializeField] private LayerMask capas;
     [SerializeField] private MovimientoHistoria2 companyeroMov;
     private int gravedad, empujeVel;
-    private bool saltarInp, seguir, yendo, sueleado, empujando, limitadoX;
+    public bool saltarInp, seguir, yendo, sueleado, empujando, limitadoX;
     private CharacterController characterCtr;
     private float horizontalInp, verticalInp, angulo;
     private Quaternion rotacion;
@@ -151,7 +151,7 @@ public class MovimientoHistoria2 : MonoBehaviour
 
 
     // Pone "sueleado" a "true" para evitar que se reproduzca la animación de estar en el aire cuando realmente no lo está.
-    private void OnTriggerEnter (Collider other)
+    private void OnTriggerStay (Collider other)
     {
         if (other.tag == "Sueleador")
         {

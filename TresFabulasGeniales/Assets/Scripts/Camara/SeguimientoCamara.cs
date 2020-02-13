@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class SeguimientoCamara : MonoBehaviour
 {
-    public bool input, centrar;
+    public bool input, centrar, transicionando;
     public Transform objetivo, detras;
 
     [SerializeField] private int movimientoVel, abajoLim, arribaLim, sensibilidad, centradoVel;
@@ -22,6 +22,7 @@ public class SeguimientoCamara : MonoBehaviour
         //Cursor.lockState = CursorLockMode.Locked;
         //Cursor.visible = false;
         centrar = false;
+        transicionando = false;
     }
 
 
@@ -34,22 +35,22 @@ public class SeguimientoCamara : MonoBehaviour
             centrar = true;
         }
 
-        if (input == true) 
+        if (input == true)
         {
             if (centrar == true)
             {
                 Vector3 diferencia = objetivo.position - detras.position;
 
-                rotacionX = Mathf.Atan2(diferencia.x, diferencia.z) * Mathf.Rad2Deg + 90;
+                rotacionX = Mathf.Atan2 (diferencia.x, diferencia.z) * Mathf.Rad2Deg + 90;
                 rotacionY = 0;
                 rotacionObj = Quaternion.Euler (0, rotacionX, rotacionY);
-                this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacionObj, Time.deltaTime * centradoVel);
-                if (Quaternion.Angle (this.transform.rotation, rotacionObj) < 1) 
+                this.transform.rotation = Quaternion.Lerp(this.transform.rotation, rotacionObj, Time.deltaTime * centradoVel);
+                if (Quaternion.Angle(this.transform.rotation, rotacionObj) < 1)
                 {
                     centrar = false;
                 }
             }
-            else 
+            else
             {
                 float suavizado = sensibilidad * Time.deltaTime;
                 float ratX = Input.GetAxis ("Cámara X ratón");
@@ -70,12 +71,22 @@ public class SeguimientoCamara : MonoBehaviour
                 this.transform.rotation = rotacionObj;
             }
         }
+        else 
+        {
+            if (this.transform.position == objetivo.position) 
+            {
+                CambioDePersonajesYAgrupacion.instancia.PermitirInput ();
+            }
+        }
     }
 
 
     // Seguimiento del objetivo de la cámara.
     private void LateUpdate ()
     {
-        this.transform.position = Vector3.MoveTowards (this.transform.position, objetivo.position, movimientoVel * Time.deltaTime);
+        if (transicionando == false) 
+        {
+            this.transform.position = Vector3.MoveTowards (this.transform.position, objetivo.position, movimientoVel * Time.deltaTime);
+        } 
     }
 }

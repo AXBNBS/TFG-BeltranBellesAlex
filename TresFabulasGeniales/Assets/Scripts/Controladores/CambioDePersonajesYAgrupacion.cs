@@ -10,14 +10,16 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     public static CambioDePersonajesYAgrupacion instancia;
     public bool input, juntos;
 
-    [SerializeField] private LayerMask avataresCap;
+    [SerializeField] private LayerMask avataresCap, capasSinAvt;
     private MovimientoHistoria2[] personajesMov;
     private Transform[] personajesTrf, detrases, puntosSeg;
     private SeguimientoCamara camara;
+    private ColisionesCamara camaraHij;
     private float agrupacionRad;
+    private int personajeAct;
 
 
-    // Inicialización de elementos y desactivación del movimiento de uno de los personajes.
+    // Inicialización de elementos.
     private void Start ()
     {
         instancia = this;
@@ -27,6 +29,7 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
         detrases = new Transform[2];
         puntosSeg = new Transform[2];
         camara = GameObject.FindObjectOfType<SeguimientoCamara> ();
+        camaraHij = camara.GetComponentInChildren<ColisionesCamara> ();
         agrupacionRad = personajesMov[0].offsetXZ * 3;
         personajesTrf[0] = personajesMov[0].transform.GetChild (2);
         personajesTrf[1] = personajesMov[1].transform.GetChild (2);
@@ -38,11 +41,13 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
         {
             camara.objetivo = personajesTrf[0];
             camara.detras = detrases[0];
+            personajeAct = 0;
         }
         else
         {
             camara.objetivo = personajesTrf[1];
             camara.detras = detrases[1];
+            personajeAct = 1;
         }
         camara.transform.position = camara.objetivo.position;
     }
@@ -97,15 +102,42 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     }
 
 
+    // .
+    public void PararInput () 
+    {
+        input = false;
+        camara.input = false;
+        personajesMov[personajeAct == 0 ? 0 : 1].input = false;
+        camaraHij.enabled = false;
+    }
+
+
+    // .
+    public void PermitirInput () 
+    {
+        input = true;
+        camara.input = true;
+        personajesMov[personajeAct].input = true;
+        camaraHij.enabled = true;
+    }
+
+
     // La cámara pasa a seguir al nuevo personaje y se desactiva el movimiento del otro, en caso de que el botón de cambio se haya pulsado cuando el personaje desde el que se cambia no está en el aire.
     private void CambiarA (int nuevo, int anterior)
     {
         if (personajesMov[anterior].EstaEnElAire () == false)
         {
+            PararInput ();
+
             camara.objetivo = personajesTrf[nuevo];
             camara.detras = detrases[nuevo];
-            personajesMov[anterior].input = false;
-            personajesMov[nuevo].input = true;
+            personajeAct = nuevo;
+            if (Vector3.Distance (personajesTrf[nuevo].position, personajesTrf[anterior].position) > 500 || Physics.Linecast (personajesTrf[anterior].position, personajesTrf[nuevo].position, capasSinAvt, QueryTriggerInteraction.Ignore) == true)
+            {
+                camara.transicionando = true;
+
+                Fundido.instancia.FundidoAPosicion (personajesTrf[nuevo].position);
+            }
 
             personajesMov[nuevo].GestionarCambio ();
         }
