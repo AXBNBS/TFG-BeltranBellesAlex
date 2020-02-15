@@ -8,13 +8,33 @@ using UnityEngine;
 [System.Serializable]
 public class Twii
 {
-    public Vector3 velocidad;
-    public float gravedad = 20;
-    public Vector3 gravedadDir = new Vector3 (0, -1, 0);
+    [HideInInspector] public Vector3 velocidad;
+
+    [SerializeField] private int gravedad;
+    [SerializeField] private Vector3 gravedadDir;
+    [SerializeField] private float resistencia, velocidadMax;
+    private Vector3 resistenciaDir;
 
 
+    // .
     public void AplicarGravedad () 
     {
         velocidad += gravedadDir * gravedad * Time.deltaTime;
+    }
+
+
+    // .
+    public void AplicarResistencia () 
+    {
+        resistenciaDir = -velocidad;
+        resistenciaDir *= resistencia;
+        velocidad += resistenciaDir;
+    }
+
+
+    // .
+    public void LimitarVelocidadMaxima () 
+    {
+        velocidad = Vector3.ClampMagnitude (velocidad, velocidadMax);
     }
 }

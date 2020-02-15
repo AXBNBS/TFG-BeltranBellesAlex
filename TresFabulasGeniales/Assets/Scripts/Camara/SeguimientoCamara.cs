@@ -44,8 +44,8 @@ public class SeguimientoCamara : MonoBehaviour
                 rotacionX = Mathf.Atan2 (diferencia.x, diferencia.z) * Mathf.Rad2Deg + 90;
                 rotacionY = 0;
                 rotacionObj = Quaternion.Euler (0, rotacionX, rotacionY);
-                this.transform.rotation = Quaternion.Lerp(this.transform.rotation, rotacionObj, Time.deltaTime * centradoVel);
-                if (Quaternion.Angle(this.transform.rotation, rotacionObj) < 1)
+                this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacionObj, Time.deltaTime * centradoVel);
+                if (Quaternion.Angle (this.transform.rotation, rotacionObj) < 1)
                 {
                     centrar = false;
                 }

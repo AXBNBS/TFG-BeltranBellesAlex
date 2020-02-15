@@ -20,6 +20,6 @@ public class Colgarse : MonoBehaviour
     // .
     private void Update ()
     {
-        this.transform.localPosition = balanceo.Mover (this.transform.localPosition, Time.deltaTime);
+        //this.transform.localPosition = balanceo.Mover (this.transform.localPosition, Time.deltaTime);
     }
 }

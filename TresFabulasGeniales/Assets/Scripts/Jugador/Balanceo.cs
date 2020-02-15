@@ -13,7 +13,7 @@ public class Balanceo
     public Cuerda cuerda;
     public Twii twii;
 
-    private Vector3 posicionPrv;
+    private Vector3 posicionUltFrm;
 
 
     // .
@@ -25,13 +25,21 @@ public class Balanceo
 
 
     // .
-    public Vector3 Mover (Vector3 posicion, float tiempo) 
+    public Vector3 Mover (Vector3 posicion, Vector3 posicionPrv, float tiempo) 
     {
         twii.velocidad += ObtenerPosicionNueva (posicion, posicionPrv, tiempo);
+
         twii.AplicarGravedad ();
+        twii.AplicarResistencia ();
+        twii.LimitarVelocidadMaxima ();
 
         posicion += twii.velocidad * tiempo;
-        posicionPrv = posicion;
+        if (Vector3.Distance (posicion, enganche.posicion) < cuerda.longitud) 
+        {
+            posicion = Vector3.Normalize (posicion - enganche.posicion) * cuerda.longitud;
+            cuerda.longitud = Vector3.Distance (posicion, enganche.posicion);
+        }
+        posicionUltFrm = posicion;
 
         return posicion;
     }
@@ -53,5 +61,29 @@ public class Balanceo
         }
 
         return Vector3.zero;
+    }
+
+
+    // .
+    public void CambiarEnganche (Vector3 nuevaPos) 
+    {
+        twiiTrf.parent = null;
+        enganche.engancheTrf.position = nuevaPos;
+        twiiTrf.parent = enganche.engancheTrf;
+        enganche.posicion = enganche.engancheTrf.InverseTransformPoint (nuevaPos);
+        cuerda.longitud = Vector3.Distance (twiiTrf.localPosition, enganche.posicion);
+    }
+
+
+    // .
+    public Vector3 Fall (Vector3 posicion, float tiempo) 
+    {
+        twii.AplicarGravedad ();
+        twii.AplicarResistencia ();
+        twii.LimitarVelocidadMaxima ();
+
+        posicion += twii.velocidad * tiempo;
+
+        return posicion;
     }
 }
