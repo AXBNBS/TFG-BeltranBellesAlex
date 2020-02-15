@@ -41,8 +41,8 @@ public class MovimientoHistoria2 : MonoBehaviour
         offsetY = this.transform.localScale.y * characterCtr.height;
         offsetXZ = this.transform.localScale.x * characterCtr.radius * 3;
         camaraTrf = GameObject.FindGameObjectWithTag("CamaraPrincipal").transform;
-        objetivoSeg = companyeroMov.transform.GetChild (1);
-        companyeroTrf = companyeroMov.transform;
+        //objetivoSeg = companyeroMov.transform.GetChild (1);
+        //companyeroTrf = companyeroMov.transform;
         animator = this.GetComponentInChildren<Animator> ();
         mallaAgtNav = this.GetComponent<NavMeshAgent> ();
     }

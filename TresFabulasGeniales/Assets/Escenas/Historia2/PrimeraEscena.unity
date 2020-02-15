@@ -15632,6 +15632,80 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 422443057}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1041695264
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2900223900628438257, guid: 5e0717d8e3dc57c4ab9b080ac16d2729,
+        type: 3}
+      propertyPath: m_Name
+      value: PadreCamara
+      objectReference: {fileID: 0}
+    - target: {fileID: 2900223900628438257, guid: 5e0717d8e3dc57c4ab9b080ac16d2729,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2900223900628438256, guid: 5e0717d8e3dc57c4ab9b080ac16d2729,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2900223900628438256, guid: 5e0717d8e3dc57c4ab9b080ac16d2729,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2900223900628438256, guid: 5e0717d8e3dc57c4ab9b080ac16d2729,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2900223900628438256, guid: 5e0717d8e3dc57c4ab9b080ac16d2729,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2900223900628438256, guid: 5e0717d8e3dc57c4ab9b080ac16d2729,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2900223900628438256, guid: 5e0717d8e3dc57c4ab9b080ac16d2729,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2900223900628438256, guid: 5e0717d8e3dc57c4ab9b080ac16d2729,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2900223900628438256, guid: 5e0717d8e3dc57c4ab9b080ac16d2729,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 2900223900628438256, guid: 5e0717d8e3dc57c4ab9b080ac16d2729,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2900223900628438256, guid: 5e0717d8e3dc57c4ab9b080ac16d2729,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2900223900628438256, guid: 5e0717d8e3dc57c4ab9b080ac16d2729,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 5e0717d8e3dc57c4ab9b080ac16d2729, type: 3}
 --- !u!1 &1048984266
 GameObject:
   m_ObjectHideFlags: 0
@@ -22418,6 +22492,27 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: bafb26fbdf23db844a9a54c3d00b921c, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 181b292ad909c0540837cb263c3448fb, type: 3}
+--- !u!21 &1477815524
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Hidden/FMColor
+  m_Shader: {fileID: 4800000, guid: ff8efdd52694d4f0091d5d6e468fac4c, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs: []
+    m_Floats: []
+    m_Colors: []
 --- !u!1001 &1496188294
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -35178,6 +35273,80 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: bafb26fbdf23db844a9a54c3d00b921c, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 181b292ad909c0540837cb263c3448fb, type: 3}
+--- !u!1001 &281096939768085697
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 281096940083137174, guid: 6c34b2764381bef4ab6b7047c645baf8,
+        type: 3}
+      propertyPath: m_Name
+      value: Padre camara
+      objectReference: {fileID: 0}
+    - target: {fileID: 281096940083137176, guid: 6c34b2764381bef4ab6b7047c645baf8,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -963.125
+      objectReference: {fileID: 0}
+    - target: {fileID: 281096940083137176, guid: 6c34b2764381bef4ab6b7047c645baf8,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 432.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 281096940083137176, guid: 6c34b2764381bef4ab6b7047c645baf8,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 1025
+      objectReference: {fileID: 0}
+    - target: {fileID: 281096940083137176, guid: 6c34b2764381bef4ab6b7047c645baf8,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 281096940083137176, guid: 6c34b2764381bef4ab6b7047c645baf8,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 281096940083137176, guid: 6c34b2764381bef4ab6b7047c645baf8,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 281096940083137176, guid: 6c34b2764381bef4ab6b7047c645baf8,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 281096940083137176, guid: 6c34b2764381bef4ab6b7047c645baf8,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 281096940083137176, guid: 6c34b2764381bef4ab6b7047c645baf8,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 281096940083137176, guid: 6c34b2764381bef4ab6b7047c645baf8,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 281096940083137176, guid: 6c34b2764381bef4ab6b7047c645baf8,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 281096939554376450, guid: 6c34b2764381bef4ab6b7047c645baf8,
+        type: 3}
+      propertyPath: material
+      value: 
+      objectReference: {fileID: 1477815524}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 6c34b2764381bef4ab6b7047c645baf8, type: 3}
 --- !u!1001 &1604634211158490043
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -35259,6 +35428,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Padre camara
       objectReference: {fileID: 0}
+    - target: {fileID: 2900223900628438257, guid: 5e0717d8e3dc57c4ab9b080ac16d2729,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2900223900628438256, guid: 5e0717d8e3dc57c4ab9b080ac16d2729,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -35297,7 +35471,7 @@ PrefabInstance:
     - target: {fileID: 2900223900628438256, guid: 5e0717d8e3dc57c4ab9b080ac16d2729,
         type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 19
       objectReference: {fileID: 0}
     - target: {fileID: 2900223900628438256, guid: 5e0717d8e3dc57c4ab9b080ac16d2729,
         type: 3}
@@ -35323,7 +35497,15 @@ PrefabInstance:
       propertyPath: zoomVal
       value: 5
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 2900223902310915861, guid: 5e0717d8e3dc57c4ab9b080ac16d2729,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 2900223900628438271, guid: 5e0717d8e3dc57c4ab9b080ac16d2729, type: 3}
+    - {fileID: 2900223902310915861, guid: 5e0717d8e3dc57c4ab9b080ac16d2729, type: 3}
+    - {fileID: 897433237, guid: 5e0717d8e3dc57c4ab9b080ac16d2729, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 5e0717d8e3dc57c4ab9b080ac16d2729, type: 3}
 --- !u!1001 &7464368003868265991
 PrefabInstance:
@@ -35336,6 +35518,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: HUD juego
+      objectReference: {fileID: 0}
+    - target: {fileID: 7464368002998091844, guid: d06a0d8de54c0024eb6d7b8af94dc5ae,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7464368002998091843, guid: d06a0d8de54c0024eb6d7b8af94dc5ae,
         type: 3}

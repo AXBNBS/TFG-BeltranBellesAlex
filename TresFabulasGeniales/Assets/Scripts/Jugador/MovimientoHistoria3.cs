@@ -11,6 +11,7 @@ public class MovimientoHistoria3 : MonoBehaviour
 
     [SerializeField] private int movimientoVel, rotacionVel, saltoVel;
     [SerializeField] private LayerMask capas;
+    [SerializeField] private ForceMode tipoFrz;
     private bool saltarInp, cayendo;
     private float horizontalInp, verticalInp, angulo, longitudRay;
     private Rigidbody rigidbody;
@@ -25,6 +26,7 @@ public class MovimientoHistoria3 : MonoBehaviour
     {
         rigidbody = this.GetComponent<Rigidbody> ();
         longitudRay = this.GetComponent<CapsuleCollider>().height / 2 + 0.1f;
+        camaraTrf = GameObject.FindGameObjectWithTag("CamaraPrincipal").transform;
     }
 
 
@@ -43,23 +45,18 @@ public class MovimientoHistoria3 : MonoBehaviour
             verticalInp = Mathf.RoundToInt (Input.GetAxisRaw ("Movimiento vertical"));
             saltarInp = Input.GetButtonDown ("Salto");
         }
-        //cayendo = Physics.Raycast (this.transform.position, -this.transform.up, );
-    }
+        cayendo = !Physics.Raycast (this.transform.position, -this.transform.up, longitudRay, capas, QueryTriggerInteraction.Ignore);
 
-
-    // .
-    private void FixedUpdate ()
-    {
         Mover ();
         Saltar ();
     }
 
 
     // .
-    private void OnDrawGizmos ()
+    /*private void OnDrawGizmos ()
     {
         Gizmos.DrawRay (this.transform.position, -longitudRay * this.transform.up);
-    }
+    }*/
 
 
     // .
@@ -67,7 +64,16 @@ public class MovimientoHistoria3 : MonoBehaviour
     {
         if (horizontalInp != 0 || verticalInp != 0) 
         {
-            rigidbody.MovePosition (this.transform.position + this.transform.TransformDirection (horizontalInp, 0, verticalInp) * Time.deltaTime * movimientoVel);
+            Vector3 relativoCam = camaraTrf.right * horizontalInp + camaraTrf.forward * verticalInp;
+
+            relativoCam.y = 0;
+            relativoCam = relativoCam.normalized;
+
+            rigidbody.MovePosition (this.transform.position + relativoCam * Time.deltaTime * movimientoVel);
+
+            angulo = Mathf.Atan2 (relativoCam.x, relativoCam.z) * Mathf.Rad2Deg;
+            rotacion = Quaternion.Euler (this.transform.rotation.x, angulo, this.transform.rotation.z);
+            this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacion, rotacionVel * Time.deltaTime);
         }
     }
 
@@ -77,7 +83,8 @@ public class MovimientoHistoria3 : MonoBehaviour
     {
         if (saltarInp == true && cayendo == false) 
         {
-            rigidbody.AddForce (this.transform.up, ForceMode.Impulse);
+            rigidbody.AddForce (this.transform.up * saltoVel, tipoFrz);
+            rigidbody.velocity = Vector3.zero;
         }
     }
 }
