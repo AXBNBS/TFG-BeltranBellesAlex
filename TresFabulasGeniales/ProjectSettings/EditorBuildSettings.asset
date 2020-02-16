@@ -6,6 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Escenas/AythamiPruebas.unity
-    guid: 40a6bf92ea9a85b4ca8a281dd36d197c
+    path: Assets/Escenas/Historia2/PrimeraEscena.unity
+    guid: 00651f3e325334643856dc4b6ee9ac50
+  - enabled: 1
+    path: Assets/Escenas/Historia2/SegundaEscena.unity
+    guid: cfafea3c7f9ae7543a0ef01425d2ea2a
+  - enabled: 1
+    path: Assets/Escenas/AlexPruebas.unity
+    guid: 879904ebb7b058646b5d8dad7fb218ab
   m_configObjects: {}

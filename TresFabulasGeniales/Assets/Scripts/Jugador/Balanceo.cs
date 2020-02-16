@@ -16,7 +16,7 @@ public class Balanceo
     private Vector3 posicionUltFrm;
 
 
-    // .
+    // Inicializamos el padre del twii y la longitud de la cuerda.
     public void Inicializar () 
     {
         twiiTrf.parent = enganche.engancheTrf;

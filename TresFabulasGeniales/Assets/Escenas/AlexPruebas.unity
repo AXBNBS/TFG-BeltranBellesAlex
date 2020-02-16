@@ -39,7 +39,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.40549588, g: 0.4067918, b: 0.42231357, a: 1}
+  m_IndirectSpecularColor: {r: 0.40549588, g: 0.4067917, b: 0.42231268, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -214,6 +214,27 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!21 &709350131
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Hidden/FMColor
+  m_Shader: {fileID: 4800000, guid: ff8efdd52694d4f0091d5d6e468fac4c, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs: []
+    m_Floats: []
+    m_Colors: []
 --- !u!1 &916854157
 GameObject:
   m_ObjectHideFlags: 0
@@ -305,12 +326,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 53.962, y: 0, z: 0}
---- !u!20 &994670872 stripped
-Camera:
-  m_CorrespondingSourceObject: {fileID: 2900223902310915860, guid: 5e0717d8e3dc57c4ab9b080ac16d2729,
-    type: 3}
-  m_PrefabInstance: {fileID: 1622666491}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1151398532
 GameObject:
   m_ObjectHideFlags: 0
@@ -530,8 +545,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79eb7f9ecd0f9114e8950eb208917b6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cam: {fileID: 994670872}
-  pendulum:
+  balanceo:
     twiiTrf: {fileID: 1236090948}
     enganche:
       posicion: {x: 0, y: 0, z: 0}
@@ -544,9 +558,9 @@ MonoBehaviour:
       gravedadDir: {x: 0, y: -1, z: 0}
       resistencia: 0.001
       velocidadMax: 50
-  speed: 6
-  jumpSpeed: 20
-  gravity: 20
+  movimientoVel: 6
+  saltoVel: 20
+  gravedad: -20
   capas:
     serializedVersion: 2
     m_Bits: 7479
@@ -778,9 +792,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00554548c77ddd6489a63de6c17455d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bob: {fileID: 1236090948}
-  target1: {fileID: 1558231114}
-  hasParent: 0
+  padre: 0
   capas:
     serializedVersion: 2
     m_Bits: 7479
@@ -880,27 +892,6 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
---- !u!21 &1608410750
-Material:
-  serializedVersion: 6
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: Hidden/FMColor
-  m_Shader: {fileID: 4800000, guid: ff8efdd52694d4f0091d5d6e468fac4c, type: 3}
-  m_ShaderKeywords: 
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs: []
-    m_Floats: []
-    m_Colors: []
 --- !u!1001 &1622666491
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -978,6 +969,11 @@ PrefabInstance:
       propertyPath: detras
       value: 
       objectReference: {fileID: 1670741279}
+    - target: {fileID: 2900223902310915861, guid: 5e0717d8e3dc57c4ab9b080ac16d2729,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2900223902310915859, guid: 5e0717d8e3dc57c4ab9b080ac16d2729,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -986,11 +982,6 @@ PrefabInstance:
     - target: {fileID: 2900223902310915859, guid: 5e0717d8e3dc57c4ab9b080ac16d2729,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2900223902310915861, guid: 5e0717d8e3dc57c4ab9b080ac16d2729,
-        type: 3}
-      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
