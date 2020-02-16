@@ -591,6 +591,27 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 307584818}
   m_PrefabAsset: {fileID: 0}
+--- !u!21 &31698658
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Hidden/FMColor
+  m_Shader: {fileID: 4800000, guid: ff8efdd52694d4f0091d5d6e468fac4c, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs: []
+    m_Floats: []
+    m_Colors: []
 --- !u!4 &32307253 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: 16d31ec6653e91c47a488011721558d1,
@@ -17434,6 +17455,11 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[3]
       value: 
       objectReference: {fileID: 2100000, guid: 1a35d33d13a2dae42863fc0d9d503f20, type: 2}
+    - target: {fileID: -1504981713932161579, guid: a7267562b360a2b49b8cdf6a0722c1f5,
+        type: 3}
+      propertyPath: m_Materials.Array.data[4]
+      value: 
+      objectReference: {fileID: 2100000, guid: b7dd89722feed1442bbccbecdd5eadc7, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a7267562b360a2b49b8cdf6a0722c1f5, type: 3}
 --- !u!1001 &947385513
@@ -32999,27 +33025,6 @@ PrefabInstance:
       objectReference: {fileID: 9100000, guid: aeb311ed8063a3d4db7893354f3356c8, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 49e62f16c0dc1664c99bdc54b502882f, type: 3}
---- !u!21 &1831291452
-Material:
-  serializedVersion: 6
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: Hidden/FMColor
-  m_Shader: {fileID: 4800000, guid: ff8efdd52694d4f0091d5d6e468fac4c, type: 3}
-  m_ShaderKeywords: 
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs: []
-    m_Floats: []
-    m_Colors: []
 --- !u!1001 &1832653313
 PrefabInstance:
   m_ObjectHideFlags: 0
