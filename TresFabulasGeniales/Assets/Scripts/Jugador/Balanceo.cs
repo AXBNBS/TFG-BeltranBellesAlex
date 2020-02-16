@@ -16,7 +16,7 @@ public class Balanceo
     private Vector3 posicionUltFrm;
 
 
-    // .
+    // Inicializamos el padre del twii y la longitud de la cuerda.
     public void Inicializar () 
     {
         twiiTrf.parent = enganche.engancheTrf;
@@ -76,7 +76,7 @@ public class Balanceo
 
 
     // .
-    public Vector3 Fall (Vector3 posicion, float tiempo) 
+    public Vector3 Caida (Vector3 posicion, float tiempo) 
     {
         twii.AplicarGravedad ();
         twii.AplicarResistencia ();
