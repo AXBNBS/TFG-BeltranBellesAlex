@@ -8,15 +8,17 @@ public class MovimientoHistoria3 : MonoBehaviour
 {
     public bool input;
     public Balanceo balanceo;
+    public Vector3 enganchePnt;
 
-    [SerializeField] private int movimientoVel, saltoVel, gravedad;
+    [SerializeField] private int movimientoVel, rotacionVel, saltoVel, gravedad;
     [SerializeField] private LayerMask capas;
     private Camera camara;
-    private Vector3 direccionMov, previaPos, golpePos;
+    private Vector3 direccionMov, previaPos;
     private CharacterController characterCtr;
     private enum Estado { Balanceandose, Cayendo, Caminando };
     private Estado estado;
     private float sueloDst;
+    private bool enganchado, movimientoX;
 
 
     // Inicialización de variables.
@@ -29,6 +31,7 @@ public class MovimientoHistoria3 : MonoBehaviour
         balanceo.twiiTrf.parent = balanceo.enganche.engancheTrf;
         previaPos = this.transform.localPosition;
         sueloDst = characterCtr.height + 0.1f;
+        enganchado = false;
     }
 
 
@@ -59,7 +62,7 @@ public class MovimientoHistoria3 : MonoBehaviour
     // Si golpeamos el objeto que provoca que reaparezcamos, la escena es reiniciada.
     private void OnControllerColliderHit (ControllerColliderHit hit)
     {
-        if (hit.transform.name == "Reaparecer")
+        if (hit.transform.tag == "Reaparecer")
         {
             SceneManager.LoadScene (SceneManager.GetActiveScene().buildIndex);
         }
@@ -72,9 +75,8 @@ public class MovimientoHistoria3 : MonoBehaviour
         Vector3 indeseadoMov = collision.GetContact(0).normal * Vector3.Dot (balanceo.twii.velocidad, collision.GetContact(0).normal);
 
         balanceo.twii.velocidad = balanceo.twii.velocidad - (indeseadoMov * 1.2f);
-        golpePos = this.transform.position;
 
-        if (collision.transform.name == "Reaparecer")
+        if (collision.transform.tag == "Reaparecer")
         {
             SceneManager.LoadScene (SceneManager.GetActiveScene().buildIndex);
         }
@@ -95,29 +97,43 @@ public class MovimientoHistoria3 : MonoBehaviour
         if (Sueleado () == true)
         {
             estado = Estado.Caminando;
+            enganchado = false;
         }
-        else if (Mathf.RoundToInt (Input.GetAxisRaw ("Engancharse")) != 0)
+        else if (enganchePnt != Vector3.zero && Input.GetButtonDown ("Engancharse") == true && Physics.Raycast (this.transform.position, enganchePnt - this.transform.position, 15, capas, QueryTriggerInteraction.Ignore) == true)
         {
-            RaycastHit hit;
+            if (estado == Estado.Caminando)
+            {
+                balanceo.twii.velocidad = direccionMov;
+            }
+            estado = Estado.Balanceandose;
+            //enganchado = true;
+
+            balanceo.CambiarEnganche (enganchePnt);
+        }
+        /*else if (Input.GetButtonDown ("Engancharse") == true)
+        {
+            RaycastHit infoRay;
 
             Ray ray = camara.ScreenPointToRay (Input.mousePosition);
 
-            if (Physics.Raycast (ray, out hit, capas) == true)
+            if (Physics.Raycast (ray, out infoRay, capas) == true)
             {
                 if (estado == Estado.Caminando)
                 {
                     balanceo.twii.velocidad = direccionMov;
                 }
                 estado = Estado.Balanceandose;
+                enganchado = true;
 
-                balanceo.CambiarEnganche (hit.point);
+                balanceo.CambiarEnganche (infoRay.point);
             }
-        }
+        }*/
         else if (Input.GetButtonDown ("Soltarse") == true)
         {
             if (estado == Estado.Balanceandose)
             {
                 estado = Estado.Cayendo;
+                enganchado = false;
             }
         }
     }
@@ -135,12 +151,26 @@ public class MovimientoHistoria3 : MonoBehaviour
         }*/
         if (horizontalInp != 0)
         {
-            balanceo.twii.velocidad += camara.transform.right * 1.2f * horizontalInp;
+            balanceo.twii.velocidad += camara.transform.right * horizontalInp / 2;
         }
-        if (verticalInp == +1)
+        if (verticalInp != 0) 
+        {
+            balanceo.twii.velocidad += camara.transform.forward * verticalInp / 2;
+        }
+        if (movimientoX == true)
+        {
+            balanceo.twii.velocidad.z = 0;
+            this.transform.position = Vector3.Lerp (this.transform.position, new Vector3 (this.transform.position.x, this.transform.position.y, enganchePnt.z), Time.deltaTime);
+        }
+        else 
+        {
+            balanceo.twii.velocidad.x = 0;
+            this.transform.position = Vector3.Lerp (this.transform.position, new Vector3 (enganchePnt.x, this.transform.position.y, this.transform.position.z), Time.deltaTime);
+        }
+        /*if (verticalInp == +1)
         {
             balanceo.twii.velocidad += balanceo.twii.velocidad.normalized * 2;
-        }
+        }*/
         /*if (Input.GetKey (KeyCode.A) == true)
         {
             balanceo.twii.velocidad -= camara.transform.right * 1.2f;
@@ -166,6 +196,9 @@ public class MovimientoHistoria3 : MonoBehaviour
     // .
     private void Caminar ()
     {
+        float angulo;
+        Quaternion rotacion;
+
         balanceo.twii.velocidad = Vector3.zero;
         if (characterCtr.isGrounded == true)
         {
@@ -182,6 +215,12 @@ public class MovimientoHistoria3 : MonoBehaviour
             }
         }
         direccionMov.y += gravedad * Time.deltaTime;
+        if (direccionMov.x != 0 || direccionMov.z != 0)
+        {
+            angulo = Mathf.Atan2 (direccionMov.x, direccionMov.z) * Mathf.Rad2Deg;
+            rotacion = Quaternion.Euler (this.transform.rotation.x, angulo, this.transform.rotation.z);
+            this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacion, rotacionVel * Time.deltaTime);
+        }
 
         characterCtr.Move (direccionMov * Time.deltaTime);
     }

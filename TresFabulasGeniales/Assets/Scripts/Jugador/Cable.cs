@@ -13,6 +13,7 @@ public class Cable : MonoBehaviour
     private LineRenderer lineRnd;
     //private bool isTarget1;
     private Camera camara;
+    private MovimientoHistoria3 twiiMov;
 
 
     // .
@@ -23,15 +24,16 @@ public class Cable : MonoBehaviour
         lineRnd = GetComponent<LineRenderer> ();
         //isTarget1 = true;
         camara = GameObject.FindGameObjectWithTag("CamaraPrincipal").GetComponent<Camera> ();
+        twiiMov = GameObject.FindObjectOfType<MovimientoHistoria3> ();
 
-        if (padre == true)
+        /*if (padre == true)
         {
             lineRnd.SetPosition (1, this.transform.InverseTransformPoint (twii.position));
         }
         else
-        {
+        {*/
             lineRnd.SetPosition (1, twii.position);
-        }
+        //}
 
         actualObj = nuevoObj;
     }
@@ -40,40 +42,39 @@ public class Cable : MonoBehaviour
     // .
     private void Update ()
     {
-        if (Mathf.RoundToInt (Input.GetAxisRaw ("Engancharse")) != 0)
+        if (Input.GetButtonDown ("Engancharse") == true)
         {
-            RaycastHit hit;
+            //Ray ray = camara.ScreenPointToRay (Input.mousePosition);
 
-            Ray ray = camara.ScreenPointToRay (Input.mousePosition);
-
-            if (Physics.Raycast (ray, out hit, capas) == true)
+            if (Physics.Raycast (twii.position, twiiMov.enganchePnt - twii.position, 15, capas, QueryTriggerInteraction.Ignore) == true)
             {
                 lineRnd.enabled = true;
             }
         }
-        else if (Input.GetButtonDown ("Soltarse") == true)
+
+        if (Input.GetButtonDown ("Soltarse") == true)
         {
             lineRnd.enabled = false;
         }
 
-        lineRnd = GetComponent<LineRenderer> ();
+        //lineRnd = GetComponent<LineRenderer> ();
 
-        if (padre == true)
+        /*if (padre == true)
         {
             lineRnd.SetPosition (1, this.transform.InverseTransformPoint (twii.position));
         }
         else
-        {
+        {*/
             lineRnd.SetPosition (1, twii.position);
-        }
+        /*}
         if (padre == true)
         {
             lineRnd.SetPosition (0, this.transform.InverseTransformPoint (actualObj.position));
         }
         else
-        {
+        {*/
             lineRnd.SetPosition (0, actualObj.position);
-        }
+        //}
     }
 }
 /*using UnityEngine;

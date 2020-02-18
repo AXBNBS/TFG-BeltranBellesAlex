@@ -12,6 +12,8 @@ TagManager:
   - CaidaObjeto
   - Enemigo
   - Rebote
+  - Enganche
+  - Reaparecer
   layers:
   - Default
   - TransparentFX
@@ -26,7 +28,7 @@ TagManager:
   - Obstaculos
   - Movil
   - Enemigos
-  - 
+  - PuntosBalanceo
   - 
   - 
   - 

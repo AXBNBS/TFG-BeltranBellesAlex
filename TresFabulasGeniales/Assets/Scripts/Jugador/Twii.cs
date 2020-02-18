@@ -8,7 +8,7 @@ using UnityEngine;
 [System.Serializable]
 public class Twii
 {
-    [HideInInspector] public Vector3 velocidad;
+    public Vector3 velocidad;
 
     [SerializeField] private int gravedad;
     [SerializeField] private Vector3 gravedadDir;
