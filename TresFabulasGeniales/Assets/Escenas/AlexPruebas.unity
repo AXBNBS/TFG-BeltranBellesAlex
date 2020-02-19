@@ -248,27 +248,6 @@ Transform:
   m_Father: {fileID: 43906845}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!21 &503825778
-Material:
-  serializedVersion: 6
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: Hidden/FMColor
-  m_Shader: {fileID: 4800000, guid: ff8efdd52694d4f0091d5d6e468fac4c, type: 3}
-  m_ShaderKeywords: 
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs: []
-    m_Floats: []
-    m_Colors: []
 --- !u!1 &884730775
 GameObject:
   m_ObjectHideFlags: 0
@@ -896,15 +875,16 @@ MonoBehaviour:
       gravedad: 20
       gravedadDir: {x: 0, y: -1, z: 0}
       resistencia: 0.002
-      velocidadMax: 20
+      velocidadMax: 17
   enganchePnt: {x: 0, y: 0, z: 0}
   movimientoVel: 15
   rotacionVel: 10
-  saltoVel: 10
-  gravedad: -20
+  saltoVel: 20
+  gravedad: -10
   capas:
     serializedVersion: 2
     m_Bits: 15671
+  estado: 0
 --- !u!1 &1342132136
 GameObject:
   m_ObjectHideFlags: 0
@@ -1310,6 +1290,11 @@ PrefabInstance:
       propertyPath: detras
       value: 
       objectReference: {fileID: 1670741279}
+    - target: {fileID: 2900223902310915861, guid: 5e0717d8e3dc57c4ab9b080ac16d2729,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2900223902310915859, guid: 5e0717d8e3dc57c4ab9b080ac16d2729,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1318,11 +1303,6 @@ PrefabInstance:
     - target: {fileID: 2900223902310915859, guid: 5e0717d8e3dc57c4ab9b080ac16d2729,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2900223902310915861, guid: 5e0717d8e3dc57c4ab9b080ac16d2729,
-        type: 3}
-      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -1449,6 +1429,27 @@ Transform:
   m_Father: {fileID: 43906845}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!21 &1845794740
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Hidden/FMColor
+  m_Shader: {fileID: 4800000, guid: ff8efdd52694d4f0091d5d6e468fac4c, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs: []
+    m_Floats: []
+    m_Colors: []
 --- !u!1 &1987692877
 GameObject:
   m_ObjectHideFlags: 0

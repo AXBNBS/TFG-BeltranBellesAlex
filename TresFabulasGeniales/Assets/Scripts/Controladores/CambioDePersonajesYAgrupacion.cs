@@ -8,7 +8,7 @@ using UnityEngine;
 public class CambioDePersonajesYAgrupacion : MonoBehaviour
 {
     public static CambioDePersonajesYAgrupacion instancia;
-    public bool input, juntos;
+    public bool input, juntos, violetaAct;
 
     [SerializeField] private LayerMask avataresCap, capasSinAvt;
     private MovimientoHistoria2[] personajesMov;
@@ -24,6 +24,7 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     {
         instancia = this;
         juntos = false;
+        violetaAct = true;
         personajesMov = GameObject.FindObjectsOfType<MovimientoHistoria2> ();
         personajesTrf = new Transform[2];
         detrases = new Transform[2];
@@ -80,6 +81,8 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
                     CambiarA (0, 1);
                 }
                 Separar ();
+
+                violetaAct = !violetaAct;
             }
         }
     }

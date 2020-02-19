@@ -8,7 +8,8 @@ using UnityEngine;
 public class ColisionesCamara : MonoBehaviour
 {
     [SerializeField] private int minimoDst, maximoDst, suavizado;
-    [SerializeField] private LayerMask capas, capasSinAvt;
+    [SerializeField] private LayerMask capasVio, capasAbd, capasSinAvt;
+    private LayerMask capasSlc;
     private float distancia;
     private Vector3 direccion, posicionUltFrm;
     private RaycastHit raycastDat;
@@ -26,9 +27,17 @@ public class ColisionesCamara : MonoBehaviour
     // Si existe algún obstáculo entre la posición de la cámara y el avatar seguido, hacemos que esta se acerque al mismo.
     private void Update ()
     {
-        //if (this.transform.position != posicionUltFrm) 
-        //{
-            if (Physics.Raycast (this.transform.parent.position, this.transform.position - this.transform.parent.position, out raycastDat, maximoDst, capas, QueryTriggerInteraction.Ignore) == true)
+        if (CambioDePersonajesYAgrupacion.instancia.juntos == false)
+        {
+            capasSlc = CambioDePersonajesYAgrupacion.instancia.violetaAct ? capasVio : capasAbd;
+        }
+        else 
+        {
+            capasSlc = capasSinAvt;
+        }
+        if (this.transform.position != posicionUltFrm)
+        {
+            if (Physics.Raycast (this.transform.parent.position, this.transform.position - this.transform.parent.position, out raycastDat, maximoDst, capasSlc, QueryTriggerInteraction.Ignore) == true)
             {
                 distancia = Mathf.Clamp (raycastDat.distance * 0.7f, minimoDst, maximoDst);
             }
@@ -36,16 +45,16 @@ public class ColisionesCamara : MonoBehaviour
             {
                 distancia = maximoDst;
             }
-
-            /*Vector3 posicionObj = distancia * (direccion - extra);
-
-            if (Vector3.Distance (posicionObj, this.transform.parent.position) < minimoDst) 
-            {
-                posicionObj = minimoDst * direccion;
-            }*/
             this.transform.localPosition = Vector3.Lerp (this.transform.localPosition, distancia * direccion, Time.deltaTime * suavizado);
+        }
+        /*Vector3 posicionObj = distancia * (direccion - extra);
+
+        if (Vector3.Distance (posicionObj, this.transform.parent.position) < minimoDst) 
+        {
+            posicionObj = minimoDst * direccion;
+        }*/
         //}
-        //posicionUltFrm = this.transform.position;
+        posicionUltFrm = this.transform.position;
     }
 
 

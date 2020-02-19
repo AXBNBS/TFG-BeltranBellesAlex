@@ -31585,12 +31585,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   input: 1
   juntos: 0
+  violetaAct: 0
   avataresCap:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 49152
   capasSinAvt:
     serializedVersion: 2
-    m_Bits: 7479
+    m_Bits: 15671
 --- !u!4 &1925727915
 Transform:
   m_ObjectHideFlags: 0
@@ -35419,16 +35420,6 @@ PrefabInstance:
       propertyPath: material
       value: 
       objectReference: {fileID: 1477815524}
-    - target: {fileID: 281096939554376453, guid: 6c34b2764381bef4ab6b7047c645baf8,
-        type: 3}
-      propertyPath: suavizado
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 281096939554376453, guid: 6c34b2764381bef4ab6b7047c645baf8,
-        type: 3}
-      propertyPath: capas.m_Bits
-      value: 15671
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6c34b2764381bef4ab6b7047c645baf8, type: 3}
 --- !u!1001 &2900223901923537511

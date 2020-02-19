@@ -90,13 +90,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   minimoDst: 10
   maximoDst: 90
-  suavizado: 5
-  capas:
+  suavizado: 10
+  capasVio:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 48439
+  capasAbd:
+    serializedVersion: 2
+    m_Bits: 32055
   capasSinAvt:
     serializedVersion: 2
-    m_Bits: 7479
+    m_Bits: 15671
 --- !u!114 &281096939554376450
 MonoBehaviour:
   m_ObjectHideFlags: 0
