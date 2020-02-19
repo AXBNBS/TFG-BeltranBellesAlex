@@ -26,10 +26,9 @@ public class ColisionesCamara : MonoBehaviour
     // Si existe algún obstáculo entre la posición de la cámara y el avatar seguido, hacemos que esta se acerque al mismo.
     private void Update ()
     {
-        if (this.transform.position != posicionUltFrm) 
-        {
-            if (Physics.Raycast (this.transform.parent.position, this.transform.position - this.transform.parent.position, out raycastDat, maximoDst, CambioDePersonajesYAgrupacion.instancia.juntos == false ? capas : capasSinAvt,
-                QueryTriggerInteraction.Ignore) == true)
+        //if (this.transform.position != posicionUltFrm) 
+        //{
+            if (Physics.Raycast (this.transform.parent.position, this.transform.position - this.transform.parent.position, out raycastDat, maximoDst, capas, QueryTriggerInteraction.Ignore) == true)
             {
                 distancia = Mathf.Clamp (raycastDat.distance * 0.7f, minimoDst, maximoDst);
             }
@@ -45,8 +44,8 @@ public class ColisionesCamara : MonoBehaviour
                 posicionObj = minimoDst * direccion;
             }*/
             this.transform.localPosition = Vector3.Lerp (this.transform.localPosition, distancia * direccion, Time.deltaTime * suavizado);
-        }
-        posicionUltFrm = this.transform.position;
+        //}
+        //posicionUltFrm = this.transform.position;
     }
 
 

@@ -90,7 +90,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   minimoDst: 10
   maximoDst: 90
-  suavizado: 20
+  suavizado: 5
   capas:
     serializedVersion: 2
     m_Bits: 4294967295

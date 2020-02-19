@@ -160,11 +160,13 @@ public class MovimientoHistoria3 : MonoBehaviour
         if (movimientoX == true)
         {
             balanceo.twii.velocidad.z = 0;
+            //balanceo.twii.velocidad = balanceo.twii.velocidad.normalized;
             this.transform.position = Vector3.Lerp (this.transform.position, new Vector3 (this.transform.position.x, this.transform.position.y, enganchePnt.z), Time.deltaTime);
         }
         else 
         {
             balanceo.twii.velocidad.x = 0;
+            //balanceo.twii.velocidad = balanceo.twii.velocidad.normalized;
             this.transform.position = Vector3.Lerp (this.transform.position, new Vector3 (enganchePnt.x, this.transform.position.y, this.transform.position.z), Time.deltaTime);
         }
         /*if (verticalInp == +1)

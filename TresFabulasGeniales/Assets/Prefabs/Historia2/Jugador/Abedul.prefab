@@ -142,7 +142,7 @@ CharacterController:
   m_Enabled: 1
   serializedVersion: 2
   m_Height: 19
-  m_Radius: 5
+  m_Radius: 5.5
   m_SlopeLimit: 20
   m_StepOffset: 2
   m_SkinWidth: 0.5
@@ -230,6 +230,12 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 7223
   companyeroMov: {fileID: 0}
+  saltarInp: 0
+  seguir: 0
+  yendo: 0
+  sueleado: 0
+  empujando: 0
+  limitadoX: 0
 --- !u!114 &9139600075987871173
 MonoBehaviour:
   m_ObjectHideFlags: 0
