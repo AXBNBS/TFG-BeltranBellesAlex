@@ -6,33 +6,40 @@ using UnityEngine;
 
 public class MovimientoHistoria3 : MonoBehaviour
 {
-    public bool input;
+    public bool input, movimientoXEsc, movimientoXBal, escalarPos;
     public Balanceo balanceo;
     public Vector3 enganchePnt;
+    public float limiteBal, limiteEsc1, limiteEsc2;
 
-    [SerializeField] private int movimientoVel, rotacionVel, saltoVel, gravedad;
+    [SerializeField] private int movimientoVel, rotacionVel, saltoVel, escaladaVel, gravedad;
     [SerializeField] private LayerMask capas;
     private Camera camara;
-    private Vector3 direccionMov, previaPos;
+    private Vector3 direccionMov, previaPos, impulsoBal, impulsoCai, impulsoPar;
     private CharacterController characterCtr;
-    public enum Estado { Balanceandose, Cayendo, Caminando };
-    public Estado estado;
     private float sueloDst;
-    private bool enganchado, movimientoX, saltado;
+    private int verticalInp, horizontalInp;
+    private bool saltoInp, engancharseInp, saltado, impulsoMnt;
+    private LineRenderer renderizadorLin;
+    private Quaternion[] rotacionesBal;
+    private Quaternion rotacionBal, rotacionEsc;
+    private enum Estado { normal, trepando, balanceandose };
+    private Estado estado;
 
 
     // Inicialización de variables.
     private void Start ()
     {
+        escalarPos = false;
         camara = GameObject.FindGameObjectWithTag("CamaraPrincipal").GetComponent<Camera> ();
         direccionMov = Vector3.zero;
         characterCtr = this.GetComponent<CharacterController> ();
-        estado = Estado.Caminando;
         balanceo.twiiTrf.parent = balanceo.enganche.engancheTrf;
         previaPos = this.transform.localPosition;
-        sueloDst = characterCtr.height + 0.1f;
-        enganchado = false;
+        sueloDst = characterCtr.height / 2 + 0.1f;
         saltado = false;
+        renderizadorLin = this.GetComponent<LineRenderer> ();
+        rotacionesBal = new Quaternion[] { Quaternion.Euler (0, 0, 0), Quaternion.Euler (0, 90, 0), Quaternion.Euler (0, 180, 0), Quaternion.Euler (0, 270, 0) };
+        estado = Estado.normal;
     }
 
 
@@ -41,31 +48,61 @@ public class MovimientoHistoria3 : MonoBehaviour
     {
         direccionMov.x = 0;
         direccionMov.z = 0;
+        if (input == true)
+        {
+            verticalInp = Mathf.RoundToInt (Input.GetAxisRaw ("Movimiento vertical"));
+            horizontalInp = Mathf.RoundToInt (Input.GetAxisRaw ("Movimiento horizontal"));
+            saltoInp = estado != Estado.balanceandose ? Input.GetButtonDown ("Salto") : false;
+            engancharseInp = estado != Estado.trepando ? Mathf.RoundToInt (Input.GetAxisRaw ("Engancharse")) != 0 : false;
+        }
+        else 
+        {
+            verticalInp = 0;
+            horizontalInp = 0;
+            saltoInp = false;
+            engancharseInp = false;
+        }
 
         DeterminarEstado ();
         switch (estado)
         {
-            case Estado.Caminando:
-                Saltar ();
+            case Estado.normal:
+                SaltarSuelo ();
                 Caminar ();
 
                 break;
-            case Estado.Balanceandose:
-                Balancear ();
+            case Estado.trepando:
+                SaltarPared ();
+                Trepar ();
 
                 break;
             default:
-                Caer ();
+                Balancear ();
+                CambiarPosicionCuerda ();
 
                 break;
         }
+        /*if (enganchado == false)
+        {
+            Saltar ();
+            Caminar ();
+        }
+        else 
+        {
+            Balancear ();
+            CambiarPosicionCuerda ();
+        }*/
 
+        if (impulsoMnt == false) 
+        {
+            impulsoBal = Vector3.zero;
+        }
+        impulsoMnt = false;
         previaPos = this.transform.localPosition;
-        print (direccionMov);
     }
 
 
-    // .
+    // Aplicamos la gravedad a intervalos de tiempo fijos para que la velocidad del PC no afecte a la jugabilidad.
     private void FixedUpdate ()
     {
         AplicarGravedad ();
@@ -75,25 +112,41 @@ public class MovimientoHistoria3 : MonoBehaviour
     // Si golpeamos el objeto que provoca que reaparezcamos, la escena es reiniciada.
     private void OnControllerColliderHit (ControllerColliderHit hit)
     {
+        if (hit.transform.tag == "Escalable") 
+        {
+            rotacionEsc = Quaternion.FromToRotation (this.transform.forward, -hit.normal) * Quaternion.AngleAxis (this.transform.eulerAngles.y, this.transform.forward);
+            //this.transform.rotation.Loo
+            //rotacionEsc = Quaternion.Euler (0, Vector3.Angle (direccionMov, -hit.normal), 0);
+        }
+
         if (hit.transform.tag == "Reaparecer")
         {
             SceneManager.LoadScene (SceneManager.GetActiveScene().buildIndex);
+
+            return;
         }
     }
 
 
-    // .
+    // Si golpeamos el objeto que provoca que reaparezcamos, la escena es reiniciada.
     private void OnCollisionEnter (Collision collision)
     {
-        Vector3 indeseadoMov = collision.GetContact(0).normal * Vector3.Dot (balanceo.twii.velocidad, collision.GetContact(0).normal);
+        /*Vector3 indeseadoMov = collision.GetContact(0).normal * Vector3.Dot (balanceo.twii.velocidad, collision.GetContact(0).normal);
 
-        balanceo.twii.velocidad = balanceo.twii.velocidad - (indeseadoMov * 1.2f);
+        balanceo.twii.velocidad = balanceo.twii.velocidad - (indeseadoMov * 1.2f);*/
 
         if (collision.transform.tag == "Reaparecer")
         {
             SceneManager.LoadScene (SceneManager.GetActiveScene().buildIndex);
         }
     }
+
+
+    // A ver si debugueamos.
+    /*private void OnDrawGizmos ()
+    {
+        Gizmos.DrawRay (this.transform.position, -Vector3.up * sueloDst);   
+    }*/
 
 
     // Lanzamos un raycast hacia abajo de no mucha mayor longitud que la altura del personaje para comprobar si este está tocando el suelo o no.
@@ -103,217 +156,215 @@ public class MovimientoHistoria3 : MonoBehaviour
     }
 
 
-    // .
+    // Si el personaje no está balanceándose pero está por debajo del enganche, dentro de un cierto radio respecto a él, se está pulsando el botón de balancearse y no hay obstáculos entre él y el punto, pasamos a columpiarnos. En cambio, si sí está
+    //enganchado y el botón deja de pulsarse, el personaje empieza a caer teniendo en cuenta su inercia tras el balanceo.
     private void DeterminarEstado ()
     {
-        if (Sueleado () == true)
+        switch (estado) 
         {
-            estado = Estado.Caminando;
-            enganchado = false;
-        }
-        else if (enganchePnt != Vector3.zero && Input.GetButtonDown ("Engancharse") == true && Physics.Raycast (this.transform.position, enganchePnt - this.transform.position, 15, capas, QueryTriggerInteraction.Ignore) == true)
-        {
-            if (estado == Estado.Caminando)
-            {
-                balanceo.twii.velocidad = direccionMov;
-            }
-            estado = Estado.Balanceandose;
-            //enganchado = true;
-
-            balanceo.CambiarEnganche (enganchePnt);
-        }
-        /*else if (Input.GetButtonDown ("Engancharse") == true)
-        {
-            RaycastHit infoRay;
-
-            Ray ray = camara.ScreenPointToRay (Input.mousePosition);
-
-            if (Physics.Raycast (ray, out infoRay, capas) == true)
-            {
-                if (estado == Estado.Caminando)
+            case Estado.normal:
+                if (escalarPos == true && Sueleado () == false) 
                 {
-                    balanceo.twii.velocidad = direccionMov;
-                }
-                estado = Estado.Balanceandose;
-                enganchado = true;
+                    estado = Estado.trepando;
+                    impulsoCai = Vector3.zero;
 
-                balanceo.CambiarEnganche (infoRay.point);
+                    break;
+                }
+                if (engancharseInp == true && this.transform.position.y < enganchePnt.y && enganchePnt != Vector3.zero && Sueleado () == false &&
+                    Physics.Raycast (this.transform.position, enganchePnt - this.transform.position, 15, capas, QueryTriggerInteraction.Ignore) == false) 
+                {
+                    estado = Estado.balanceandose;
+                    balanceo.twii.velocidad = impulsoBal * 2;
+                    renderizadorLin.enabled = true;
+                    if (movimientoXBal == true)
+                    {
+                        rotacionBal = Quaternion.Angle (this.transform.rotation, rotacionesBal[1]) < Quaternion.Angle (this.transform.rotation, rotacionesBal[3]) ? rotacionesBal[1] : rotacionesBal[3];
+                    }
+                    else
+                    {
+                        rotacionBal = Quaternion.Angle (this.transform.rotation, rotacionesBal[0]) < Quaternion.Angle (this.transform.rotation, rotacionesBal[2]) ? rotacionesBal[0] : rotacionesBal[2];
+                    }
+
+                    balanceo.CambiarEnganche (enganchePnt);
+
+                    break;
+                }
+                break;
+            case Estado.trepando:
+                if (escalarPos == false) 
+                {
+                    estado = Estado.normal;
+                    direccionMov.y = impulsoPar.y;
+                }
+
+                break;
+            default:
+                if (engancharseInp == false)
+                {
+                    estado = Estado.normal;
+                    renderizadorLin.enabled = false;
+                    this.transform.parent = null;
+                    impulsoCai = new Vector3 (balanceo.twii.velocidad.x, 0, balanceo.twii.velocidad.z);
+                    direccionMov.y = balanceo.twii.velocidad.y;
+                }
+
+                break;
+        }
+
+        /*if (enganchado == false)
+        {
+            if (this.transform.position.y < enganchePnt.y && enganchePnt != Vector3.zero && Mathf.RoundToInt (Input.GetAxisRaw ("Engancharse")) != 0 &&
+                Physics.Raycast (this.transform.position, enganchePnt - this.transform.position, 15, capas, QueryTriggerInteraction.Ignore) == false) 
+            {
+                balanceo.twii.velocidad = impulsoBal * 2;
+                enganchado = true;
+                renderizadorLin.enabled = true;
+                if (movimientoX == true)
+                {
+                    rotacionBal = Quaternion.Angle (this.transform.rotation, rotacionesBal[1]) < Quaternion.Angle (this.transform.rotation, rotacionesBal[3]) ? rotacionesBal[1] : rotacionesBal[3];
+                }
+                else 
+                {
+                    rotacionBal = Quaternion.Angle (this.transform.rotation, rotacionesBal[0]) < Quaternion.Angle (this.transform.rotation, rotacionesBal[2]) ? rotacionesBal[0] : rotacionesBal[2];
+                }
+
+                balanceo.CambiarEnganche (enganchePnt);
+            }
+        }
+        else 
+        {
+            if (Mathf.RoundToInt (Input.GetAxisRaw ("Engancharse")) == 0) 
+            {
+                enganchado = false;
+                renderizadorLin.enabled = false;
+                this.transform.parent = null;
+                impulsoCai = new Vector3 (balanceo.twii.velocidad.x, 0 , balanceo.twii.velocidad.z);
+                direccionMov.y = balanceo.twii.velocidad.y;
             }
         }*/
-        else if (Input.GetButtonDown ("Soltarse") == true)
-        {
-            if (estado == Estado.Balanceandose)
-            {
-                estado = Estado.Cayendo;
-                enganchado = false;
-            }
-        }
     }
 
 
-    // .
+    // Se le permite al jugador influir en el balanceo usando el input para impulsar al personaje (aunque a partir de cierta altura no es posible ya que sino el movimiento deja de ser realista), además, limitamos el movimiento a un sólo eje,
+    //haciendo que la posición del personaje quede fija en el otro y también rotamos al personaje de manera que se alinee con el movimiento.
     private void Balancear ()
     {
-        int horizontalInp = Mathf.RoundToInt (Input.GetAxisRaw ("Movimiento horizontal"));
-        int verticalInp = Mathf.RoundToInt (Input.GetAxisRaw ("Movimiento vertical"));
-
-        /*if (Input.GetKey (KeyCode.W) == true)
+        if (this.transform.position.y < limiteBal) 
         {
-            balanceo.twii.velocidad += balanceo.twii.velocidad.normalized * 2;
-        }*/
-        if (this.transform.position.y < enganchePnt.y) 
-        {
-            if (horizontalInp != 0)
-            {
-                balanceo.twii.velocidad += camara.transform.right * horizontalInp / 2;
-            }
             if (verticalInp != 0)
             {
-                balanceo.twii.velocidad += camara.transform.forward * verticalInp / 2;
+                balanceo.twii.velocidad += camara.transform.forward * verticalInp;
+            }
+            if (horizontalInp != 0)
+            {
+                balanceo.twii.velocidad += camara.transform.right * horizontalInp;
             }
         }
-        if (movimientoX == true)
+        if (movimientoXBal == true)
         {
             balanceo.twii.velocidad.z = 0;
-            //balanceo.twii.velocidad = balanceo.twii.velocidad.normalized;
             this.transform.position = Vector3.Lerp (this.transform.position, new Vector3 (this.transform.position.x, this.transform.position.y, enganchePnt.z), Time.deltaTime);
         }
         else 
         {
             balanceo.twii.velocidad.x = 0;
-            //balanceo.twii.velocidad = balanceo.twii.velocidad.normalized;
             this.transform.position = Vector3.Lerp (this.transform.position, new Vector3 (enganchePnt.x, this.transform.position.y, this.transform.position.z), Time.deltaTime);
         }
-        /*if (verticalInp == +1)
-        {
-            balanceo.twii.velocidad += balanceo.twii.velocidad.normalized * 2;
-        }*/
-        /*if (Input.GetKey (KeyCode.A) == true)
-        {
-            balanceo.twii.velocidad -= camara.transform.right * 1.2f;
-        }
-        if (Input.GetKey (KeyCode.D) == true)
-        {
-            balanceo.twii.velocidad += camara.transform.right * 1.2f;
-        }*/
+        this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacionBal, Time.deltaTime);
         this.transform.localPosition = balanceo.Mover (this.transform.localPosition, previaPos, Time.deltaTime);
-        //previaPos = this.transform.localPosition;
     }
 
 
-    // .
-    private void Caer ()
+    // En principio no haría falta (?).
+    /*private void Caer ()
     {
         balanceo.cuerda.longitud = Mathf.Infinity;
         this.transform.localPosition = balanceo.Caida (this.transform.localPosition, Time.deltaTime);
-        //previaPos = this.transform.localPosition;
-    }
+    }*/
 
 
-    // .
+    // Movemos al personaje mientras camina o cae y lo rotamos acorde al movimiento, también tenemos en cuenta el impulso que puede estar recibiendo mientras cae tras balancearse.
     private void Caminar ()
     {
-        float verticalInp = Mathf.RoundToInt (Input.GetAxisRaw ("Movimiento vertical"));
-        float horizontalInp = Mathf.RoundToInt (Input.GetAxisRaw ("Movimiento horizontal"));
-
         balanceo.twii.velocidad = Vector3.zero;
 
-        //if (characterCtr.isGrounded == true)
-        //{
-        if (verticalInp != 0 || horizontalInp != 0) 
+        if ((verticalInp != 0 || horizontalInp != 0) && impulsoPar == Vector3.zero) 
         {
             float angulo;
             Quaternion rotacion;
 
-            Vector3 relativoCam = camara.transform.TransformDirection (new Vector3(horizontalInp, 0, verticalInp).normalized) * movimientoVel;
+            Vector3 relativoCam = camara.transform.TransformDirection(new Vector3 (horizontalInp, 0, verticalInp)).normalized * movimientoVel;
 
-            direccionMov.x = relativoCam.x;
-            direccionMov.z = relativoCam.z;
-            //direccionMov = camara.transform.TransformDirection (direccionMov);
-            //direccionMov *= movimientoVel;
-            //direccionMov.y = 0;
+            if (impulsoCai == Vector3.zero) 
+            {
+                direccionMov.x = relativoCam.x;
+                direccionMov.z = relativoCam.z;
+            }
+            else
+            {
+                direccionMov.x = relativoCam.x / 2;
+                direccionMov.z = relativoCam.z / 2;
+            }
+            impulsoBal = direccionMov;
+            impulsoMnt = true;
             angulo = Mathf.Atan2 (direccionMov.x, direccionMov.z) * Mathf.Rad2Deg;
             rotacion = Quaternion.Euler (this.transform.rotation.x, angulo, this.transform.rotation.z);
             this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacion, rotacionVel * Time.deltaTime);
         }
-
-        characterCtr.Move (direccionMov * Time.deltaTime);
-        /*else
+        if (impulsoPar == Vector3.zero)
         {
-            direccionMov.y = 0;
-        }
-    }
-    direccionMov.y += gravedad * Time.deltaTime;*/
-
-
-
-
-        /*if (characterCtr.isGrounded == true && Input.GetButtonDown ("Salto") == true)
-        {
-            direccionMov.y = saltoVel;
-        }*/
-    }
-
-
-    // Le aplicamos gravedad al personaje y, si además está siendo movido por el jugador, lo movemos y rotamos adecuadamente hacia la dirección del movimiento, teniendo en cuenta además la posición de la cámara para que el movimiento sea relativo a la
-    //misma. Movemos también el objeto empujado en caso de que haya alguno.
-    /*private void Mover ()
-    {
-        if (horizontal != 0 || vertical != 0)
-        {
-            Vector3 relativoCam;
-
-            if (empujando == false)
-            {
-                relativoCam = (camaraTrf.right * horizontal + camaraTrf.forward * vertical).normalized * movimientoVel;
-                movimiento.x = relativoCam.x;
-                movimiento.z = relativoCam.z;
-            }
-            else
-            {
-                relativoCam = (camaraTrf.right * horizontal + camaraTrf.forward * vertical);
-                if (limitadoX == true)
-                {
-                    movimiento.z = relativoCam.z;
-                }
-                else
-                {
-                    movimiento.x = relativoCam.x;
-                }
-                movimiento = movimiento.normalized * empujeVel;
-            }
-            angulo = Mathf.Atan2(movimiento.x, movimiento.z) * Mathf.Rad2Deg;
-            rotacion = Quaternion.Euler(this.transform.rotation.x, angulo, this.transform.rotation.z);
-            this.transform.rotation = Quaternion.Lerp(this.transform.rotation, rotacion, rotacionVel * Time.deltaTime);
-        }
-        movimiento += empuje * movimientoVel / 2;
-
-        characterCtr.Move(movimiento * Time.deltaTime);
-        if (empujando == true)
-        {
-            empujado.Mover(movimiento * Time.deltaTime);
-        }
-    }*/
-
-
-    // .
-    private void AplicarGravedad () 
-    {
-        if (Sueleado () == true)
-        {
-            direccionMov.y = -0.1f;
+            direccionMov += impulsoCai;
         }
         else 
         {
-            direccionMov.y += gravedad;
+            if (movimientoXEsc == true)
+            {
+                direccionMov.x = impulsoPar.x;
+            }
+            else 
+            {
+                direccionMov.z = impulsoPar.z;
+            }
+        }
+
+        characterCtr.Move (direccionMov * Time.deltaTime);
+
+        if (characterCtr.isGrounded == true) 
+        {
+            impulsoCai = Vector3.zero;
         }
     }
 
 
-    // .
-    private void Saltar () 
+    // Si el personaje está tocando el suelo o enganchado, la gravedad aplicada es casi nula; en caso contrario, se incrementa según cae.
+    private void AplicarGravedad () 
     {
-        if (Input.GetButtonDown ("Salto") == true) 
+        if (estado != Estado.normal)
+        {
+            direccionMov.y = 0;
+        }
+        else 
+        {
+            if (characterCtr.isGrounded == true)
+            {
+                direccionMov.y = -0.1f;
+            }
+            else 
+            {
+                direccionMov.y += gravedad;
+                if (direccionMov.y < 0) 
+                {
+                    impulsoPar = Vector3.zero;
+                }
+            }
+        }
+    }
+
+
+    // Si el personaje está en el suelo y se ha pulsado el botón de salto, aplicamos una fuerza vertical que le permite saltar.
+    private void SaltarSuelo () 
+    {
+        if (saltoInp == true && characterCtr.isGrounded == true) 
         {
             direccionMov.y = saltoVel;
             saltado = true;
@@ -323,10 +374,62 @@ public class MovimientoHistoria3 : MonoBehaviour
     }
 
 
-    // .
+    // Usamos está función para poner la variable a "false" tras un pequeño intervalo de tiempo.
     private void FinImpulso () 
     {
         saltado = false;
+    }
+
+
+    // Se llama si el personaje se está balanceando y permite mostrar la cuerda que le mantiene colgado de manera correcta.
+    private void CambiarPosicionCuerda () 
+    {
+        renderizadorLin.SetPosition (0, enganchePnt);
+        renderizadorLin.SetPosition (1, this.transform.position);
+    }
+
+
+    // . 
+    private void SaltarPared () 
+    {
+        if (saltoInp == true) 
+        {
+            impulsoPar = -this.transform.forward * saltoVel;
+            impulsoPar.y = saltoVel;
+        }
+    }
+
+
+    // Según el tipo de superficie escalable, el input en horizontal se usará para movernos en un eje u otro.
+    private void Trepar () 
+    {
+        if (verticalInp != 0 || horizontalInp != 0)
+        {
+            Vector3 relativoCam = camara.transform.TransformDirection (movimientoXEsc == true ? new Vector3 (horizontalInp, verticalInp, 0) : new Vector3 (0, verticalInp, horizontalInp));
+
+            if (movimientoXEsc == true) 
+            {
+                direccionMov.x = relativoCam.x;
+                if ((direccionMov.x > 0 && this.transform.position.x >= limiteEsc1) || (direccionMov.x < 0 && this.transform.position.x <= limiteEsc2))
+                {
+                    direccionMov.z = 0;
+                }
+            }
+            else 
+            {
+                direccionMov.z = relativoCam.z;
+                if ((direccionMov.z > 0 && this.transform.position.z >= limiteEsc1) || (direccionMov.z < 0 && this.transform.position.z <= limiteEsc2)) 
+                {
+                    direccionMov.z = 0;
+                }
+            }
+            direccionMov.y = relativoCam.y;
+            direccionMov = direccionMov.normalized * escaladaVel;
+        }
+        direccionMov += impulsoPar;
+        this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacionEsc, Time.deltaTime);
+
+        characterCtr.Move (direccionMov * Time.deltaTime);
     }
 }
 /*using UnityEngine.SceneManagement;

@@ -6,8 +6,6 @@ using UnityEngine;
 [RequireComponent (typeof (LineRenderer))]
 public class Cable : MonoBehaviour
 {
-    public bool padre;
-
     [SerializeField] private LayerMask capas;
     private Transform twii, nuevoObj, actualObj;
     private LineRenderer lineRnd;
@@ -21,26 +19,18 @@ public class Cable : MonoBehaviour
     {
         twii = GameObject.FindGameObjectWithTag("Jugador").transform;
         nuevoObj = this.transform;
-        lineRnd = GetComponent<LineRenderer> ();
-        //isTarget1 = true;
+        lineRnd = this.GetComponent<LineRenderer> ();
         camara = GameObject.FindGameObjectWithTag("CamaraPrincipal").GetComponent<Camera> ();
         twiiMov = GameObject.FindObjectOfType<MovimientoHistoria3> ();
 
-        /*if (padre == true)
-        {
-            lineRnd.SetPosition (1, this.transform.InverseTransformPoint (twii.position));
-        }
-        else
-        {*/
-            lineRnd.SetPosition (1, twii.position);
-        //}
+        lineRnd.SetPosition (1, twii.position);
 
         actualObj = nuevoObj;
     }
 
 
     // .
-    private void Update ()
+    /*private void Update ()
     {
         if (Input.GetButtonDown ("Engancharse") == true)
         {
@@ -57,25 +47,9 @@ public class Cable : MonoBehaviour
             lineRnd.enabled = false;
         }
 
-        //lineRnd = GetComponent<LineRenderer> ();
-
-        /*if (padre == true)
-        {
-            lineRnd.SetPosition (1, this.transform.InverseTransformPoint (twii.position));
-        }
-        else
-        {*/
-            lineRnd.SetPosition (1, twii.position);
-        /*}
-        if (padre == true)
-        {
-            lineRnd.SetPosition (0, this.transform.InverseTransformPoint (actualObj.position));
-        }
-        else
-        {*/
-            lineRnd.SetPosition (0, actualObj.position);
-        //}
-    }
+        lineRnd.SetPosition (1, twii.position);
+        lineRnd.SetPosition (0, actualObj.position);
+    }*/
 }
 /*using UnityEngine;
 

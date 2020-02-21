@@ -7,39 +7,45 @@ using UnityEngine;
 
 public class PuntoBalanceo : MonoBehaviour
 {
-    public bool movimientoX;
+    [SerializeField] private int offsetY;
+    [SerializeField] private bool movimientoX;
+    private float limiteY;
+    private MovimientoHistoria3 jugador;
 
     
-    // .
+    // Inicializamos una unidad de variable.
     private void Start ()
     {
-        
+        limiteY = this.transform.position.y + offsetY;
+        jugador = GameObject.FindObjectOfType<MovimientoHistoria3> ();
     }
 
 
-    // .
-    private void Update ()
+    // Para ver mejor a donde llega el límite.
+    private void OnDrawGizmos ()
     {
-        
+        Gizmos.DrawLine (this.transform.position, this.transform.position + Vector3.up * offsetY);
     }
 
 
-    // .
+    // El jugador recibe información sobre dónde está el punto al que engancharse, en que eje puede balancearse y a partir de que límite en Y no puede impulsarse más.
     private void OnTriggerEnter (Collider other)
     {
         if (other.tag == "Jugador") 
         {
-            other.GetComponent<MovimientoHistoria3>().enganchePnt = this.transform.position;
+            jugador.enganchePnt = this.transform.position;
+            jugador.movimientoXBal = movimientoX;
+            jugador.limiteBal = limiteY;
         }
     }
 
 
-    // .
+    // El punto de enganche más cercano pasa a estar en una posición no permitida, y por tanto el jugador no puede colgarse.
     private void OnTriggerExit (Collider other)
     {
         if (other.tag == "Jugador") 
         {
-            other.GetComponent<MovimientoHistoria3>().enganchePnt = Vector3.zero;
+            jugador.enganchePnt = Vector3.zero;
         }
     }
 }
