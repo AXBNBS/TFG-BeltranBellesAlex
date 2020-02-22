@@ -10,7 +10,8 @@ public class SuperficieEscalable : MonoBehaviour
     [SerializeField] private bool movimientoX;
     [SerializeField] private Collider trigger;
     private MovimientoHistoria3 jugador;
-    public float limite1, limite2;
+    private float limite1, limite2;
+    private Quaternion[] rotacionesEsc;
 
 
     // Inicializamos una unidad de variable.
@@ -27,7 +28,7 @@ public class SuperficieEscalable : MonoBehaviour
             limite1 = trigger.bounds.center.z + trigger.bounds.extents.z;
             limite2 = trigger.bounds.center.z - trigger.bounds.extents.z;
         }
-        
+        rotacionesEsc = new Quaternion[] { Quaternion.Euler (0, 0, 0), Quaternion.Euler (0, 90, 0), Quaternion.Euler (0, 180, 0), Quaternion.Euler (0, 270, 0) };
     }
 
 
@@ -40,6 +41,14 @@ public class SuperficieEscalable : MonoBehaviour
             jugador.movimientoXEsc = movimientoX;
             jugador.limiteEsc1 = limite1;
             jugador.limiteEsc2 = limite2;
+            if (movimientoX == true)
+            {
+                jugador.rotacionEsc = this.transform.position.z > jugador.transform.position.z ? rotacionesEsc[0] : rotacionesEsc[2];
+            }
+            else 
+            {
+                jugador.rotacionEsc = this.transform.position.x > jugador.transform.position.x ? rotacionesEsc[1] : rotacionesEsc[3];
+            }
         }
     }
 

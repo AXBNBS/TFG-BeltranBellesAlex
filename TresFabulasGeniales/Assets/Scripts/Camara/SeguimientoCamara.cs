@@ -21,7 +21,7 @@ public class SeguimientoCamara : MonoBehaviour
         // ACTIVAR AL FINAL
         //Cursor.lockState = CursorLockMode.Locked;
         //Cursor.visible = false;
-        centrar = false;
+        centrar = true;
         transicionando = false;
     }
 
