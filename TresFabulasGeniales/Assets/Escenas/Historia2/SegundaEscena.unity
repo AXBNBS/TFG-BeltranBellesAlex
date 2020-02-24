@@ -9660,6 +9660,27 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 8f82e98ec80eecf46a16693262950d1b, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3b0e839a3d7985a46ab97b139789b6da, type: 3}
+--- !u!21 &409393377
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Hidden/FMColor
+  m_Shader: {fileID: 4800000, guid: ff8efdd52694d4f0091d5d6e468fac4c, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs: []
+    m_Floats: []
+    m_Colors: []
 --- !u!4 &413229009 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: 49e62f16c0dc1664c99bdc54b502882f,
@@ -18210,27 +18231,6 @@ Transform:
   m_Father: {fileID: 56133828}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!21 &769138084
-Material:
-  serializedVersion: 6
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: Hidden/FMColor
-  m_Shader: {fileID: 4800000, guid: ff8efdd52694d4f0091d5d6e468fac4c, type: 3}
-  m_ShaderKeywords: 
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs: []
-    m_Floats: []
-    m_Colors: []
 --- !u!1 &771311107
 GameObject:
   m_ObjectHideFlags: 0
@@ -23575,7 +23575,7 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: c90b39097367b4643a23440c88ad2c90,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 397.8
+      value: 393.2
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: c90b39097367b4643a23440c88ad2c90,
         type: 3}
@@ -23625,17 +23625,17 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: c90b39097367b4643a23440c88ad2c90,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 12
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: c90b39097367b4643a23440c88ad2c90,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 12
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: c90b39097367b4643a23440c88ad2c90,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 12
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: -6057140222963153312, guid: c90b39097367b4643a23440c88ad2c90,
         type: 3}
