@@ -78,7 +78,6 @@ public class MovimientoHistoria3 : MonoBehaviour
 
                 break;
             case Estado.rodando:
-                //SaltarBola ();
                 MantenerEquilibrio ();
 
                 break;
@@ -200,6 +199,7 @@ public class MovimientoHistoria3 : MonoBehaviour
                 {
                     estado = Estado.normal;
                     this.transform.parent = null;
+                    bolaSup = null;
                     direccionMov.y = saltoVel;
                 }
 
@@ -264,7 +264,7 @@ public class MovimientoHistoria3 : MonoBehaviour
 
         if ((verticalInp != 0 || horizontalInp != 0) && impulsoPar == Vector3.zero) 
         {
-            Vector3 relativoCam = camara.transform.TransformDirection(new Vector3 (horizontalInp, 0, verticalInp)).normalized * movimientoVel;
+            Vector3 relativoCam = (camara.transform.right * horizontalInp + camara.transform.forward * verticalInp).normalized * movimientoVel;
 
             if (impulsoCai == Vector3.zero) 
             {
@@ -280,8 +280,8 @@ public class MovimientoHistoria3 : MonoBehaviour
             impulsoMnt = true;
 
             Rotar ();
-
         }
+
         if (impulsoPar == Vector3.zero)
         {
             direccionMov += impulsoCai;
@@ -390,10 +390,11 @@ public class MovimientoHistoria3 : MonoBehaviour
     {
         if (verticalInp != 0 || horizontalInp != 0)
         {
-            Vector3 relativoCam = camara.transform.TransformDirection (movimientoXEsc == true ? new Vector3 (horizontalInp, verticalInp, 0) : new Vector3 (0, verticalInp, horizontalInp));
+            Vector3 relativoCam;
 
             if (movimientoXEsc == true) 
             {
+                relativoCam = (camara.transform.right * horizontalInp + camara.transform.up * verticalInp);
                 direccionMov.x = relativoCam.x;
                 if ((direccionMov.x > 0 && this.transform.position.x >= limiteEsc1) || (direccionMov.x < 0 && this.transform.position.x <= limiteEsc2))
                 {
@@ -402,6 +403,7 @@ public class MovimientoHistoria3 : MonoBehaviour
             }
             else 
             {
+                relativoCam = (camara.transform.forward * horizontalInp + camara.transform.up * verticalInp);
                 direccionMov.z = relativoCam.z;
                 if ((direccionMov.z > 0 && this.transform.position.z >= limiteEsc1) || (direccionMov.z < 0 && this.transform.position.z <= limiteEsc2)) 
                 {
@@ -428,12 +430,12 @@ public class MovimientoHistoria3 : MonoBehaviour
     }*/
 
 
-    // .
+    // Miramos la posición hacia la que se mueve la bola para rotar al jugador de manera acorde, y también nos aseguramos de que su posición se corresponda con la parte superior de la bola.
     private void MantenerEquilibrio () 
     {
         if (verticalInp != 0 || horizontalInp != 0)
         {
-            Vector3 relativoCam = camara.transform.TransformDirection (new Vector3 (horizontalInp, verticalInp, 0));
+            Vector3 relativoCam = (camara.transform.right * horizontalInp + camara.transform.forward * verticalInp);
 
             direccionMov.x = relativoCam.x;
             direccionMov.z = relativoCam.z;

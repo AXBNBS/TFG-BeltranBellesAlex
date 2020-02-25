@@ -31,7 +31,7 @@ public class PuntoBalanceo : MonoBehaviour
     // El jugador recibe información sobre dónde está el punto al que engancharse, en que eje puede balancearse y a partir de que límite en Y no puede impulsarse más.
     private void OnTriggerEnter (Collider other)
     {
-        if (other.tag == "Jugador") 
+        if (other.CompareTag ("Jugador") == true) 
         {
             jugador.enganchePnt = this.transform.position;
             jugador.movimientoXBal = movimientoX;
@@ -43,7 +43,7 @@ public class PuntoBalanceo : MonoBehaviour
     // El punto de enganche más cercano pasa a estar en una posición no permitida, y por tanto el jugador no puede colgarse.
     private void OnTriggerExit (Collider other)
     {
-        if (other.tag == "Jugador") 
+        if (other.CompareTag ("Jugador") == true) 
         {
             jugador.enganchePnt = Vector3.zero;
         }
