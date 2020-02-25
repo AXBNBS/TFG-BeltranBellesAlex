@@ -73,7 +73,7 @@ public class SeguimientoCamara : MonoBehaviour
         }
         else 
         {
-            if (this.transform.position == objetivo.position && CambioDePersonajesYAgrupacion.instancia != null) 
+            if (this.transform.position == objetivo.position) 
             {
                 CambioDePersonajesYAgrupacion.instancia.PermitirInput ();
             }

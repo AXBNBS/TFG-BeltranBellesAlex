@@ -15,8 +15,6 @@ TagManager:
   - Enganche
   - Reaparecer
   - Escalable
-  - Hablable
-  - PanelTexto
   layers:
   - Default
   - TransparentFX
