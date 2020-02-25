@@ -153,7 +153,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     // Pone "sueleado" a "true" para evitar que se reproduzca la animación de estar en el aire cuando realmente no lo está.
     private void OnTriggerStay (Collider other)
     {
-        if (other.tag == "Sueleador")
+        if (other.CompareTag ("Sueleador") == true)
         {
             sueleado = true;
         }
@@ -163,7 +163,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     // Pone "sueleado" a "false" para permitir que se reproduzca la animación de estar en el aire una vez se haya salido del rango que ocupa el trigger.
     private void OnTriggerExit (Collider other)
     {
-        if (other.tag == "Sueleador") 
+        if (other.CompareTag ("Sueleador") == true) 
         {
             sueleado = false;
         }

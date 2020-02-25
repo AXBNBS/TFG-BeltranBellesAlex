@@ -66,9 +66,8 @@ public class Bola : MonoBehaviour
     {
         if (other.CompareTag ("Jugador") == true) 
         {
-            jugador.bolaSup = null;
             input = false;
-            print (cuerpoRig.velocity);
+            print (cuerpoRig.velocity.magnitude);
         }
     }
 
