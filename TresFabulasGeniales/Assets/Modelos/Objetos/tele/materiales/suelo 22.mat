@@ -89,6 +89,6 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _ColorBlend: {r: 0.5471698, g: 0.16260235, b: 0.16260235, a: 1}
+    - _ColorBlend: {r: 0.26415092, g: 0.18066926, b: 0.18066926, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _EmissiveBlend: {r: 0.9716981, g: 0.9716981, b: 0.9716981, a: 1}
