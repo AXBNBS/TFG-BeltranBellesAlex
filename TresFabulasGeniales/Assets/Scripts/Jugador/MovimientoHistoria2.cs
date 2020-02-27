@@ -13,19 +13,22 @@ public class MovimientoHistoria2 : MonoBehaviour
     public int saltoVel;
     [HideInInspector] public float offsetY, offsetXZ;
 
-    [SerializeField] private int movimientoVel, rotacionVel;
+    [SerializeField] private int movimientoVel, rotacionVel, saltoDst;
     [SerializeField] private LayerMask capas;
     [SerializeField] private MovimientoHistoria2 companyeroMov;
     private int gravedad, empujeVel;
-    public bool saltarInp, seguir, yendo, sueleado, empujando, limitadoX;
+    private bool saltarInp, seguir, yendo, sueleado, empujando, limitadoX, enemigosCer, saltado;
     private CharacterController characterCtr;
-    private float horizontalInp, verticalInp, angulo;
+    private float horizontalInp, verticalInp, angulo, offsetBas, sueloDst;
     private Quaternion rotacion;
-    private Transform camaraTrf, objetivoSeg, companyeroTrf;
+    private Transform camaraTrf, objetivoSeg, companyeroTrf, enemigoTrf;
     private Animator animator;
     private Vector3 empuje;
     private NavMeshAgent mallaAgtNav;
     private ObjetoMovil empujado;
+    private enum Estado { normal, siguiendo, atacando };
+    private Estado estado;
+    private AreaEnemiga areaEng;
 
 
     // Inicialización de variables.
@@ -37,7 +40,10 @@ public class MovimientoHistoria2 : MonoBehaviour
         yendo = false;
         sueleado = false;
         empujando = false;
+        enemigosCer = false;
+        saltado = false;
         characterCtr = this.GetComponent<CharacterController> ();
+        sueloDst = 0.1f;
         offsetY = this.transform.localScale.y * characterCtr.height;
         offsetXZ = this.transform.localScale.x * characterCtr.radius * 3;
         camaraTrf = GameObject.FindGameObjectWithTag("CamaraPrincipal").transform;
@@ -45,6 +51,8 @@ public class MovimientoHistoria2 : MonoBehaviour
         companyeroTrf = companyeroMov.transform;
         animator = this.GetComponentInChildren<Animator> ();
         mallaAgtNav = this.GetComponent<NavMeshAgent> ();
+        offsetBas = mallaAgtNav.baseOffset;
+        estado = Estado.normal;
     }
 
 
@@ -70,19 +78,28 @@ public class MovimientoHistoria2 : MonoBehaviour
         movimiento.x = 0;
         movimiento.z = 0;
 
-        if (saltarInp == true && characterCtr.isGrounded == true)
+        switch (estado) 
         {
-            Saltar ();
+            case Estado.normal:
+                if (saltarInp == true && characterCtr.isGrounded == true)
+                {
+                    SaltarNormal ();
+                }
+                Mover ();
+
+                break;
+            case Estado.siguiendo:
+                Seguir ();
+                DesagruparSiEso ();
+
+                break;
+            default:
+                SaltarIA ();
+                IrHaciaEnemigo ();
+
+                break;
         }
-        if (seguir == false)
-        {
-            Mover (horizontalInp, verticalInp);
-        }
-        else
-        {
-            Seguir ();
-            DesagruparSiEso ();
-        }
+
         Animar ();
     }
 
@@ -98,6 +115,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     private void OnControllerColliderHit (ControllerColliderHit hit)
     {
         Transform tocado = hit.transform;
+
         switch (tocado.tag) 
         {
             case "Jugador":
@@ -126,12 +144,7 @@ public class MovimientoHistoria2 : MonoBehaviour
                         return;
                     }
 
-                    if (Physics.Raycast (centroSup, -tocado.forward, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
-                    {
-                        empuje = -tocado.forward;
-
-                        return;
-                    }
+                    empuje = -tocado.forward;
                 }
 
                 break;
@@ -146,7 +159,29 @@ public class MovimientoHistoria2 : MonoBehaviour
     // Pal debug y tal.
     private void OnDrawGizmosSelected ()
     {
-        
+        Gizmos.color = Color.red;
+
+        Gizmos.DrawLine (this.transform.position, this.transform.position - Vector3.up * sueloDst);
+    }
+
+
+    // .
+    private void OnTriggerEnter (Collider other)
+    {
+        if (other.CompareTag ("AreaEnemiga") == true) 
+        {
+            enemigosCer = true;
+            areaEng = other.GetComponent<AreaEnemiga> ();
+
+            if (estado == Estado.normal)
+            {
+                companyeroMov.ComenzarAtaque (areaEng);
+            }
+            else 
+            {
+                ComenzarAtaque (areaEng);
+            }
+        }
     }
 
 
@@ -191,6 +226,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     {
         seguir = comenzar;
         mallaAgtNav.enabled = comenzar;
+        estado = comenzar == true ? Estado.siguiendo : Estado.normal;
     }
 
 
@@ -210,30 +246,93 @@ public class MovimientoHistoria2 : MonoBehaviour
     }
 
 
+    // .
+    public void ComenzarAtaque (AreaEnemiga zona) 
+    {
+        if (estado == Estado.siguiendo) 
+        {
+            estado = Estado.atacando;
+            areaEng = zona;
+            enemigoTrf = PosicionEnemigoCercano ();
+        }
+    }
+
+
+    // Lanzamos un raycast hacia abajo de no mucha mayor longitud que la altura del personaje para comprobar si este está tocando el suelo o no.
+    private bool Sueleado ()
+    {
+        return (saltado == false ? Physics.Raycast (this.transform.position, -Vector3.up, sueloDst) : false);
+    }
+
+
+    // Obtiene la posición del enemigo más cercano dentro de la zona en la que se encuentra el jugador actualmente.
+    private Transform PosicionEnemigoCercano ()
+    {
+        float evaluada;
+
+        Transform resultado = null;
+        float distanciaMin = Mathf.Infinity;
+
+        foreach (Enemigo e in areaEng.enemigos)
+        {
+            if (e.isActiveAndEnabled == true)
+            {
+                evaluada = Vector3.Distance (this.transform.position, e.transform.position);
+                if (evaluada < distanciaMin)
+                {
+                    distanciaMin = evaluada;
+                    resultado = e.transform;
+                }
+            }
+        }
+
+        return resultado;
+    }
+
+
     // Si el personaje está en el suelo y se ha pulsado el botón de salto, haremos que salte.
-    private void Saltar ()
+    private void SaltarNormal ()
     {
         movimiento.y = saltoVel;
+        saltado = true;
+
+        this.Invoke ("FinImpulso", 0.1f);
+    }
+
+
+    // .
+    private void SaltarIA () 
+    {
+        if (mallaAgtNav.baseOffset == offsetBas && mallaAgtNav.remainingDistance < saltoDst) 
+        {
+            SaltarNormal ();
+        }
+
+        mallaAgtNav.baseOffset += Time.deltaTime * movimiento.y;
+        if (mallaAgtNav.baseOffset < offsetBas && Sueleado () == true) 
+        {
+            mallaAgtNav.baseOffset = offsetBas;
+        }
     }
 
 
     // Le aplicamos gravedad al personaje y, si además está siendo movido por el jugador, lo movemos y rotamos adecuadamente hacia la dirección del movimiento, teniendo en cuenta además la posición de la cámara para que el movimiento sea relativo a la
     //misma. Movemos también el objeto empujado en caso de que haya alguno.
-    private void Mover (float horizontal, float vertical) 
+    private void Mover () 
     {
-        if (horizontal != 0 || vertical != 0)
+        if (horizontalInp != 0 || verticalInp != 0)
         {
             Vector3 relativoCam;
 
             if (empujando == false)
             {
-                relativoCam = (camaraTrf.right * horizontal + camaraTrf.forward * vertical).normalized * movimientoVel;
+                relativoCam = (camaraTrf.right * horizontalInp + camaraTrf.forward * verticalInp).normalized * movimientoVel;
                 movimiento.x = relativoCam.x;
                 movimiento.z = relativoCam.z;
             }
             else 
             {
-                relativoCam = (camaraTrf.right * horizontal + camaraTrf.forward * vertical);
+                relativoCam = (camaraTrf.right * horizontalInp + camaraTrf.forward * verticalInp);
                 if (limitadoX == true)
                 {
                     movimiento.z = relativoCam.z;
@@ -338,5 +437,23 @@ public class MovimientoHistoria2 : MonoBehaviour
     private void CambiarSueleado () 
     {
         sueleado = false;
+    }
+
+
+    // .
+    private void IrHaciaEnemigo () 
+    {
+        mallaAgtNav.destination = enemigoTrf.position;
+
+        //characterCtr.Move (mallaAgtNav.desiredVelocity.normalized * movimientoVel * Time.deltaTime);
+
+        //mallaAgtNav.velocity = characterCtr.velocity;
+    }
+
+
+    // Usamos está función para poner la variable a "false" tras un pequeño intervalo de tiempo.
+    private void FinImpulso ()
+    {
+        saltado = false;
     }
 }

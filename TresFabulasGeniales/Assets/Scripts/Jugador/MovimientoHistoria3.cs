@@ -1,6 +1,7 @@
 ﻿
 using UnityEngine.SceneManagement;
 using UnityEngine;
+using UnityEngine.AI;
 
 
 
@@ -26,6 +27,7 @@ public class MovimientoHistoria3 : MonoBehaviour
     private Quaternion rotacionBal;
     private enum Estado { normal, trepando, rodando, balanceandose };
     private Estado estado;
+    private NavMeshAgent agente;
 
 
     // Inicialización de variables.
@@ -35,16 +37,20 @@ public class MovimientoHistoria3 : MonoBehaviour
         camara = GameObject.FindGameObjectWithTag("CamaraPrincipal").GetComponent<Camera> ();
         direccionMov = Vector3.zero;
         characterCtr = this.GetComponent<CharacterController> ();
+        //characterCtr.velocity ;
         previaPos = this.transform.localPosition;
         sueloDst = characterCtr.height / 2 + 0.1f;
         saltado = false;
         renderizadorLin = this.GetComponent<LineRenderer> ();
         rotacionesBal = new Quaternion[] { Quaternion.Euler (0, 0, 0), Quaternion.Euler (0, 90, 0), Quaternion.Euler (0, 180, 0), Quaternion.Euler (0, 270, 0) };
         estado = Estado.normal;
+        agente = this.GetComponent<NavMeshAgent> ();
+
+        agente.SetDestination (new Vector3 (0, 0, -50));
     }
 
 
-    // Determinamos el estado actual en el que se encuentra el personaje y actuamos en consecuencia, haciendo que siga caminando, balanceándose o caiga.
+    // Determinamos el estado actual en el que se encuentra el personaje y actuamos en consecuencia, haciendo que siga caminando (afectado también por la gravedad), trepando, desplazándose con una bola o balanceándose.
     private void Update ()
     {
         direccionMov.x = 0;
@@ -88,6 +94,7 @@ public class MovimientoHistoria3 : MonoBehaviour
                 break;
         }
 
+        agente.baseOffset += Time.deltaTime * direccionMov.y;
         if (impulsoMnt == false) 
         {
             impulsoBal = Vector3.zero;
@@ -108,20 +115,6 @@ public class MovimientoHistoria3 : MonoBehaviour
     private void OnControllerColliderHit (ControllerColliderHit hit)
     {
         if (hit.transform.CompareTag ("Reaparecer") == true)
-        {
-            SceneManager.LoadScene (SceneManager.GetActiveScene().buildIndex);
-        }
-    }
-
-
-    // Si golpeamos el objeto que provoca que reaparezcamos, la escena es reiniciada.
-    private void OnCollisionEnter (Collision collision)
-    {
-        /*Vector3 indeseadoMov = collision.GetContact(0).normal * Vector3.Dot (balanceo.twii.velocidad, collision.GetContact(0).normal);
-
-        balanceo.twii.velocidad = balanceo.twii.velocidad - (indeseadoMov * 1.2f);*/
-
-        if (collision.transform.CompareTag ("Reaparecer") == true)
         {
             SceneManager.LoadScene (SceneManager.GetActiveScene().buildIndex);
         }
@@ -330,9 +323,9 @@ public class MovimientoHistoria3 : MonoBehaviour
         }
         else 
         {
-            if (characterCtr.isGrounded == true)
+            if (Sueleado () == true)
             {
-                direccionMov.y = -0.1f;
+                direccionMov.y = 0;
             }
             else 
             {
@@ -349,7 +342,7 @@ public class MovimientoHistoria3 : MonoBehaviour
     // Si el personaje está en el suelo y se ha pulsado el botón de salto, aplicamos una fuerza vertical que le permite saltar.
     private void SaltarSuelo () 
     {
-        if (saltoInp == true && characterCtr.isGrounded == true) 
+        if (saltoInp == true && Sueleado () == true) 
         {
             direccionMov.y = saltoVel;
             saltado = true;

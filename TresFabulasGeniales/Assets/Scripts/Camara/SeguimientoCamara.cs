@@ -10,9 +10,11 @@ public class SeguimientoCamara : MonoBehaviour
     public bool input, centrar, transicionando;
     public Transform objetivo, detras;
 
-    [SerializeField] private int movimientoVel, abajoLim, arribaLim, sensibilidad, centradoVel;
+    [SerializeField] private int movimientoVel, cambioPosVel, abajoLim, arribaLim, sensibilidad, centradoVel;
     private float ratonX, ratonY, stickX, stickY, finalX, finalY, rotacionX, rotacionY;
-    private Quaternion rotacionObj;
+    private Quaternion rotacionObj, rotacionDlg;
+    private bool dialogando;
+    private Vector3 puntoMed;
 
 
     // Inicialización de variables.
@@ -23,6 +25,7 @@ public class SeguimientoCamara : MonoBehaviour
         //Cursor.visible = false;
         centrar = true;
         transicionando = false;
+        dialogando = false;
     }
 
 
@@ -77,6 +80,11 @@ public class SeguimientoCamara : MonoBehaviour
             {
                 CambioDePersonajesYAgrupacion.instancia.PermitirInput ();
             }
+
+            if (dialogando == true) 
+            {
+                this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacionDlg, Time.deltaTime * centradoVel);
+            }
         }
     }
 
@@ -86,7 +94,50 @@ public class SeguimientoCamara : MonoBehaviour
     {
         if (transicionando == false) 
         {
-            this.transform.position = Vector3.MoveTowards (this.transform.position, objetivo.position, movimientoVel * Time.deltaTime);
+            if (dialogando == false) 
+            {
+                this.transform.position = Vector3.MoveTowards (this.transform.position, objetivo.position, Time.deltaTime * movimientoVel);
+            }
+            else 
+            {
+                this.transform.position = Vector3.MoveTowards (this.transform.position, puntoMed, Time.deltaTime * cambioPosVel);
+            }
         } 
+    }
+
+
+    // La típica.
+    /*private void OnDrawGizmos ()
+    {
+        Gizmos.color = Color.red;
+
+        Gizmos.DrawLine (puntoMed, puntoMed + (objetivo.right - objetivo.forward).normalized * 5);
+        Gizmos.DrawLine (puntoMed, puntoMed - (objetivo.right + objetivo.forward).normalized * 5);
+    }*/
+
+
+    // .
+    public void PuntoMedioDialogo (bool activar, Vector3 personaje, Vector3 npc) 
+    {
+        dialogando = activar;
+        if (activar == true)
+        {
+            puntoMed = (npc - personaje) / 2 + personaje;
+            puntoMed.y = npc.y;
+        }
+    }
+
+
+    // .
+    public void CalcularGiro () 
+    {
+        Vector3 diferencia1 = puntoMed - (puntoMed + (objetivo.right - objetivo.forward).normalized * 5);
+        Vector3 diferencia2 = puntoMed - (puntoMed - (objetivo.right + objetivo.forward).normalized * 5);
+        float rotacion1 = Mathf.Atan2 (diferencia1.x, diferencia1.z) * Mathf.Rad2Deg + 90;
+        float rotacion2 = Mathf.Atan2 (diferencia2.x, diferencia2.z) * Mathf.Rad2Deg + 90;
+
+        rotacionX = Mathf.Abs (rotacion1 - this.transform.rotation.eulerAngles.y) < Mathf.Abs (rotacion2 - this.transform.rotation.eulerAngles.y) ? rotacion1 : rotacion2;
+        rotacionY = 0;
+        rotacionDlg = Quaternion.Euler (0, rotacionX, rotacionY);
     }
 }

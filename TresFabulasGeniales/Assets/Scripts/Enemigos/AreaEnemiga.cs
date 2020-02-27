@@ -7,7 +7,8 @@ using UnityEngine;
 
 public class AreaEnemiga : MonoBehaviour
 {
-    private Enemigo[] enemigos;
+    public Enemigo[] enemigos;
+
     private List<Transform> dentro;
 
 

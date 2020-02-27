@@ -34,7 +34,7 @@ public class Ataque : MonoBehaviour
     // Hacemos que el avatar rebote tras tocar la cabeza del enemigo y además le cause daño.
     private void OnTriggerEnter (Collider other)
     {
-        if (other.tag == "Rebote" && this.transform.position.y > other.transform.position.y) 
+        if (other.CompareTag ("Rebote") == true && this.transform.position.y > other.transform.position.y) 
         {
             movimientoScr.movimiento.y = reboteVel;
 

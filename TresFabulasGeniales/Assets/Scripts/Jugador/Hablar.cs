@@ -48,7 +48,6 @@ public class Hablar : MonoBehaviour
     private void Update ()
     {
         tiempoPas += Time.deltaTime;
-        //this.transform.rotation = Quaternion.Euler (0, 180, 0);
 
         if (input == true && texto != null && Input.GetButtonDown ("Interacción") == true) 
         {
@@ -57,6 +56,7 @@ public class Hablar : MonoBehaviour
                 panelTxt.SetActive (true);
                 SepararTexto ();
                 ControlarInput (false);
+                camara.PuntoMedioDialogo (true, this.transform.position, npc.GetComponent<CapsuleCollider>().bounds.center);
 
                 rotacionObj = Quaternion.Euler (0, Quaternion.LookRotation(npc.position - this.transform.position).eulerAngles.y, 0);
             }
@@ -81,6 +81,10 @@ public class Hablar : MonoBehaviour
                 tiempoPas = 0;
             }
             this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacionObj, Time.deltaTime * rotacionVel);
+            if (Quaternion.Angle (this.transform.rotation, rotacionObj) < 1) 
+            {
+                camara.CalcularGiro ();
+            }
         }
     }
 
@@ -119,6 +123,7 @@ public class Hablar : MonoBehaviour
 
             panelTxt.SetActive (false);
             ControlarInput (true);
+            camara.PuntoMedioDialogo (false, Vector3.zero, Vector3.zero);
         }
     }
 
