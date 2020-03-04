@@ -30,38 +30,43 @@ public class AreaEnemiga : MonoBehaviour
     // Cada vez que uno de los avatares entre dentro del área enemiga, hacemos que los enemigos empiecen a atacar, además, se dividirán para atacar en el caso de que haya 2 personajes en la zona.
     private void OnTriggerEnter (Collider other)
     {
-        dentro.Add (other.transform);
-        for (int e = 0; e < enemigos.Length; e += 1) 
+        if (other.CompareTag ("Jugador") == true) 
         {
-            if (dentro.Count > 1 && e >= enemigos.Length / 2) 
+            dentro.Add (other.transform);
+            for (int e = 0; e < enemigos.Length; e += 1)
             {
-                enemigos[e].AtacarA (dentro[1]);
-            }
-            else 
-            {
-                enemigos[e].AtacarA (dentro[0]);
+                if (dentro.Count > 1 && e >= enemigos.Length / 2)
+                {
+                    enemigos[e].AtacarA (dentro[1]);
+                }
+                else
+                {
+                    enemigos[e].AtacarA (dentro[0]);
+                }
             }
         }
-
     }
 
 
     // Si un avatar ha salido del área enemiga, haremos que los enemigos se centren en el que queda o, en caso de que no quede ninguno, simplemente paren de atacar.
     private void OnTriggerExit (Collider other)
     {
-        dentro.Remove (other.transform);
-        if (dentro.Count == 0) 
+        if (other.CompareTag ("Jugador") == true) 
         {
-            foreach (Enemigo e in enemigos)
+            dentro.Remove (other.transform);
+            if (dentro.Count == 0)
             {
-                e.Parar ();
+                foreach (Enemigo e in enemigos)
+                {
+                    e.Parar ();
+                }
             }
-        }
-        else 
-        {
-            foreach (Enemigo e in enemigos) 
+            else
             {
-                e.AtacarA (dentro[0]);
+                foreach (Enemigo e in enemigos)
+                {
+                    e.AtacarA (dentro[0]);
+                }
             }
         }
     }

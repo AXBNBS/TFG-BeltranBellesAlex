@@ -131,7 +131,7 @@ NavMeshAgent:
   m_Acceleration: 1000
   avoidancePriority: 50
   m_AngularSpeed: 0
-  m_StoppingDistance: 2.5
+  m_StoppingDistance: 2
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -183,22 +183,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   input: 1
+  sueleado: 0
   movimiento: {x: 0, y: 0, z: 0}
   saltoVel: 300
   offsetY: 0
   offsetXZ: 0
   movimientoVel: 200
   rotacionVel: 10
+  saltoDst: 10
   capas:
     serializedVersion: 2
     m_Bits: 7223
+  capasSinAvt:
+    serializedVersion: 2
+    m_Bits: 3383
   companyeroMov: {fileID: 0}
-  saltarInp: 0
-  seguir: 0
-  yendo: 0
-  sueleado: 0
-  empujando: 0
-  limitadoX: 0
+  pararDstSeg: 2
+  pararDstAtq: 0
 --- !u!114 &1105000601539949260
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -214,6 +215,7 @@ MonoBehaviour:
   input: 1
   saltoFrz: 2
   aranyazoFrz: 1
+  danyado: 0
 --- !u!1 &5885188633620359636
 GameObject:
   m_ObjectHideFlags: 0
@@ -258,13 +260,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4803602200047490099, guid: ff301ff2d0b4de84ea4908255fd6accb,
         type: 3}
-      propertyPath: m_TagString
-      value: Untagged
+      propertyPath: m_Layer
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 4803602200047490099, guid: ff301ff2d0b4de84ea4908255fd6accb,
         type: 3}
-      propertyPath: m_Layer
-      value: 14
+      propertyPath: m_TagString
+      value: Untagged
       objectReference: {fileID: 0}
     - target: {fileID: 8874509940874635377, guid: ff301ff2d0b4de84ea4908255fd6accb,
         type: 3}

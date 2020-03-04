@@ -9,12 +9,12 @@ using UnityEngine.AI;
 public class Enemigo : MonoBehaviour
 {
     [SerializeField] private float puntosGol;
-    [SerializeField] private int saltoDef, aranyazoDef;
-    [SerializeField] private int aleatoriedad;
+    [SerializeField] private int saltoDef, aranyazoDef, aleatoriedad, velocidadMov, velocidadRot;
     private bool perseguir, reposicionado;
     private NavMeshAgent agente;
+    private CharacterController personajeCtr;
     private Transform objetivo;
-    private Vector3 posicionIni;
+    private Vector3 posicionIni, destinoRnd;
 
     
     // Inicialización de variables.
@@ -23,7 +23,10 @@ public class Enemigo : MonoBehaviour
         perseguir = false;
         reposicionado = false;
         agente = this.GetComponent<NavMeshAgent> ();
+        personajeCtr = this.GetComponent<CharacterController> ();
         posicionIni = this.transform.position;
+        //agente.updatePosition = false;
+        agente.updateRotation = false;
     }
 
 
@@ -31,27 +34,26 @@ public class Enemigo : MonoBehaviour
     //caiga sobre él y le haga daño, la nueva posición se definirá cada cierto tiempo.
     private void Update ()
     {
-        if (perseguir == true && this.gameObject.activeSelf == true) 
+        if (perseguir == true) 
         {
-            if (objetivo.position.y > this.transform.position.y) 
+            if (objetivo.position.y <= this.transform.position.y) 
             {
-                if (reposicionado == true)
+                MoverAgenteYControlador (objetivo.position);
+            }
+            else 
+            {
+                MoverAgenteYControlador (destinoRnd);
+                if (reposicionado == false)
                 {
-                    agente.SetDestination (new Vector3 (objetivo.position.x + Random.Range (-aleatoriedad, +aleatoriedad), objetivo.transform.position.y, objetivo.position.z + Random.Range (-aleatoriedad, +aleatoriedad)));
-
-                    reposicionado = false;
-                }
-                else 
-                {
-                    if (this.IsInvoking () == false && agente.remainingDistance < agente.stoppingDistance) 
+                    if (this.IsInvoking () == false)
                     {
                         this.Invoke ("Reposicionado", 1.75f);
                     }
                 }
-            }
-            else 
-            {
-                agente.SetDestination (objetivo.position);
+                else
+                {
+                    reposicionado = false;
+                }
             }
         }
     }
@@ -70,21 +72,29 @@ public class Enemigo : MonoBehaviour
     {
         perseguir = false;
 
-        if (this.gameObject.activeSelf == true) 
-        {
-            agente.SetDestination (posicionIni);
-        }
+        agente.SetDestination (posicionIni);
     }
 
 
     // Se recibe el valor del daño recibido, y si es un salto o no, para tener en cuenta el valor de defensa del enemigo según el tipo de ataque. Además desactivaremos al enemigo en caso de que su salud tras el golpe sea menor de 0.
-    public void Danyar (int danyo, bool salto) 
+    public void Danyar (float danyo, bool salto) 
     {
-        puntosGol -= salto ? danyo / saltoDef : danyo / aranyazoDef;
+        puntosGol -= salto  == true ? danyo / saltoDef : danyo / aranyazoDef;
+    }
 
-        if (puntosGol < 0) 
+
+    // .
+    public bool ChecarDerrotado () 
+    {
+        if (puntosGol >= 0) 
+        {
+            return false;
+        }
+        else
         {
             this.gameObject.SetActive (false);
+
+            return true;
         }
     }
 
@@ -93,5 +103,24 @@ public class Enemigo : MonoBehaviour
     private void Reposicionado () 
     {
         reposicionado = true;
+        destinoRnd = new Vector3 (objetivo.position.x + Random.Range (-aleatoriedad, +aleatoriedad), this.transform.position.y, objetivo.position.z + Random.Range (-aleatoriedad, +aleatoriedad));
+    }
+
+
+    // .
+    private void MoverAgenteYControlador (Vector3 objetivo)
+    {
+        print (objetivo);
+        if (Vector3.Distance (this.transform.position, agente.destination) > agente.stoppingDistance) 
+        {
+            objetivo.y = this.transform.position.y;
+            this.transform.rotation = Quaternion.Lerp (this.transform.rotation, Quaternion.LookRotation (objetivo - this.transform.position), Time.deltaTime * velocidadRot);
+
+            agente.SetDestination (objetivo);
+            personajeCtr.Move (agente.desiredVelocity.normalized * Time.deltaTime * velocidadMov);
+
+            agente.velocity = personajeCtr.velocity;
+            this.transform.position = new Vector3 (this.transform.position.x, posicionIni.y, this.transform.position.z);
+        }
     }
 }

@@ -713,7 +713,7 @@ PrefabInstance:
     - target: {fileID: 6347342489798359407, guid: adf1be9a8ccdadc43a72839b1872594b,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 2.6
       objectReference: {fileID: 0}
     - target: {fileID: 6347342489798359407, guid: adf1be9a8ccdadc43a72839b1872594b,
         type: 3}
@@ -5976,7 +5976,7 @@ PrefabInstance:
     - target: {fileID: 6347342489798359407, guid: adf1be9a8ccdadc43a72839b1872594b,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 2.6000004
       objectReference: {fileID: 0}
     - target: {fileID: 6347342489798359407, guid: adf1be9a8ccdadc43a72839b1872594b,
         type: 3}
@@ -6051,7 +6051,7 @@ PrefabInstance:
     - target: {fileID: 6347342489798359407, guid: adf1be9a8ccdadc43a72839b1872594b,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 2.6000004
       objectReference: {fileID: 0}
     - target: {fileID: 6347342489798359407, guid: adf1be9a8ccdadc43a72839b1872594b,
         type: 3}
@@ -14722,7 +14722,7 @@ PrefabInstance:
     - target: {fileID: 6347342489798359407, guid: adf1be9a8ccdadc43a72839b1872594b,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 2.6000004
       objectReference: {fileID: 0}
     - target: {fileID: 6347342489798359407, guid: adf1be9a8ccdadc43a72839b1872594b,
         type: 3}
@@ -30014,7 +30014,7 @@ PrefabInstance:
     - target: {fileID: 6347342489798359407, guid: adf1be9a8ccdadc43a72839b1872594b,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 2.6000004
       objectReference: {fileID: 0}
     - target: {fileID: 6347342489798359407, guid: adf1be9a8ccdadc43a72839b1872594b,
         type: 3}
@@ -31672,7 +31672,7 @@ MonoBehaviour:
   m_OverrideTileSize: 0
   m_TileSize: 256
   m_OverrideVoxelSize: 0
-  m_VoxelSize: 1.6666666
+  m_VoxelSize: 0.016666668
   m_BuildHeightMesh: 0
   m_NavMeshData: {fileID: 23800000, guid: 25f0789fc72e29c4ebeb165143bfc2c2, type: 2}
 --- !u!4 &1928859381 stripped

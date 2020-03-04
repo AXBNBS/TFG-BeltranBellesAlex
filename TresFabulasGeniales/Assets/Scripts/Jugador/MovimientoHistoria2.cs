@@ -8,18 +8,19 @@ using UnityEngine.AI;
 
 public class MovimientoHistoria2 : MonoBehaviour
 {
-    public bool input;
+    public bool input, sueleado;
     public Vector3 movimiento;
     public int saltoVel;
     [HideInInspector] public float offsetY, offsetXZ;
 
     [SerializeField] private int movimientoVel, rotacionVel, saltoDst;
-    [SerializeField] private LayerMask capas;
+    [SerializeField] private LayerMask capas, capasSinAvt;
     [SerializeField] private MovimientoHistoria2 companyeroMov;
+    [SerializeField] private float pararDstSeg, pararDstAtq;
     private int gravedad, empujeVel;
-    private bool saltarInp, seguir, yendo, sueleado, empujando, limitadoX, enemigosCer, saltado;
+    private bool saltarInp, yendo, empujando, limitadoX, enemigosCer, saltado, cambiando, siguiendoAcb;
     private CharacterController characterCtr;
-    private float horizontalInp, verticalInp, angulo, offsetBas, sueloDst;
+    private float horizontalInp, verticalInp, angulo, offsetBas, sueloDst, radioRotAtq;
     private Quaternion rotacion;
     private Transform camaraTrf, objetivoSeg, companyeroTrf, enemigoTrf;
     private Animator animator;
@@ -34,16 +35,18 @@ public class MovimientoHistoria2 : MonoBehaviour
     // Inicialización de variables.
     private void Start ()
     {
+        sueleado = true;
         gravedad = -11;
         empujeVel = movimientoVel / 3;
-        seguir = false;
         yendo = false;
-        sueleado = false;
         empujando = false;
         enemigosCer = false;
         saltado = false;
+        cambiando = false;
+        siguiendoAcb = false;
         characterCtr = this.GetComponent<CharacterController> ();
-        sueloDst = 0.1f;
+        sueloDst = 1.5f;
+        radioRotAtq = characterCtr.bounds.size.x * this.transform.localScale.x * 2;
         offsetY = this.transform.localScale.y * characterCtr.height;
         offsetXZ = this.transform.localScale.x * characterCtr.radius * 3;
         camaraTrf = GameObject.FindGameObjectWithTag("CamaraPrincipal").transform;
@@ -70,18 +73,16 @@ public class MovimientoHistoria2 : MonoBehaviour
         {
             horizontalInp = Mathf.RoundToInt (Input.GetAxisRaw ("Movimiento horizontal"));
             verticalInp = Mathf.RoundToInt (Input.GetAxisRaw ("Movimiento vertical"));
-            if (empujando == false) 
-            {
-                saltarInp = Input.GetButtonDown ("Salto");
-            }
+            saltarInp = empujando == false ? Input.GetButtonDown ("Salto") : false;
         }
         movimiento.x = 0;
         movimiento.z = 0;
+        sueleado = Sueleado ();
 
         switch (estado) 
         {
             case Estado.normal:
-                if (saltarInp == true && characterCtr.isGrounded == true)
+                if (saltarInp == true && sueleado == true)
                 {
                     SaltarNormal ();
                 }
@@ -119,7 +120,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         switch (tocado.tag) 
         {
             case "Jugador":
-                if (this.transform.position.y > tocado.position.y) 
+                if (sueleado == false) 
                 {
                     Vector3 centroSup = new Vector3 (tocado.position.x, tocado.position.y + offsetY, tocado.position.z);
 
@@ -161,11 +162,11 @@ public class MovimientoHistoria2 : MonoBehaviour
     {
         Gizmos.color = Color.red;
 
-        Gizmos.DrawLine (this.transform.position, this.transform.position - Vector3.up * sueloDst);
+        Gizmos.DrawRay (this.transform.position, -Vector3.up * sueloDst);
     }
 
 
-    // .
+    // Independiente de si el jugador o el compañero ha entrado en la zona peligrosa, el compañero empieza a atacar si estaba siguiendo al jugador.
     private void OnTriggerEnter (Collider other)
     {
         if (other.CompareTag ("AreaEnemiga") == true) 
@@ -186,35 +187,35 @@ public class MovimientoHistoria2 : MonoBehaviour
 
 
     // Pone "sueleado" a "true" para evitar que se reproduzca la animación de estar en el aire cuando realmente no lo está.
-    private void OnTriggerStay (Collider other)
+    /*private void OnTriggerStay (Collider other)
     {
         if (other.CompareTag ("Sueleador") == true)
         {
             sueleado = true;
         }
-    }
+    }*/
 
 
     // Pone "sueleado" a "false" para permitir que se reproduzca la animación de estar en el aire una vez se haya salido del rango que ocupa el trigger.
-    private void OnTriggerExit (Collider other)
+    /*private void OnTriggerExit (Collider other)
     {
         if (other.CompareTag ("Sueleador") == true) 
         {
             sueleado = false;
         }
-    }
+    }*/
 
 
     // Se pone "sueleado" a "true" durante 0.1 segundos ya que si no puede detectar que está en el aire durante un momento y reproducir la animación equivocada.
     public void GestionarCambio ()
     {
-        sueleado = true;
+        cambiando = true;
 
-        this.Invoke ("CambiarSueleado", 0.1f);
+        this.Invoke ("FinalizarCambio", 0.1f);
     }
 
 
-    // Devuelve "true" si el personaje en cuestión está parado.
+    // Devuelve "true" si el personaje en cuestión está en el aire.
     public bool EstaEnElAire ()
     {
         return (animator.GetCurrentAnimatorStateInfo(0).IsTag ("Aire"));
@@ -224,9 +225,19 @@ public class MovimientoHistoria2 : MonoBehaviour
     // Hacemos que la variable que hace que se siga al compañero sea verdadera y activamos el "NavMeshAgent" para poder seguir al otro personaje.
     public void GestionarSeguimiento (bool comenzar)
     {
-        seguir = comenzar;
         mallaAgtNav.enabled = comenzar;
         estado = comenzar == true ? Estado.siguiendo : Estado.normal;
+        mallaAgtNav.stoppingDistance = pararDstSeg;
+        if (comenzar == true)
+        {
+            mallaAgtNav.baseOffset = offsetBas;
+        }
+        else 
+        {
+            siguiendoAcb = true;
+
+            this.Invoke ("FinalizarSeguimiento", 0.1f);
+        }
     }
 
 
@@ -246,27 +257,22 @@ public class MovimientoHistoria2 : MonoBehaviour
     }
 
 
-    // .
+    // El compañero pasa a atacar y encuentra el enemigo más cercano a elle dentro de la zona actual.
     public void ComenzarAtaque (AreaEnemiga zona) 
     {
         if (estado == Estado.siguiendo) 
         {
             estado = Estado.atacando;
+            mallaAgtNav.stoppingDistance = pararDstAtq;
             areaEng = zona;
-            enemigoTrf = PosicionEnemigoCercano ();
+
+            PosicionEnemigoCercano ();
         }
     }
 
 
-    // Lanzamos un raycast hacia abajo de no mucha mayor longitud que la altura del personaje para comprobar si este está tocando el suelo o no.
-    private bool Sueleado ()
-    {
-        return (saltado == false ? Physics.Raycast (this.transform.position, -Vector3.up, sueloDst) : false);
-    }
-
-
     // Obtiene la posición del enemigo más cercano dentro de la zona en la que se encuentra el jugador actualmente.
-    private Transform PosicionEnemigoCercano ()
+    public void PosicionEnemigoCercano ()
     {
         float evaluada;
 
@@ -285,8 +291,18 @@ public class MovimientoHistoria2 : MonoBehaviour
                 }
             }
         }
+        enemigoTrf = resultado;
+        if (resultado == null) 
+        {
+            estado = Estado.normal;
+        }
+    }
 
-        return resultado;
+
+    // Lanzamos un raycast hacia abajo de no mucha mayor longitud que la altura del personaje para comprobar si este está tocando el suelo o no.
+    private bool Sueleado ()
+    {
+        return Physics.Raycast (this.transform.position, -Vector3.up, sueloDst, capasSinAvt, QueryTriggerInteraction.Ignore);
     }
 
 
@@ -300,7 +316,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     }
 
 
-    // .
+    // El personaje controlado por IA salta si está en el suelo y suficientemente cerca del enemigo, simulamos aplicar gravedad cambiando el "base offset" del agente.
     private void SaltarIA () 
     {
         if (mallaAgtNav.baseOffset == offsetBas && mallaAgtNav.remainingDistance < saltoDst) 
@@ -309,15 +325,15 @@ public class MovimientoHistoria2 : MonoBehaviour
         }
 
         mallaAgtNav.baseOffset += Time.deltaTime * movimiento.y;
-        if (mallaAgtNav.baseOffset < offsetBas && Sueleado () == true) 
+        if (mallaAgtNav.baseOffset <= offsetBas) 
         {
             mallaAgtNav.baseOffset = offsetBas;
         }
     }
 
 
-    // Le aplicamos gravedad al personaje y, si además está siendo movido por el jugador, lo movemos y rotamos adecuadamente hacia la dirección del movimiento, teniendo en cuenta además la posición de la cámara para que el movimiento sea relativo a la
-    //misma. Movemos también el objeto empujado en caso de que haya alguno.
+    // Le aplicamos gravedad al personaje y, si además está siendo movido por el jugador, lo movemos y rotamos adecuadamente hacia la dirección del movimiento, teniendo en cuenta además la posición de la cámara para que el movimiento sea relativo a 
+    //la misma. Movemos también el objeto empujado en caso de que haya alguno.
     private void Mover () 
     {
         if (horizontalInp != 0 || verticalInp != 0)
@@ -337,7 +353,7 @@ public class MovimientoHistoria2 : MonoBehaviour
                 {
                     movimiento.z = relativoCam.z;
                 }
-                else 
+                else
                 {
                     movimiento.x = relativoCam.x;
                 }
@@ -349,10 +365,11 @@ public class MovimientoHistoria2 : MonoBehaviour
         }
         movimiento += empuje * movimientoVel / 2;
 
-        characterCtr.Move (movimiento * Time.deltaTime);
+        characterCtr.Move (Time.deltaTime * movimiento);
+        //print (Time.deltaTime * movimiento);
         if (empujando == true) 
         {
-            empujado.Mover (movimiento * Time.deltaTime);
+            empujado.Mover (Time.deltaTime * movimiento);
         }
     }
 
@@ -360,13 +377,35 @@ public class MovimientoHistoria2 : MonoBehaviour
     // Es que si no flota.
     private void AplicarGravedad () 
     {
-        if (characterCtr.isGrounded == false)
+        switch (estado) 
         {
-            movimiento.y += gravedad;
-        }
-        else
-        {
-            movimiento.y = -0.1f;
+            case Estado.normal:
+                if (sueleado == true && saltado == false)
+                {
+                    movimiento.y = -3;
+                    empuje = Vector3.zero;
+                }
+                else 
+                {
+                    movimiento.y += gravedad;
+                }
+
+                break;
+            case Estado.siguiendo:
+                movimiento.y = 0;
+
+                break;
+            default:
+                if (mallaAgtNav.baseOffset == offsetBas)
+                {
+                    movimiento.y = 0;
+                }
+                else 
+                {
+                    movimiento.y += gravedad;
+                }
+
+                break;
         }
     }
 
@@ -381,7 +420,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         Vector3 diferencia = posicionPnt - objetivoSeg.parent.position;
         Ray rayo = new Ray (objetivoSeg.parent.position, diferencia);
         
-        yendo = (this.transform.position - posicionPnt).magnitude > mallaAgtNav.stoppingDistance && Physics.Raycast (rayo, diferencia.magnitude, capas, QueryTriggerInteraction.Ignore) == false;
+        yendo = Vector3.Distance (this.transform.position, posicionPnt) > mallaAgtNav.stoppingDistance && Physics.Raycast (rayo, diferencia.magnitude, capas, QueryTriggerInteraction.Ignore) == false;
 
         if (yendo == false)
         {
@@ -419,41 +458,59 @@ public class MovimientoHistoria2 : MonoBehaviour
     // Gestiona las animaciones del personaje de acuerdo a su situación actual.
     private void Animar ()
     {
-        if (seguir == false)
+        switch (estado) 
         {
-            animator.SetBool ("moviendose", movimiento.x != 0 || movimiento.z != 0);
-            animator.SetBool ("tocandoSuelo", characterCtr.isGrounded || sueleado);
-            animator.SetFloat ("velocidadY", movimiento.y);
+            case Estado.normal:
+                animator.SetBool ("moviendose", movimiento.x != 0 || movimiento.z != 0);
+                animator.SetBool ("tocandoSuelo", saltado == false && (sueleado == true || cambiando == true || siguiendoAcb == true));
+                animator.SetFloat ("velocidadY", movimiento.y);
+
+                break;
+            case Estado.siguiendo:
+                animator.SetBool ("moviendose", yendo);
+                animator.SetBool ("tocandoSuelo", true);
+
+                break;
+            default:
+                animator.SetBool ("moviendose", true);
+                animator.SetBool ("tocandoSuelo", mallaAgtNav.baseOffset == offsetBas);
+                animator.SetFloat ("velocidadY", movimiento.y);
+
+                break;
         }
-        else
+    }
+
+
+    // Hacemos que la posición del enemigo a atacar sea el destino del agente.
+    private void IrHaciaEnemigo () 
+    {
+        mallaAgtNav.SetDestination (enemigoTrf.position);
+
+        if (Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (enemigoTrf.position.x, enemigoTrf.position.z)) > radioRotAtq) 
         {
-            animator.SetBool ("moviendose", yendo);
-            animator.SetBool ("tocandoSuelo", true);
+            this.transform.rotation = Quaternion.Lerp (this.transform.rotation, Quaternion.Euler (this.transform.rotation.eulerAngles.x,
+                Quaternion.LookRotation(this.transform.position - enemigoTrf.position).eulerAngles.y + 180, this.transform.rotation.eulerAngles.z), Time.deltaTime * rotacionVel);
         }
+    }
+
+
+    // Usamos esta función para poner la variable a "false" tras un pequeño intervalo de tiempo.
+    private void FinImpulso ()
+    {
+        saltado = false;
     }
 
 
     // Para evitar que reproduzca la animación de estar en el aire.
-    private void CambiarSueleado () 
+    private void FinalizarCambio ()
     {
-        sueleado = false;
+        cambiando = false;
     }
 
 
-    // .
-    private void IrHaciaEnemigo () 
+    // Para evitar de nuevo lo de la animación.
+    private void FinalizarSeguimiento () 
     {
-        mallaAgtNav.destination = enemigoTrf.position;
-
-        //characterCtr.Move (mallaAgtNav.desiredVelocity.normalized * movimientoVel * Time.deltaTime);
-
-        //mallaAgtNav.velocity = characterCtr.velocity;
-    }
-
-
-    // Usamos está función para poner la variable a "false" tras un pequeño intervalo de tiempo.
-    private void FinImpulso ()
-    {
-        saltado = false;
+        siguiendoAcb = false;
     }
 }
