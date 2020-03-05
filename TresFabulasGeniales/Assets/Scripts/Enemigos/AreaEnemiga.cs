@@ -8,6 +8,7 @@ using UnityEngine;
 public class AreaEnemiga : MonoBehaviour
 {
     public Enemigo[] enemigos;
+    public int perseguidores0, perseguidores1;
 
     private List<Transform> dentro;
 
@@ -17,6 +18,8 @@ public class AreaEnemiga : MonoBehaviour
     {
         enemigos = this.GetComponentsInChildren<Enemigo> ();
         dentro = new List<Transform> ();
+        perseguidores0 = 0;
+        perseguidores1 = 0;
     }
 
 
@@ -37,11 +40,15 @@ public class AreaEnemiga : MonoBehaviour
             {
                 if (dentro.Count > 1 && e >= enemigos.Length / 2)
                 {
-                    enemigos[e].AtacarA (dentro[1]);
+                    enemigos[e].AtacarA (dentro[1], true);
+
+                    perseguidores1 += 1;
                 }
                 else
                 {
-                    enemigos[e].AtacarA (dentro[0]);
+                    enemigos[e].AtacarA (dentro[0], false);
+
+                    perseguidores0 += 1;
                 }
             }
         }
@@ -60,13 +67,17 @@ public class AreaEnemiga : MonoBehaviour
                 {
                     e.Parar ();
                 }
+                perseguidores0 = 0;
+                perseguidores1 = 0;
             }
             else
             {
                 foreach (Enemigo e in enemigos)
                 {
-                    e.AtacarA (dentro[0]);
+                    e.AtacarA (dentro[0], false);
                 }
+                perseguidores0 = enemigos.Length;
+                perseguidores1 = 0;
             }
         }
     }

@@ -18,6 +18,7 @@ TagManager:
   - Hablable
   - PanelTexto
   - AreaEnemiga
+  - EspacioEnemigo
   layers:
   - Default
   - TransparentFX

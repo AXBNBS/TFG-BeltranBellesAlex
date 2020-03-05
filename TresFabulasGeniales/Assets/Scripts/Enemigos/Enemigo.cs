@@ -9,12 +9,14 @@ using UnityEngine.AI;
 public class Enemigo : MonoBehaviour
 {
     [SerializeField] private float puntosGol;
-    [SerializeField] private int saltoDef, aranyazoDef, aleatoriedad, velocidadMov, velocidadRot;
-    private bool perseguir, reposicionado;
+    [SerializeField] private int saltoDef, aranyazoDef, aleatoriedad, velocidadMov, velocidadRot, distanciaMaxObj;
+    private bool perseguir, reposicionado, objetivo1;
     private NavMeshAgent agente;
     private CharacterController personajeCtr;
-    private Transform objetivo;
+    private Transform objetivoTrf;
     private Vector3 posicionIni, destinoRnd;
+    private List<Transform> companyerosCer;
+    private AreaEnemiga zona;
 
     
     // Inicialización de variables.
@@ -25,8 +27,10 @@ public class Enemigo : MonoBehaviour
         agente = this.GetComponent<NavMeshAgent> ();
         personajeCtr = this.GetComponent<CharacterController> ();
         posicionIni = this.transform.position;
-        //agente.updatePosition = false;
+        agente.updatePosition = false;
         agente.updateRotation = false;
+        companyerosCer = new List<Transform> ();
+        zona = this.transform.parent.GetComponent<AreaEnemiga> ();
     }
 
 
@@ -36,18 +40,19 @@ public class Enemigo : MonoBehaviour
     {
         if (perseguir == true) 
         {
-            if (objetivo.position.y <= this.transform.position.y) 
+            if (objetivoTrf.position.y <= this.transform.position.y) 
             {
-                MoverAgenteYControlador (objetivo.position);
+                MoverAgenteYControlador (objetivoTrf.position);
             }
             else 
             {
                 MoverAgenteYControlador (destinoRnd);
+
                 if (reposicionado == false)
                 {
                     if (this.IsInvoking () == false)
                     {
-                        this.Invoke ("Reposicionado", 1.75f);
+                        this.Invoke ("Reposicionado", Random.Range (1f, 2f));
                     }
                 }
                 else
@@ -59,11 +64,32 @@ public class Enemigo : MonoBehaviour
     }
 
 
+    // .
+    private void OnTriggerEnter (Collider other)
+    {
+        if (other.CompareTag ("EspacioEnemigo") == true && other.transform.parent != this.transform) 
+        {
+            companyerosCer.Add (other.transform.parent);
+        }
+    }
+
+
+    // .
+    private void OnTriggerExit (Collider other)
+    {
+        if (other.CompareTag ("EspacioEnemigo") == true)
+        {
+            companyerosCer.Remove (other.transform.parent);
+        }
+    }
+
+
     // Se indica al enemigo que tiene que perseguir/atacar a alguien.
-    public void AtacarA (Transform jugador) 
+    public void AtacarA (Transform jugador, bool uno) 
     {
         perseguir = true;
-        objetivo = jugador;
+        objetivoTrf = jugador;
+        objetivo1 = uno;
     }
 
 
@@ -72,7 +98,10 @@ public class Enemigo : MonoBehaviour
     {
         perseguir = false;
 
-        agente.SetDestination (posicionIni);
+        if (this.gameObject.activeSelf == true) 
+        {
+            agente.SetDestination (posicionIni);
+        }
     }
 
 
@@ -103,24 +132,26 @@ public class Enemigo : MonoBehaviour
     private void Reposicionado () 
     {
         reposicionado = true;
-        destinoRnd = new Vector3 (objetivo.position.x + Random.Range (-aleatoriedad, +aleatoriedad), this.transform.position.y, objetivo.position.z + Random.Range (-aleatoriedad, +aleatoriedad));
+        destinoRnd = new Vector3 (objetivoTrf.position.x + Random.Range (-aleatoriedad, +aleatoriedad), this.transform.position.y, objetivoTrf.position.z + Random.Range (-aleatoriedad, +aleatoriedad));
     }
 
 
     // .
     private void MoverAgenteYControlador (Vector3 objetivo)
     {
-        print (objetivo);
-        if (Vector3.Distance (this.transform.position, agente.destination) > agente.stoppingDistance) 
+        agente.SetDestination (objetivo);
+
+        if (Vector3.Distance (this.transform.position, agente.destination) > distanciaMaxObj)
         {
             objetivo.y = this.transform.position.y;
-            this.transform.rotation = Quaternion.Lerp (this.transform.rotation, Quaternion.LookRotation (objetivo - this.transform.position), Time.deltaTime * velocidadRot);
 
-            agente.SetDestination (objetivo);
             personajeCtr.Move (agente.desiredVelocity.normalized * Time.deltaTime * velocidadMov);
 
             agente.velocity = personajeCtr.velocity;
+            this.transform.rotation = Quaternion.Lerp (this.transform.rotation, Quaternion.Euler (this.transform.rotation.x, Mathf.Atan2 (personajeCtr.velocity.x, personajeCtr.velocity.z) * Mathf.Rad2Deg, this.transform.rotation.z), 
+                Time.deltaTime * velocidadRot);
             this.transform.position = new Vector3 (this.transform.position.x, posicionIni.y, this.transform.position.z);
+            agente.nextPosition = this.transform.position;
         }
     }
 }
