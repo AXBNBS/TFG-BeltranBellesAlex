@@ -223,11 +223,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78aa26604015a034e937e19d6fd1be8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  indice: 0
   puntosGol: 5
   saltoDef: 1
   aranyazoDef: 1
   aleatoriedad: 50
   velocidadMov: 150
   velocidadRot: 10
-  distanciaMaxObj: 20
-  companyerosCer: []
+  distanciaMaxObj: 10
+  objetivoTrf: {fileID: 0}
+  puntoTrf: {fileID: 0}

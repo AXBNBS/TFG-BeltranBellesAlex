@@ -16,7 +16,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     [SerializeField] private int movimientoVel, rotacionVel, saltoDst;
     [SerializeField] private LayerMask capas, capasSinAvt;
     [SerializeField] private MovimientoHistoria2 companyeroMov;
-    [SerializeField] private float pararDstSeg, pararDstAtq;
+    [SerializeField] private float pararDstSeg, pararDstAtq, ajusteCaiDst;
     private int gravedad, empujeVel;
     private bool saltarInp, yendo, empujando, limitadoX, enemigosCer, saltado, cambiando, siguiendoAcb;
     private CharacterController characterCtr;
@@ -196,14 +196,14 @@ public class MovimientoHistoria2 : MonoBehaviour
     }*/
 
 
-    // Pone "sueleado" a "false" para permitir que se reproduzca la animación de estar en el aire una vez se haya salido del rango que ocupa el trigger.
-    /*private void OnTriggerExit (Collider other)
+    // .
+    private void OnTriggerExit (Collider other)
     {
-        if (other.CompareTag ("Sueleador") == true) 
+        if (other.CompareTag ("AreaEnemiga") == true) 
         {
-            sueleado = false;
+            enemigosCer = false;
         }
-    }*/
+    }
 
 
     // Se pone "sueleado" a "true" durante 0.1 segundos ya que si no puede detectar que está en el aire durante un momento y reproducir la animación equivocada.
@@ -265,6 +265,7 @@ public class MovimientoHistoria2 : MonoBehaviour
             estado = Estado.atacando;
             mallaAgtNav.stoppingDistance = pararDstAtq;
             areaEng = zona;
+            CambioDePersonajesYAgrupacion.instancia.juntos = false;
 
             PosicionEnemigoCercano ();
         }
@@ -295,6 +296,9 @@ public class MovimientoHistoria2 : MonoBehaviour
         if (resultado == null) 
         {
             estado = Estado.normal;
+            mallaAgtNav.enabled = false;
+
+            areaEng.gameObject.SetActive (false);
         }
     }
 
@@ -484,7 +488,10 @@ public class MovimientoHistoria2 : MonoBehaviour
     // Hacemos que la posición del enemigo a atacar sea el destino del agente.
     private void IrHaciaEnemigo () 
     {
-        mallaAgtNav.SetDestination (enemigoTrf.position);
+        if (sueleado == false && mallaAgtNav.baseOffset - offsetBas < ajusteCaiDst) 
+        {
+            mallaAgtNav.SetDestination (enemigoTrf.position);
+        }
 
         if (Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (enemigoTrf.position.x, enemigoTrf.position.z)) > radioRotAtq) 
         {

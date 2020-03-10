@@ -8,12 +8,14 @@ using UnityEngine.AI;
 
 public class Enemigo : MonoBehaviour
 {
+    [HideInInspector] public int indice;
+    
     [SerializeField] private float puntosGol;
     [SerializeField] private int saltoDef, aranyazoDef, aleatoriedad, velocidadMov, velocidadRot, distanciaMaxObj;
-    private bool perseguir, reposicionado, objetivo1;
+    private bool perseguir, reposicionado, objetivo1, apartandose, apartandoseUltFrm;
     private NavMeshAgent agente;
     private CharacterController personajeCtr;
-    private Transform objetivoTrf;
+    private Transform objetivoTrf, puntoTrf;
     private Vector3 posicionIni, destinoRnd;
     private List<Transform> companyerosCer;
     private AreaEnemiga zona;
@@ -24,6 +26,7 @@ public class Enemigo : MonoBehaviour
     {
         perseguir = false;
         reposicionado = false;
+        apartandose = false;
         agente = this.GetComponent<NavMeshAgent> ();
         personajeCtr = this.GetComponent<CharacterController> ();
         posicionIni = this.transform.position;
@@ -40,9 +43,9 @@ public class Enemigo : MonoBehaviour
     {
         if (perseguir == true) 
         {
-            if (objetivoTrf.position.y <= this.transform.position.y) 
+            if (apartandose == false) 
             {
-                MoverAgenteYControlador (objetivoTrf.position);
+                MoverAgenteYControlador (puntoTrf.position);
             }
             else 
             {
@@ -84,12 +87,47 @@ public class Enemigo : MonoBehaviour
     }
 
 
+    // .
+    private void OnDrawGizmosSelected ()
+    {
+        Gizmos.color = Color.red;
+
+        Gizmos.DrawWireSphere (agente.destination, 1);
+    }
+
+
     // Se indica al enemigo que tiene que perseguir/atacar a alguien.
     public void AtacarA (Transform jugador, bool uno) 
     {
-        perseguir = true;
-        objetivoTrf = jugador;
-        objetivo1 = uno;
+        if (agente.destination == destinoRnd) 
+        {
+            print(jugador.name);
+            int indiceArr;
+            float distanciaChc;
+
+            int tomado = -1;
+            float distanciaMin = float.MaxValue;
+
+            perseguir = true;
+            objetivoTrf = jugador.GetChild (3);
+            puntoTrf = this.transform;
+            objetivo1 = uno;
+            for (int p = 0; p < objetivoTrf.childCount; p += 1)
+            {
+                indiceArr = objetivo1 == false ? p : p + 4;
+                distanciaChc = Vector3.Distance(objetivoTrf.GetChild(p).position, this.transform.position);
+                if (zona.tomadosPnt[indiceArr] == false && distanciaChc < distanciaMin)
+                {
+                    distanciaMin = distanciaChc;
+                    puntoTrf = objetivoTrf.GetChild(p);
+                    tomado = p;
+                }
+            }
+            if (tomado != -1)
+            {
+                zona.tomadosPnt[tomado] = true;
+            }
+        }
     }
 
 
@@ -112,7 +150,7 @@ public class Enemigo : MonoBehaviour
     }
 
 
-    // .
+    // Devuelve true o false dependiendo de si la salud del enemigo está por debajo de 0, y también lo desactiva si es el caso.
     public bool ChecarDerrotado () 
     {
         if (puntosGol >= 0) 
@@ -139,19 +177,49 @@ public class Enemigo : MonoBehaviour
     // .
     private void MoverAgenteYControlador (Vector3 objetivo)
     {
-        agente.SetDestination (objetivo);
+        objetivo.y = this.transform.position.y;
+
+        /*if (rodear == true)
+        {
+            float numerador = objetivo1 == false ? indice : indice - zona.perseguidores0;
+            float denominador = objetivo1 == false ? zona.perseguidores0 : zona.perseguidores1;
+
+            switch (numerador % 4) 
+            {
+                case 0:
+                    agente.SetDestination (objetivo + (+numerador / denominador * objetivoTrf.forward + (+(denominador - numerador) / denominador * objetivoTrf.right)).normalized * 10);
+
+                    break;
+                case 1:
+                    agente.SetDestination (objetivo + (-numerador / denominador * objetivoTrf.forward + (+(denominador - numerador) / denominador * objetivoTrf.right)).normalized * 10);
+                    print (objetivo + (-numerador / denominador * objetivoTrf.forward + (+(denominador - numerador) / denominador * objetivoTrf.right)).normalized * 10);
+
+                    break;
+                case 2:
+                    agente.SetDestination (objetivo + (+numerador / denominador * objetivoTrf.forward + (-(denominador - numerador) / denominador * objetivoTrf.right)).normalized * 10);
+
+                    break;
+                default:
+                    agente.SetDestination (objetivo + (-numerador / denominador * objetivoTrf.forward + (-(denominador - numerador) / denominador * objetivoTrf.right)).normalized * 10);
+
+                    break;
+            }
+        }
+        else 
+        {*/
+            agente.SetDestination (objetivo);
+        //}
 
         if (Vector3.Distance (this.transform.position, agente.destination) > distanciaMaxObj)
         {
-            objetivo.y = this.transform.position.y;
-
             personajeCtr.Move (agente.desiredVelocity.normalized * Time.deltaTime * velocidadMov);
 
             agente.velocity = personajeCtr.velocity;
             this.transform.rotation = Quaternion.Lerp (this.transform.rotation, Quaternion.Euler (this.transform.rotation.x, Mathf.Atan2 (personajeCtr.velocity.x, personajeCtr.velocity.z) * Mathf.Rad2Deg, this.transform.rotation.z), 
                 Time.deltaTime * velocidadRot);
             this.transform.position = new Vector3 (this.transform.position.x, posicionIni.y, this.transform.position.z);
-            agente.nextPosition = this.transform.position;
         }
+
+        agente.nextPosition = this.transform.position;
     }
 }

@@ -9,24 +9,50 @@ public class AreaEnemiga : MonoBehaviour
 {
     public Enemigo[] enemigos;
     public int perseguidores0, perseguidores1;
+    public bool[] tomadosPnt;
 
     private List<Transform> dentro;
+    private Transform violetaTrf;
+    private bool apartandose, apartandoseUltFrm, violeta1;
+    private float enemigosY;
 
 
     // Inicialización de variables.
     private void Start ()
     {
         enemigos = this.GetComponentsInChildren<Enemigo> ();
-        dentro = new List<Transform> ();
         perseguidores0 = 0;
         perseguidores1 = 0;
+        tomadosPnt = new bool[8];
+        dentro = new List<Transform> ();
+        violetaTrf = GameObject.Find("Violeta").transform;
+        enemigosY = enemigos[0].transform.position.y;
+        for (int i = 0; i < enemigos.Length; i += 1) 
+        {
+            enemigos[i].indice = i;
+        }
     }
 
 
     // .
     private void Update ()
     {
-        
+        apartandose = dentro.Contains (violetaTrf) == true && violetaTrf.position.y < enemigosY;
+
+        if (apartandose == true && apartandoseUltFrm == false)
+        {
+            ReiniciarArrayBooleanos (false);
+        }
+
+        if (apartandose == false && apartandoseUltFrm == true)
+        {
+            foreach (Enemigo e in enemigos) 
+            {
+                e.AtacarA (violetaTrf, violeta1);
+            }
+        }
+
+        apartandoseUltFrm = apartandose;
     }
 
 
@@ -35,6 +61,9 @@ public class AreaEnemiga : MonoBehaviour
     {
         if (other.CompareTag ("Jugador") == true) 
         {
+            perseguidores0 = 0;
+            perseguidores1 = 0;
+
             dentro.Add (other.transform);
             for (int e = 0; e < enemigos.Length; e += 1)
             {
@@ -43,6 +72,7 @@ public class AreaEnemiga : MonoBehaviour
                     enemigos[e].AtacarA (dentro[1], true);
 
                     perseguidores1 += 1;
+                    violeta1 = dentro[1] == violetaTrf ? true : false;
                 }
                 else
                 {
@@ -67,6 +97,7 @@ public class AreaEnemiga : MonoBehaviour
                 {
                     e.Parar ();
                 }
+
                 perseguidores0 = 0;
                 perseguidores1 = 0;
             }
@@ -76,8 +107,32 @@ public class AreaEnemiga : MonoBehaviour
                 {
                     e.AtacarA (dentro[0], false);
                 }
+
                 perseguidores0 = enemigos.Length;
                 perseguidores1 = 0;
+            }
+        }
+    }
+
+
+    // .
+    public void ReiniciarArrayBooleanos (bool todos) 
+    {
+        if (todos == false)
+        {
+            int inicio = violeta1 == false ? 0 : 4;
+            int fin = inicio + tomadosPnt.Length / 2;
+
+            for (int t = inicio; t < fin; t += 1) 
+            {
+                tomadosPnt[t] = false;
+            }
+        }
+        else
+        {
+            for (int t = 0; t < tomadosPnt.Length; t += 1)
+            {
+                tomadosPnt[t] = false;
             }
         }
     }

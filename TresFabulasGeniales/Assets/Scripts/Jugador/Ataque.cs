@@ -44,7 +44,7 @@ public class Ataque : MonoBehaviour
             }
             else
             {
-                other.transform.parent.GetComponent<Enemigo>().Danyar (saltoFrz / 5, true);
+                other.transform.parent.GetComponent<Enemigo>().Danyar (saltoFrz, true);
 
                 agente.baseOffset += reboteVel * Time.deltaTime;
             }
