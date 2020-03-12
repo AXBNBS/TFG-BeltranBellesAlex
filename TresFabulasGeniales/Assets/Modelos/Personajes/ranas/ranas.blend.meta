@@ -42,6 +42,48 @@ ModelImporter:
   - first:
       74: 7287875265090648270
     second: Armature.002|CylinderAction.002
+  - first:
+      74: -3835224903579085534
+    second: Armature.006|ArmatureAction
+  - first:
+      74: 4915146025964625496
+    second: Armature.006|ArmatureAction.001
+  - first:
+      74: -6894800614000121497
+    second: Armature.006|ArmatureAction.002
+  - first:
+      74: 5726034560906198388
+    second: Armature.006|ArmatureAction.003
+  - first:
+      74: -5138705401369868864
+    second: Armature.006|ArmatureAction.004
+  - first:
+      74: 3134537136397814266
+    second: Armature.006|ArmatureAction.005
+  - first:
+      74: 5178529776059729416
+    second: Armature.006|ArmatureAction.006
+  - first:
+      74: 7807192732041429201
+    second: Armature.006|CylinderAction
+  - first:
+      74: -5168345507364663677
+    second: Armature.006|CylinderAction.001
+  - first:
+      74: -5618476979535130106
+    second: Armature.006|CylinderAction.002
+  - first:
+      74: -5046197227349321512
+    second: Armature.006|CylinderAction.003
+  - first:
+      74: -9065068219645440855
+    second: Armature.006|CylinderAction.004
+  - first:
+      74: 8233217005224751300
+    second: Armature.006|CylinderAction.005
+  - first:
+      74: -7672855504865832973
+    second: Armature.006|CylinderAction.006
   externalObjects: {}
   materials:
     importMaterials: 1
