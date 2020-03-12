@@ -8,17 +8,19 @@ using UnityEngine.AI;
 
 public class Enemigo : MonoBehaviour
 {
+    public Transform avatarTrf;
     [HideInInspector] public int indice;
-    
+
     [SerializeField] private float puntosGol;
     [SerializeField] private int saltoDef, aranyazoDef, aleatoriedad, velocidadMov, velocidadRot, distanciaMaxObj;
-    private bool perseguir, reposicionado, objetivo1, apartandose, apartandoseUltFrm;
+    private bool perseguir, reposicionado, objetivo1;
     private NavMeshAgent agente;
     private CharacterController personajeCtr;
-    private Transform objetivoTrf, puntoTrf;
+    [SerializeField] private Transform objetivoTrf, puntoTrf;
     private Vector3 posicionIni, destinoRnd;
     private List<Transform> companyerosCer;
     private AreaEnemiga zona;
+    private int indicePnt;
 
     
     // Inicialización de variables.
@@ -26,9 +28,9 @@ public class Enemigo : MonoBehaviour
     {
         perseguir = false;
         reposicionado = false;
-        apartandose = false;
         agente = this.GetComponent<NavMeshAgent> ();
         personajeCtr = this.GetComponent<CharacterController> ();
+        objetivoTrf = null;
         posicionIni = this.transform.position;
         agente.updatePosition = false;
         agente.updateRotation = false;
@@ -43,7 +45,7 @@ public class Enemigo : MonoBehaviour
     {
         if (perseguir == true) 
         {
-            if (apartandose == false) 
+            if (this.transform.position.y >= objetivoTrf.position.y) 
             {
                 MoverAgenteYControlador (puntoTrf.position);
             }
@@ -64,11 +66,15 @@ public class Enemigo : MonoBehaviour
                 }
             }
         }
+        else 
+        {
+            MoverAgenteYControlador (posicionIni);
+        }
     }
 
 
     // .
-    private void OnTriggerEnter (Collider other)
+    /*private void OnTriggerEnter (Collider other)
     {
         if (other.CompareTag ("EspacioEnemigo") == true && other.transform.parent != this.transform) 
         {
@@ -84,7 +90,7 @@ public class Enemigo : MonoBehaviour
         {
             companyerosCer.Remove (other.transform.parent);
         }
-    }
+    }*/
 
 
     // .
@@ -99,34 +105,31 @@ public class Enemigo : MonoBehaviour
     // Se indica al enemigo que tiene que perseguir/atacar a alguien.
     public void AtacarA (Transform jugador, bool uno) 
     {
-        if (agente.destination == destinoRnd) 
+        int indiceArr;
+        float distanciaChc;
+
+        float distanciaMin = float.MaxValue;
+
+        indicePnt = -1;
+        perseguir = true;
+        avatarTrf = jugador;
+        objetivoTrf = jugador.GetChild (3);
+        puntoTrf = this.transform;
+        objetivo1 = uno;
+        for (int p = 0; p < objetivoTrf.childCount; p += 1)
         {
-            print(jugador.name);
-            int indiceArr;
-            float distanciaChc;
-
-            int tomado = -1;
-            float distanciaMin = float.MaxValue;
-
-            perseguir = true;
-            objetivoTrf = jugador.GetChild (3);
-            puntoTrf = this.transform;
-            objetivo1 = uno;
-            for (int p = 0; p < objetivoTrf.childCount; p += 1)
+            indiceArr = objetivo1 == false ? p : p + 4;
+            distanciaChc = Vector3.Distance (objetivoTrf.GetChild(p).position, this.transform.position);
+            if (zona.tomadosPnt[indiceArr] == false && distanciaChc < distanciaMin)
             {
-                indiceArr = objetivo1 == false ? p : p + 4;
-                distanciaChc = Vector3.Distance(objetivoTrf.GetChild(p).position, this.transform.position);
-                if (zona.tomadosPnt[indiceArr] == false && distanciaChc < distanciaMin)
-                {
-                    distanciaMin = distanciaChc;
-                    puntoTrf = objetivoTrf.GetChild(p);
-                    tomado = p;
-                }
+                distanciaMin = distanciaChc;
+                puntoTrf = objetivoTrf.GetChild (p);
+                indicePnt = indiceArr;
             }
-            if (tomado != -1)
-            {
-                zona.tomadosPnt[tomado] = true;
-            }
+        }
+        if (indicePnt != -1)
+        {
+            zona.tomadosPnt[indicePnt] = true;
         }
     }
 
@@ -135,11 +138,14 @@ public class Enemigo : MonoBehaviour
     public void Parar () 
     {
         perseguir = false;
+        objetivoTrf = null;
 
-        if (this.gameObject.activeSelf == true) 
+        this.CancelInvoke ("Reposicionando");
+        /*if (this.gameObject.activeSelf == true) 
         {
             agente.SetDestination (posicionIni);
-        }
+            print ("jajan't");
+        }*/
     }
 
 
@@ -159,6 +165,12 @@ public class Enemigo : MonoBehaviour
         }
         else
         {
+            if (indicePnt != -1) 
+            {
+                zona.tomadosPnt[indicePnt] = false;
+            }
+
+            zona.APor (avatarTrf, objetivo1);
             this.gameObject.SetActive (false);
 
             return true;
@@ -207,8 +219,10 @@ public class Enemigo : MonoBehaviour
         }
         else 
         {*/
+        if (agente.destination != objetivo) 
+        {
             agente.SetDestination (objetivo);
-        //}
+        }
 
         if (Vector3.Distance (this.transform.position, agente.destination) > distanciaMaxObj)
         {
