@@ -350,11 +350,13 @@ MonoBehaviour:
   - {fileID: 2100000, guid: d17a2308ed3a03f40b9f8ebe55431033, type: 2}
   - {fileID: 2100000, guid: d17a2308ed3a03f40b9f8ebe55431033, type: 2}
   - {fileID: 2100000, guid: f2dd99a20b9fab744a9c6f22e0ab4fe5, type: 2}
+  - {fileID: 2100000, guid: 82bac58fcab42474f85c2200adec3848, type: 2}
+  - {fileID: 2100000, guid: d17a2308ed3a03f40b9f8ebe55431033, type: 2}
   materialesAlt:
   - {fileID: 2100000, guid: f2dd99a20b9fab744a9c6f22e0ab4fe5, type: 2}
   - {fileID: 2100000, guid: 464c62c673f984142bbbc14c451ac934, type: 2}
   - {fileID: 2100000, guid: 82bac58fcab42474f85c2200adec3848, type: 2}
-  - {fileID: 2100000, guid: 37556f6ae693600448657daed32d82dc, type: 2}
+  - {fileID: 2100000, guid: 82bac58fcab42474f85c2200adec3848, type: 2}
   - {fileID: 2100000, guid: 82bac58fcab42474f85c2200adec3848, type: 2}
   - {fileID: 2100000, guid: 82bac58fcab42474f85c2200adec3848, type: 2}
   - {fileID: 2100000, guid: 82bac58fcab42474f85c2200adec3848, type: 2}
@@ -362,6 +364,8 @@ MonoBehaviour:
   - {fileID: 2100000, guid: d17a2308ed3a03f40b9f8ebe55431033, type: 2}
   - {fileID: 2100000, guid: d17a2308ed3a03f40b9f8ebe55431033, type: 2}
   - {fileID: 2100000, guid: f2dd99a20b9fab744a9c6f22e0ab4fe5, type: 2}
+  - {fileID: 2100000, guid: 82bac58fcab42474f85c2200adec3848, type: 2}
+  - {fileID: 2100000, guid: d17a2308ed3a03f40b9f8ebe55431033, type: 2}
 --- !u!114 &8454711757566032795
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -497,6 +501,11 @@ PrefabInstance:
     - target: {fileID: -4852855581747759287, guid: b95bfcc4b80f0dc409dbc1ddfe424f94,
         type: 3}
       propertyPath: m_Materials.Array.data[11]
+      value: 
+      objectReference: {fileID: 2100000, guid: 82bac58fcab42474f85c2200adec3848, type: 2}
+    - target: {fileID: -4852855581747759287, guid: b95bfcc4b80f0dc409dbc1ddfe424f94,
+        type: 3}
+      propertyPath: m_Materials.Array.data[12]
       value: 
       objectReference: {fileID: 2100000, guid: d17a2308ed3a03f40b9f8ebe55431033, type: 2}
     - target: {fileID: -4216859302048453862, guid: b95bfcc4b80f0dc409dbc1ddfe424f94,

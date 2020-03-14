@@ -72,7 +72,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 4264612480362930771, guid: b95bfcc4b80f0dc409dbc1ddfe424f94,
+  m_Motion: {fileID: -766578599413751018, guid: b95bfcc4b80f0dc409dbc1ddfe424f94,
     type: 3}
   m_Tag: Aire
   m_SpeedParameter: 
@@ -101,7 +101,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: -3997514183246978980, guid: b95bfcc4b80f0dc409dbc1ddfe424f94,
+  m_Motion: {fileID: -7756126426540238649, guid: b95bfcc4b80f0dc409dbc1ddfe424f94,
     type: 3}
   m_Tag: Suelo
   m_SpeedParameter: 
@@ -130,7 +130,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 6906267723572508546, guid: b95bfcc4b80f0dc409dbc1ddfe424f94,
+  m_Motion: {fileID: 5721023799295100539, guid: b95bfcc4b80f0dc409dbc1ddfe424f94,
     type: 3}
   m_Tag: Suelo
   m_SpeedParameter: 
@@ -227,7 +227,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: -6330207154204098069, guid: b95bfcc4b80f0dc409dbc1ddfe424f94,
+  m_Motion: {fileID: 8563659759095432098, guid: b95bfcc4b80f0dc409dbc1ddfe424f94,
     type: 3}
   m_Tag: Aire
   m_SpeedParameter: 

@@ -363,7 +363,7 @@ public class MovimientoHistoria2 : MonoBehaviour
                 }
                 movimiento = movimiento.normalized * empujeVel;
             }
-            angulo = Mathf.Atan2 (movimiento.x, movimiento.z) * Mathf.Rad2Deg;
+            angulo = Mathf.Atan2 (movimiento.x, movimiento.z) * Mathf.Rad2Deg + 90;
             rotacion = Quaternion.Euler (this.transform.rotation.x, angulo, this.transform.rotation.z);
             this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacion, rotacionVel * Time.deltaTime);
         }
