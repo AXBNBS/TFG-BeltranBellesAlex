@@ -432,7 +432,7 @@ public class MovimientoHistoria2 : MonoBehaviour
 
             mirarDir = (companyeroTrf.position - this.transform.position).normalized;
             objetivoRot = Quaternion.LookRotation(mirarDir).eulerAngles;
-            rotacionY = Quaternion.Euler (this.transform.rotation.eulerAngles.x, objetivoRot.y, this.transform.rotation.eulerAngles.z);
+            rotacionY = Quaternion.Euler (this.transform.rotation.eulerAngles.x, objetivoRot.y + 90, this.transform.rotation.eulerAngles.z);
             this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacionY, rotacionVel * Time.deltaTime);
         }
         else 
@@ -441,7 +441,7 @@ public class MovimientoHistoria2 : MonoBehaviour
 
             mirarDir = (posicionPnt - this.transform.position).normalized;
             objetivoRot = Quaternion.LookRotation(mirarDir).eulerAngles;
-            rotacionY = Quaternion.Euler (this.transform.rotation.eulerAngles.x, objetivoRot.y, this.transform.rotation.eulerAngles.z);
+            rotacionY = Quaternion.Euler (this.transform.rotation.eulerAngles.x, objetivoRot.y + 90, this.transform.rotation.eulerAngles.z);
             this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacionY, rotacionVel / 2 * Time.deltaTime);
         }
     }
@@ -496,7 +496,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         if (Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (enemigoTrf.position.x, enemigoTrf.position.z)) > radioRotAtq) 
         {
             this.transform.rotation = Quaternion.Lerp (this.transform.rotation, Quaternion.Euler (this.transform.rotation.eulerAngles.x,
-                Quaternion.LookRotation(this.transform.position - enemigoTrf.position).eulerAngles.y + 180, this.transform.rotation.eulerAngles.z), Time.deltaTime * rotacionVel);
+                Quaternion.LookRotation(this.transform.position - enemigoTrf.position).eulerAngles.y - 90, this.transform.rotation.eulerAngles.z), Time.deltaTime * rotacionVel);
         }
     }
 
