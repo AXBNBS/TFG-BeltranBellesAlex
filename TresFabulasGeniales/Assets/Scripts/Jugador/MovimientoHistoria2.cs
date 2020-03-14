@@ -20,8 +20,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     private int gravedad, empujeVel;
     private bool saltarInp, yendo, empujando, limitadoX, enemigosCer, saltado, cambiando, siguiendoAcb;
     private CharacterController characterCtr;
-    private float horizontalInp, verticalInp, angulo, offsetBas, sueloDst, radioRotAtq;
-    private Quaternion rotacion;
+    private float horizontalInp, verticalInp, offsetBas, sueloDst, radioRotAtq;
     private Transform camaraTrf, objetivoSeg, companyeroTrf, enemigoTrf;
     private Animator animator;
     private Vector3 empuje;
@@ -349,6 +348,8 @@ public class MovimientoHistoria2 : MonoBehaviour
                 relativoCam = (camaraTrf.right * horizontalInp + camaraTrf.forward * verticalInp).normalized * movimientoVel;
                 movimiento.x = relativoCam.x;
                 movimiento.z = relativoCam.z;
+                this.transform.rotation = Quaternion.Lerp (this.transform.rotation, Quaternion.Euler (this.transform.rotation.x, Mathf.Atan2 (movimiento.x, movimiento.z) * Mathf.Rad2Deg + 90, this.transform.rotation.z), 
+                    rotacionVel * Time.deltaTime);
             }
             else 
             {
@@ -363,17 +364,13 @@ public class MovimientoHistoria2 : MonoBehaviour
                 }
                 movimiento = movimiento.normalized * empujeVel;
             }
-            angulo = Mathf.Atan2 (movimiento.x, movimiento.z) * Mathf.Rad2Deg + 90;
-            rotacion = Quaternion.Euler (this.transform.rotation.x, angulo, this.transform.rotation.z);
-            this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacion, rotacionVel * Time.deltaTime);
         }
         movimiento += empuje * movimientoVel / 2;
 
         characterCtr.Move (Time.deltaTime * movimiento);
-        //print (Time.deltaTime * movimiento);
         if (empujando == true) 
         {
-            empujado.Mover (Time.deltaTime * movimiento);
+            empujado.Mover (Time.deltaTime * movimiento); 
         }
     }
 

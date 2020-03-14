@@ -182,7 +182,7 @@ public class Enemigo : MonoBehaviour
     private void Reposicionado () 
     {
         reposicionado = true;
-        destinoRnd = new Vector3 (objetivoTrf.position.x + Random.Range (-aleatoriedad, +aleatoriedad), this.transform.position.y, objetivoTrf.position.z + Random.Range (-aleatoriedad, +aleatoriedad));
+        destinoRnd = new Vector3 (avatarTrf.position.x + Random.Range (-aleatoriedad, +aleatoriedad), this.transform.position.y, avatarTrf.position.z + Random.Range (-aleatoriedad, +aleatoriedad));
     }
 
 

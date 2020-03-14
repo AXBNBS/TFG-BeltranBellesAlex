@@ -15,6 +15,7 @@ public class ObjetoMovil : MonoBehaviour
     [SerializeField] private int rotacionVel;
     private CharacterController characterCtr;
     private int gravedad, indiceTrg, fuerzaY;
+    private Empujar empujarScr;
 
 
     // Inicialización de variables.
@@ -24,6 +25,7 @@ public class ObjetoMovil : MonoBehaviour
         characterCtr = this.GetComponent<CharacterController> ();
         gravedad = -11;
         fuerzaY = 0;
+        empujarScr = GameObject.FindObjectOfType<Empujar> ();
     }
 
 
@@ -46,9 +48,14 @@ public class ObjetoMovil : MonoBehaviour
     // Si el objeto entra en un trigger de caída, ponemos la variable que permite que caiga a "true".
     private void OnTriggerEnter (Collider other)
     {
-        if (other.tag == "CaidaObjeto") 
+        if (other.CompareTag ("CaidaObjeto") == true) 
         {
+            foreach (Collider t in triggers)
+            {
+                t.enabled = false;
+            }
             caer = true;
+            empujarScr.cercano = false;
         }
     }
 
@@ -56,7 +63,7 @@ public class ObjetoMovil : MonoBehaviour
     // Si el objeto sale de un trigger de caída, ponemos la variable que permite que caiga a "false".
     private void OnTriggerExit (Collider other)
     {
-        if (other.tag == "CaidaObjeto")
+        if (other.CompareTag ("CaidaObjeto") == true)
         {
             caer = false;
         }
