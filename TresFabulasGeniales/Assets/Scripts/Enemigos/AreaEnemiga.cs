@@ -54,13 +54,6 @@ public class AreaEnemiga : MonoBehaviour
             if (apartandose == false && apartandoseUltFrm == true)
             {
                 APor (violetaTrf, violeta1);
-                /*foreach (Enemigo e in enemigos)
-                {
-                    if (e.avatarTrf == violetaTrf) 
-                    {
-                        e.AtacarA (violetaTrf, violeta1);
-                    }
-                }*/
             }
         }
 
@@ -82,14 +75,20 @@ public class AreaEnemiga : MonoBehaviour
             {
                 if (dentro.Count > 1 && e >= enemigos.Length / 2)
                 {
-                    enemigos[e].AtacarA (dentro[1], true);
+                    if (dentro[1].name == "Abedul" || apartandose == false) 
+                    {
+                        enemigos[e].AtacarA (dentro[1], true);
+                    }
 
                     perseguidores1 += 1;
                     violeta1 = dentro[1] == violetaTrf ? true : false;
                 }
                 else
                 {
-                    enemigos[e].AtacarA (dentro[0], false);
+                    if (dentro[0].name == "Abedul" || apartandose == false)
+                    {
+                        enemigos[e].AtacarA (dentro[0], false);
+                    }
 
                     perseguidores0 += 1;
                 }
@@ -151,7 +150,6 @@ public class AreaEnemiga : MonoBehaviour
             {
                 tomadosPnt[t] = false;
             }
-            print ("jajan't");
         }
         else
         {
@@ -168,7 +166,7 @@ public class AreaEnemiga : MonoBehaviour
     {
         foreach (Enemigo e in enemigos) 
         {
-            if (e.avatarTrf == objetivo) 
+            if (e.isActiveAndEnabled == true && e.avatarTrf == objetivo) 
             {
                 e.AtacarA (objetivo, uno);
             }

@@ -13,14 +13,15 @@ public class Enemigo : MonoBehaviour
 
     [SerializeField] private float puntosGol;
     [SerializeField] private int saltoDef, aranyazoDef, aleatoriedad, velocidadMov, velocidadRot, distanciaMaxObj;
-    private bool perseguir, reposicionado, objetivo1;
+    private bool perseguir, reposicionado, objetivo1, alcanzadoObj;
+    private Vector3 posicionIni, destinoRnd;
     private NavMeshAgent agente;
     private CharacterController personajeCtr;
-    [SerializeField] private Transform objetivoTrf, puntoTrf;
-    private Vector3 posicionIni, destinoRnd;
+    private Transform objetivoTrf, puntoTrf;
     private List<Transform> companyerosCer;
     private AreaEnemiga zona;
     private int indicePnt;
+    private Animator animador;
 
     
     // Inicialización de variables.
@@ -28,14 +29,17 @@ public class Enemigo : MonoBehaviour
     {
         perseguir = false;
         reposicionado = false;
-        agente = this.GetComponent<NavMeshAgent> ();
-        personajeCtr = this.GetComponent<CharacterController> ();
-        objetivoTrf = null;
+        alcanzadoObj = false;
         posicionIni = this.transform.position;
+        agente = this.GetComponent<NavMeshAgent> ();
         agente.updatePosition = false;
         agente.updateRotation = false;
+        agente.destination = posicionIni;
+        personajeCtr = this.GetComponent<CharacterController> ();
+        objetivoTrf = null;
         companyerosCer = new List<Transform> ();
         zona = this.transform.parent.GetComponent<AreaEnemiga> ();
+        animador = this.GetComponentInChildren<Animator> ();
     }
 
 
@@ -43,11 +47,16 @@ public class Enemigo : MonoBehaviour
     //caiga sobre él y le haga daño, la nueva posición se definirá cada cierto tiempo.
     private void Update ()
     {
+        alcanzadoObj = Vector3.Distance (this.transform.position, agente.destination) < distanciaMaxObj;
         if (perseguir == true) 
         {
-            if (this.transform.position.y >= objetivoTrf.position.y) 
+            if (avatarTrf.name == "Abedul" || this.transform.position.y >= objetivoTrf.position.y) 
             {
                 MoverAgenteYControlador (puntoTrf.position);
+                if (this.IsInvoking () == true) 
+                {
+                    this.CancelInvoke ("Reposicionado");
+                }
             }
             else 
             {
@@ -57,6 +66,8 @@ public class Enemigo : MonoBehaviour
                 {
                     if (this.IsInvoking () == false)
                     {
+                        destinoRnd = new Vector3 (avatarTrf.position.x + Random.Range (-aleatoriedad, +aleatoriedad), this.transform.position.y, avatarTrf.position.z + Random.Range (-aleatoriedad, +aleatoriedad));
+
                         this.Invoke ("Reposicionado", Random.Range (1f, 2f));
                     }
                 }
@@ -70,6 +81,8 @@ public class Enemigo : MonoBehaviour
         {
             MoverAgenteYControlador (posicionIni);
         }
+
+        Animar ();
     }
 
 
@@ -170,7 +183,11 @@ public class Enemigo : MonoBehaviour
                 zona.tomadosPnt[indicePnt] = false;
             }
 
-            zona.APor (avatarTrf, objetivo1);
+            if (avatarTrf.name == "Abedul" || this.transform.position.y >= objetivoTrf.position.y) 
+            {
+                zona.APor (avatarTrf, objetivo1);
+            }
+
             this.gameObject.SetActive (false);
 
             return true;
@@ -182,7 +199,6 @@ public class Enemigo : MonoBehaviour
     private void Reposicionado () 
     {
         reposicionado = true;
-        destinoRnd = new Vector3 (avatarTrf.position.x + Random.Range (-aleatoriedad, +aleatoriedad), this.transform.position.y, avatarTrf.position.z + Random.Range (-aleatoriedad, +aleatoriedad));
     }
 
 
@@ -224,16 +240,26 @@ public class Enemigo : MonoBehaviour
             agente.SetDestination (objetivo);
         }
 
-        if (Vector3.Distance (this.transform.position, agente.destination) > distanciaMaxObj)
+        if (alcanzadoObj == false)
         {
             personajeCtr.Move (agente.desiredVelocity.normalized * Time.deltaTime * velocidadMov);
 
             agente.velocity = personajeCtr.velocity;
-            this.transform.rotation = Quaternion.Lerp (this.transform.rotation, Quaternion.Euler (this.transform.rotation.x, Mathf.Atan2 (personajeCtr.velocity.x, personajeCtr.velocity.z) * Mathf.Rad2Deg, this.transform.rotation.z), 
-                Time.deltaTime * velocidadRot);
+            if (agente.velocity != Vector3.zero) 
+            {
+                this.transform.rotation = Quaternion.Lerp (this.transform.rotation, Quaternion.Euler (this.transform.rotation.x, Mathf.Atan2 (personajeCtr.velocity.x, personajeCtr.velocity.z) * Mathf.Rad2Deg, this.transform.rotation.z),
+                    Time.deltaTime * velocidadRot);
+            }
             this.transform.position = new Vector3 (this.transform.position.x, posicionIni.y, this.transform.position.z);
         }
 
         agente.nextPosition = this.transform.position;
+    }
+
+
+    // .
+    private void Animar () 
+    {
+        animador.SetBool ("moviendose", !alcanzadoObj);
     }
 }

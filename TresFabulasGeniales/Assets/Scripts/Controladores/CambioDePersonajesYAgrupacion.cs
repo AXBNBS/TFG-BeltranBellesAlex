@@ -12,6 +12,8 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
 
     [SerializeField] private LayerMask avataresCap, capasSinAvt;
     private MovimientoHistoria2[] personajesMov;
+    private Ataque[] personajesAtq;
+    private Empujar abedulEmp;
     private Transform[] personajesTrf, detrases, puntosSeg;
     private SeguimientoCamara camara;
     private ColisionesCamara camaraHij;
@@ -26,6 +28,17 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
         juntos = false;
         violetaAct = true;
         personajesMov = GameObject.FindObjectsOfType<MovimientoHistoria2> ();
+        personajesAtq = new Ataque[2];
+        personajesAtq[0] = personajesMov[0].GetComponent<Ataque> ();
+        personajesAtq[1] = personajesMov[1].GetComponent<Ataque> ();
+        if (personajesMov[0].GetComponent<Empujar> () != null)
+        {
+            abedulEmp = personajesMov[0].GetComponent<Empujar> ();
+        }
+        else 
+        {
+            abedulEmp = personajesMov[1].GetComponent<Empujar> ();
+        }
         personajesTrf = new Transform[2];
         detrases = new Transform[2];
         puntosSeg = new Transform[2];
@@ -105,22 +118,34 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     }
 
 
-    // .
-    public void PararInput () 
+    // Al cambiar de personaje, dejamos de permitir el input en este script, impedimos el movimiento de la cámara, que el personaje controlado hasta ahora pueda moverse y atacar (también empujar si este era Abedul) y que la cámara se ajuste en base
+    //a las colisiones con el entorno.
+    private void PararInput () 
     {
         input = false;
         camara.input = false;
-        personajesMov[personajeAct == 0 ? 0 : 1].input = false;
+        personajesMov[personajeAct].input = false;
+        personajesAtq[personajeAct].input = false;
+        if (violetaAct == false) 
+        {
+            abedulEmp.input = false;
+        }
         camaraHij.enabled = false;
     }
 
 
-    // .
+    // Una vez la cámara ha alcanzado el nuevo personaje controlado, permitimos de nuevo el input en este script, el movimiento de la cámara, el ataque y movimiento de este nuevo personaje (si es Abedul, también el empuje) y que la cámara se ajuste
+    //en base a las colisiones con el entorno.
     public void PermitirInput () 
     {
         input = true;
         camara.input = true;
         personajesMov[personajeAct].input = true;
+        personajesAtq[personajeAct].input = true;
+        if (violetaAct == false) 
+        {
+            abedulEmp.input = true;
+        }
         camaraHij.enabled = true;
     }
 

@@ -63,7 +63,7 @@ public class Ataque : MonoBehaviour
     // Hacemos que el avatar rebote tras tocar la cabeza del enemigo y además le cause daño.
     private void OnTriggerStay (Collider other)
     {
-        if (saltado == false && movimientoScr.sueleado == false && other.CompareTag ("Rebote") == true) 
+        if (saltado == false && movimientoScr.sueleado == false && other.CompareTag ("Rebote") == true && this.name != "Abedul") 
         {
             saltado = true;
             movimientoScr.movimiento.y = reboteVel;
@@ -101,10 +101,10 @@ public class Ataque : MonoBehaviour
 
 
     // Pal debug.
-    private void OnDrawGizmos ()
+    /*private void OnDrawGizmos ()
     {
         Gizmos.DrawLine (centroTrf.position, centroTrf.position - this.transform.right * longitudRay);
-    }
+    }*/
 
 
     // Activamos el trigger del animador que permite que se reproduzca la animación de atacar.
