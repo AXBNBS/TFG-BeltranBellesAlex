@@ -10,15 +10,15 @@ public class Ataque : MonoBehaviour
 {
     public bool input;
 
-    [SerializeField] private float saltoFrz, aranyazoFrz;
+    [SerializeField] private float saltoFrz, aranyazoFrz, rangoAtq;
     private MovimientoHistoria2 movimientoScr;
     private CharacterController characterCtr;
     private float reboteVel, longitudRay;
     private NavMeshAgent agente;
-    [SerializeField] private bool saltado, aranyado;
+    private bool saltado, aranyado;
     private Animator animador;
     private LayerMask enemigosCap;
-    private Transform centroTrf;
+    private Transform ataqueCenTrf;
 
     
     // Inicialización de variables.
@@ -33,7 +33,7 @@ public class Ataque : MonoBehaviour
         aranyado = false;
         animador = this.GetComponentInChildren<Animator> ();
         enemigosCap = LayerMask.GetMask ("Enemigos");
-        centroTrf = this.transform.GetChild (2);
+        ataqueCenTrf = this.transform.GetChild (4);
     }
 
 
@@ -42,7 +42,7 @@ public class Ataque : MonoBehaviour
     {
         if (input == true && Input.GetButtonDown ("Atacar") == true) 
         {
-            Animar ();
+            IniciarAtaque ();
         }
         if (animador.GetCurrentAnimatorStateInfo(0).IsTag ("Ataque") == true)
         {
@@ -103,12 +103,15 @@ public class Ataque : MonoBehaviour
     // Pal debug.
     /*private void OnDrawGizmos ()
     {
-        Gizmos.DrawLine (centroTrf.position, centroTrf.position - this.transform.right * longitudRay);
+        if (ataqueCenTrf != null) 
+        {
+            Gizmos.DrawWireSphere (ataqueCenTrf.position, rangoAtq);
+        }
     }*/
 
 
     // Activamos el trigger del animador que permite que se reproduzca la animación de atacar.
-    private void Animar () 
+    public void IniciarAtaque () 
     {
         animador.SetTrigger ("atacando");
     }
@@ -117,7 +120,19 @@ public class Ataque : MonoBehaviour
     // .
     private void Atacar () 
     {
-        RaycastHit rayoDat;
+        Collider[] enemigosCol = Physics.OverlapSphere (ataqueCenTrf.position, rangoAtq, enemigosCap, QueryTriggerInteraction.Ignore);
+
+        foreach (Collider e in enemigosCol) 
+        {
+            Enemigo enemigo = e.GetComponent<Enemigo> ();
+
+            enemigo.Danyar (aranyazoFrz, false);
+            if (enemigo.ChecarDerrotado () == true && movimientoScr.input == false) 
+            {
+                movimientoScr.PosicionEnemigoCercano ();
+            }
+        }
+        /*RaycastHit rayoDat;
 
         if (Physics.Raycast (centroTrf.position, -this.transform.right, out rayoDat, longitudRay, enemigosCap, QueryTriggerInteraction.Ignore) == true) 
         {
@@ -129,6 +144,6 @@ public class Ataque : MonoBehaviour
             {
                 movimientoScr.PosicionEnemigoCercano ();
             }
-        }
+        }*/
     }
 }

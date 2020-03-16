@@ -13,15 +13,18 @@ public class Enemigo : MonoBehaviour
 
     [SerializeField] private float puntosGol;
     [SerializeField] private int saltoDef, aranyazoDef, aleatoriedad, velocidadMov, velocidadRot, distanciaMaxObj;
-    private bool perseguir, reposicionado, objetivo1, alcanzadoObj;
+    private bool perseguir, reposicionado, objetivo1, alcanzadoObj, parado;
+    [SerializeField] private bool cercanoAvt;
     private Vector3 posicionIni, destinoRnd;
     private NavMeshAgent agente;
     private CharacterController personajeCtr;
-    private Transform objetivoTrf, puntoTrf;
+    private Transform objetivoTrf;
+    private Vector3 offsetObj;
     private List<Transform> companyerosCer;
     private AreaEnemiga zona;
     private int indicePnt;
     private Animator animador;
+    private GameObject rebotador;
 
     
     // Inicialización de variables.
@@ -30,6 +33,7 @@ public class Enemigo : MonoBehaviour
         perseguir = false;
         reposicionado = false;
         alcanzadoObj = false;
+        parado = false;
         posicionIni = this.transform.position;
         agente = this.GetComponent<NavMeshAgent> ();
         agente.updatePosition = false;
@@ -40,6 +44,7 @@ public class Enemigo : MonoBehaviour
         companyerosCer = new List<Transform> ();
         zona = this.transform.parent.GetComponent<AreaEnemiga> ();
         animador = this.GetComponentInChildren<Animator> ();
+        rebotador = this.transform.GetChild(0).gameObject;
     }
 
 
@@ -52,7 +57,7 @@ public class Enemigo : MonoBehaviour
         {
             if (avatarTrf.name == "Abedul" || this.transform.position.y >= objetivoTrf.position.y) 
             {
-                MoverAgenteYControlador (puntoTrf.position);
+                MoverAgenteYControlador (objetivoTrf.position + offsetObj, true, true);
                 if (this.IsInvoking () == true) 
                 {
                     this.CancelInvoke ("Reposicionado");
@@ -79,39 +84,62 @@ public class Enemigo : MonoBehaviour
         }
         else 
         {
-            MoverAgenteYControlador (posicionIni);
+            if (alcanzadoObj == false && puntosGol >= 0)
+            {
+                StartCoroutine ("VolverAPosicionInicial");
+            }
         }
 
         Animar ();
     }
 
 
-    // .
-    /*private void OnTriggerEnter (Collider other)
+    // Si el enemigo ha muerto, lo acercamos lentamente al suelo para que cuadre con la animación de muerte.
+    private void FixedUpdate ()
     {
-        if (other.CompareTag ("EspacioEnemigo") == true && other.transform.parent != this.transform) 
+        if (puntosGol < 0) 
         {
-            companyerosCer.Add (other.transform.parent);
+            this.transform.Translate (new Vector3 (0, -0.4f, 0));
         }
     }
 
 
-    // .
-    private void OnTriggerExit (Collider other)
+    // Puede servir para ver que hacer cuando no podemos llegar al punto.
+    /*private void OnControllerColliderHit (ControllerColliderHit hit)
     {
-        if (other.CompareTag ("EspacioEnemigo") == true)
-        {
-            companyerosCer.Remove (other.transform.parent);
-        }
+        print (this.name + ": " + hit.transform.name);
     }*/
 
 
-    // .
+    // Si el enemigo entra en la esfera que cubre al jugador que es su blanco, consideramos que se encuentra cerca del mismo.
+    private void OnTriggerEnter (Collider other)
+    {
+        if (other.CompareTag ("Jugador") == true && other.transform == avatarTrf) 
+        {
+            cercanoAvt = true;
+        }
+    }
+
+
+    // Si el enemigo sale de la esfera que cubre al jugador que es us blanco, consideramos que se encuentra lejos del mismo.
+    private void OnTriggerExit (Collider other)
+    {
+        if (other.CompareTag ("Jugador") == true && other.transform == avatarTrf)
+        {
+            cercanoAvt = false;
+        }
+    }
+
+
+    // Para marcar el objetivo de los ranoncios.
     private void OnDrawGizmosSelected ()
     {
-        Gizmos.color = Color.red;
+        if (agente != null) 
+        {
+            Gizmos.color = Color.red;
 
-        Gizmos.DrawWireSphere (agente.destination, 1);
+            Gizmos.DrawWireSphere (agente.destination, 1);
+        }
     }
 
 
@@ -127,7 +155,7 @@ public class Enemigo : MonoBehaviour
         perseguir = true;
         avatarTrf = jugador;
         objetivoTrf = jugador.GetChild (3);
-        puntoTrf = this.transform;
+        offsetObj = Vector3.zero;
         objetivo1 = uno;
         for (int p = 0; p < objetivoTrf.childCount; p += 1)
         {
@@ -136,7 +164,7 @@ public class Enemigo : MonoBehaviour
             if (zona.tomadosPnt[indiceArr] == false && distanciaChc < distanciaMin)
             {
                 distanciaMin = distanciaChc;
-                puntoTrf = objetivoTrf.GetChild (p);
+                offsetObj = objetivoTrf.position - objetivoTrf.GetChild(p).position;
                 indicePnt = indiceArr;
             }
         }
@@ -144,6 +172,7 @@ public class Enemigo : MonoBehaviour
         {
             zona.tomadosPnt[indicePnt] = true;
         }
+        //print (this.name + ": " + avatarTrf.name);
     }
 
 
@@ -152,13 +181,9 @@ public class Enemigo : MonoBehaviour
     {
         perseguir = false;
         objetivoTrf = null;
+        parado = true;
 
         this.CancelInvoke ("Reposicionando");
-        /*if (this.gameObject.activeSelf == true) 
-        {
-            agente.SetDestination (posicionIni);
-            print ("jajan't");
-        }*/
     }
 
 
@@ -182,13 +207,12 @@ public class Enemigo : MonoBehaviour
             {
                 zona.tomadosPnt[indicePnt] = false;
             }
+            posicionIni = this.transform.position;
+            perseguir = false;
+            personajeCtr.enabled = false;
 
-            if (avatarTrf.name == "Abedul" || this.transform.position.y >= objetivoTrf.position.y) 
-            {
-                zona.APor (avatarTrf, objetivo1);
-            }
-
-            this.gameObject.SetActive (false);
+            rebotador.SetActive (false);
+            this.Invoke ("Desaparecer", 0.7f);
 
             return true;
         }
@@ -202,40 +226,12 @@ public class Enemigo : MonoBehaviour
     }
 
 
-    // .
-    private void MoverAgenteYControlador (Vector3 objetivo)
+    // Si el nuevo objetivo es distinto al anteriormente asignado y no estamos cerca del jugador.
+    private void MoverAgenteYControlador (Vector3 objetivo, bool mirarObj = false, bool importaCer = false)
     {
         objetivo.y = this.transform.position.y;
 
-        /*if (rodear == true)
-        {
-            float numerador = objetivo1 == false ? indice : indice - zona.perseguidores0;
-            float denominador = objetivo1 == false ? zona.perseguidores0 : zona.perseguidores1;
-
-            switch (numerador % 4) 
-            {
-                case 0:
-                    agente.SetDestination (objetivo + (+numerador / denominador * objetivoTrf.forward + (+(denominador - numerador) / denominador * objetivoTrf.right)).normalized * 10);
-
-                    break;
-                case 1:
-                    agente.SetDestination (objetivo + (-numerador / denominador * objetivoTrf.forward + (+(denominador - numerador) / denominador * objetivoTrf.right)).normalized * 10);
-                    print (objetivo + (-numerador / denominador * objetivoTrf.forward + (+(denominador - numerador) / denominador * objetivoTrf.right)).normalized * 10);
-
-                    break;
-                case 2:
-                    agente.SetDestination (objetivo + (+numerador / denominador * objetivoTrf.forward + (-(denominador - numerador) / denominador * objetivoTrf.right)).normalized * 10);
-
-                    break;
-                default:
-                    agente.SetDestination (objetivo + (-numerador / denominador * objetivoTrf.forward + (-(denominador - numerador) / denominador * objetivoTrf.right)).normalized * 10);
-
-                    break;
-            }
-        }
-        else 
-        {*/
-        if (agente.destination != objetivo) 
+        if ((importaCer == false || cercanoAvt == false) && agente.destination != objetivo) 
         {
             agente.SetDestination (objetivo);
         }
@@ -245,21 +241,65 @@ public class Enemigo : MonoBehaviour
             personajeCtr.Move (agente.desiredVelocity.normalized * Time.deltaTime * velocidadMov);
 
             agente.velocity = personajeCtr.velocity;
-            if (agente.velocity != Vector3.zero) 
+            if (agente.velocity != Vector3.zero)
             {
-                this.transform.rotation = Quaternion.Lerp (this.transform.rotation, Quaternion.Euler (this.transform.rotation.x, Mathf.Atan2 (personajeCtr.velocity.x, personajeCtr.velocity.z) * Mathf.Rad2Deg, this.transform.rotation.z),
-                    Time.deltaTime * velocidadRot);
+                this.transform.rotation = Quaternion.Lerp (this.transform.rotation, Quaternion.Euler (this.transform.rotation.eulerAngles.x, Mathf.Atan2 (personajeCtr.velocity.x, personajeCtr.velocity.z) * Mathf.Rad2Deg, 
+                    this.transform.rotation.eulerAngles.z), Time.deltaTime * velocidadRot);
             }
             this.transform.position = new Vector3 (this.transform.position.x, posicionIni.y, this.transform.position.z);
+            parado = false;
+        }
+        else 
+        {
+            if (mirarObj == true) 
+            {
+                this.transform.rotation = Quaternion.Lerp (this.transform.rotation, Quaternion.Euler (this.transform.rotation.eulerAngles.x, Quaternion.LookRotation(this.transform.position - avatarTrf.position).eulerAngles.y + 180, 
+                    this.transform.rotation.eulerAngles.z), Time.deltaTime * velocidadRot);
+            }
         }
 
         agente.nextPosition = this.transform.position;
     }
 
 
-    // .
+    // Si la salud del enemigo está por debajo de 0, hacemos que reproduzca su animación de muerte, en caso contrario, hacemos que reproduzca su animación de correr o estar parado según si se está desplazando o no.
     private void Animar () 
     {
-        animador.SetBool ("moviendose", !alcanzadoObj);
+        if (puntosGol < 0) 
+        {
+            animador.SetTrigger ("derrotado");
+        }
+        else 
+        {
+            animador.SetBool ("moviendose", alcanzadoObj == false && parado == false);
+        }
+    }
+
+
+    // Tras completar su animación de muerte, desactivamos el objeto que representa al enemigo.
+    private void Desaparecer () 
+    {
+        if (avatarTrf.name == "Abedul" || this.transform.position.y >= objetivoTrf.position.y)
+        {
+            zona.APor (avatarTrf, objetivo1);
+        }
+        this.gameObject.SetActive (false);
+
+        zona.vivos -= 1;
+    }
+
+
+    // Esta corutina se llamará repetidamente cuando no haya avatares en la zona y hará que tras 2 segundos los enemigos se acerquen, frame tras frame, a su posición inicial, una vez se llegue a la misma descartaremos todas las llamadas que haya en
+    //curso relativas a esta misma corutina.
+    private IEnumerator VolverAPosicionInicial () 
+    {
+        yield return new WaitForSeconds (2);
+
+        print (this.name + ": " + "llamada.");
+        MoverAgenteYControlador (posicionIni);
+        if (alcanzadoObj == true) 
+        {
+            this.StopAllCoroutines ();
+        }
     }
 }

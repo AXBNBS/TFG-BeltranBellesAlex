@@ -8,13 +8,14 @@ using UnityEngine;
 public class AreaEnemiga : MonoBehaviour
 {
     public Enemigo[] enemigos;
-    public int perseguidores0, perseguidores1;
+    public int perseguidores0, perseguidores1, vivos;
     public bool[] tomadosPnt;
 
     private List<Transform> dentro;
     private Transform violetaTrf;
     private bool apartandose, apartandoseUltFrm, violeta1, dentroVio;
     private float enemigosY;
+    private MovimientoHistoria2[] jugadoresMov;
 
 
     // Inicialización de variables.
@@ -23,6 +24,7 @@ public class AreaEnemiga : MonoBehaviour
         enemigos = this.GetComponentsInChildren<Enemigo> ();
         perseguidores0 = 0;
         perseguidores1 = 0;
+        vivos = enemigos.Length;
         tomadosPnt = new bool[8];
         dentro = new List<Transform> ();
         violetaTrf = GameObject.Find("Violeta").transform;
@@ -31,6 +33,7 @@ public class AreaEnemiga : MonoBehaviour
         violeta1 = false;
         dentroVio = false;
         enemigosY = enemigos[0].transform.position.y;
+        jugadoresMov = GameObject.FindObjectsOfType<MovimientoHistoria2> ();
         for (int i = 0; i < enemigos.Length; i += 1) 
         {
             enemigos[i].indice = i;
@@ -42,6 +45,13 @@ public class AreaEnemiga : MonoBehaviour
     //los enemigos estaban apartándose y tienen que volver a perseguirla, nos aseguramos de que aquellos enemigos que la tengan como blanco lo hagan.
     private void Update ()
     {
+        if (vivos == 0) 
+        {
+            this.gameObject.SetActive (false);
+            jugadoresMov[0].CombateTerminado ();
+            jugadoresMov[1].CombateTerminado ();
+        }
+
         apartandose = violetaTrf.position.y > enemigosY;
 
         if (dentroVio == true)

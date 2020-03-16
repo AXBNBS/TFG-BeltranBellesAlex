@@ -17,11 +17,12 @@ public class MovimientoHistoria2 : MonoBehaviour
     [SerializeField] private LayerMask capas, capasSinAvt;
     [SerializeField] private MovimientoHistoria2 companyeroMov;
     [SerializeField] private float pararDstSeg, pararDstAtq, ajusteCaiDst;
+    [SerializeField] private bool saltador;
     private int gravedad, empujeVel;
     private bool saltarInp, yendo, empujando, limitadoX, enemigosCer, saltado, cambiando, siguiendoAcb;
     private CharacterController characterCtr;
     private float horizontalInp, verticalInp, offsetBas, sueloDst, radioRotAtq;
-    private Transform camaraTrf, objetivoSeg, companyeroTrf, enemigoTrf;
+    [SerializeField] private Transform camaraTrf, objetivoSeg, companyeroTrf, enemigoTrf;
     private Animator animator;
     private Vector3 empuje;
     private NavMeshAgent mallaAgtNav;
@@ -29,6 +30,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     private enum Estado { normal, siguiendo, atacando };
     private Estado estado;
     private AreaEnemiga areaEng;
+    private Ataque ataqueScr;
 
 
     // Inicialización de variables.
@@ -55,6 +57,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         mallaAgtNav = this.GetComponent<NavMeshAgent> ();
         offsetBas = mallaAgtNav.baseOffset;
         estado = Estado.normal;
+        ataqueScr = this.GetComponent<Ataque> ();
     }
 
 
@@ -94,7 +97,10 @@ public class MovimientoHistoria2 : MonoBehaviour
 
                 break;
             default:
-                SaltarIA ();
+                if (saltador == true) 
+                {
+                    SaltarIA ();
+                }
                 IrHaciaEnemigo ();
 
                 break;
@@ -292,13 +298,15 @@ public class MovimientoHistoria2 : MonoBehaviour
             }
         }
         enemigoTrf = resultado;
-        if (resultado == null) 
-        {
-            estado = Estado.normal;
-            mallaAgtNav.enabled = false;
+    }
 
-            areaEng.gameObject.SetActive (false);
-        }
+
+    // .
+    public void CombateTerminado () 
+    {
+        estado = Estado.normal;
+        mallaAgtNav.enabled = false;
+        enemigosCer = false;
     }
 
 
@@ -473,7 +481,7 @@ public class MovimientoHistoria2 : MonoBehaviour
 
                 break;
             default:
-                animator.SetBool ("moviendose", true);
+                animator.SetBool ("moviendose", saltador == true || mallaAgtNav.velocity != Vector3.zero);
                 animator.SetBool ("tocandoSuelo", mallaAgtNav.baseOffset == offsetBas);
                 animator.SetFloat ("velocidadY", movimiento.y);
 
@@ -485,9 +493,17 @@ public class MovimientoHistoria2 : MonoBehaviour
     // Hacemos que la posición del enemigo a atacar sea el destino del agente.
     private void IrHaciaEnemigo () 
     {
-        if (sueleado == false && mallaAgtNav.baseOffset - offsetBas < ajusteCaiDst) 
+        if (sueleado == true || mallaAgtNav.baseOffset - offsetBas > ajusteCaiDst) 
         {
-            mallaAgtNav.SetDestination (enemigoTrf.position);
+            if (saltador == true || Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (enemigoTrf.position.x, enemigoTrf.position.z)) > pararDstAtq)
+            {
+                mallaAgtNav.SetDestination (enemigoTrf.position);
+            }
+            else 
+            {
+                mallaAgtNav.SetDestination (this.transform.position);
+                ataqueScr.IniciarAtaque ();
+            }
         }
 
         if (Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (enemigoTrf.position.x, enemigoTrf.position.z)) > radioRotAtq) 
