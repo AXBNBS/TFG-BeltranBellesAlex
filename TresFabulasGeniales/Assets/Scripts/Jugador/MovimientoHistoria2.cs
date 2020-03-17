@@ -31,6 +31,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     private Estado estado;
     private AreaEnemiga areaEng;
     private Ataque ataqueScr;
+    private Salud saludScr;
 
 
     // Inicialización de variables.
@@ -58,6 +59,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         offsetBas = mallaAgtNav.baseOffset;
         estado = Estado.normal;
         ataqueScr = this.GetComponent<Ataque> ();
+        saludScr = this.GetComponent<Salud> ();
     }
 
 
@@ -278,7 +280,7 @@ public class MovimientoHistoria2 : MonoBehaviour
 
 
     // Obtiene la posición del enemigo más cercano dentro de la zona en la que se encuentra el jugador actualmente.
-    public void PosicionEnemigoCercano ()
+    public void PosicionEnemigoCercano (Enemigo excluido = null)
     {
         float evaluada;
 
@@ -287,7 +289,7 @@ public class MovimientoHistoria2 : MonoBehaviour
 
         foreach (Enemigo e in areaEng.enemigos)
         {
-            if (e.isActiveAndEnabled == true)
+            if (e.isActiveAndEnabled == true && e != excluido)
             {
                 evaluada = Vector3.Distance (this.transform.position, e.transform.position);
                 if (evaluada < distanciaMin)
@@ -330,7 +332,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     // El personaje controlado por IA salta si está en el suelo y suficientemente cerca del enemigo, simulamos aplicar gravedad cambiando el "base offset" del agente.
     private void SaltarIA () 
     {
-        if (mallaAgtNav.baseOffset == offsetBas && mallaAgtNav.remainingDistance < saltoDst) 
+        if (saludScr.aturdido == false && mallaAgtNav.baseOffset == offsetBas && mallaAgtNav.remainingDistance < saltoDst) 
         {
             SaltarNormal ();
         }
@@ -495,14 +497,21 @@ public class MovimientoHistoria2 : MonoBehaviour
     {
         if (sueleado == true || mallaAgtNav.baseOffset - offsetBas > ajusteCaiDst) 
         {
-            if (saltador == true || Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (enemigoTrf.position.x, enemigoTrf.position.z)) > pararDstAtq)
+            if (saludScr.aturdido == false)
             {
-                mallaAgtNav.SetDestination (enemigoTrf.position);
+                if (saltador == true || Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (enemigoTrf.position.x, enemigoTrf.position.z)) > pararDstAtq)
+                {
+                    mallaAgtNav.SetDestination (enemigoTrf.position);
+                }
+                else
+                {
+                    mallaAgtNav.SetDestination (this.transform.position);
+                    ataqueScr.IniciarAtaque ();
+                }
             }
             else 
             {
                 mallaAgtNav.SetDestination (this.transform.position);
-                ataqueScr.IniciarAtaque ();
             }
         }
 

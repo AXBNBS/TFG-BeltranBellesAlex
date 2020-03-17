@@ -169,6 +169,7 @@ GameObject:
   - component: {fileID: 796876532862441872}
   - component: {fileID: 3002010986360654492}
   - component: {fileID: 1105000601539949260}
+  - component: {fileID: 4511691215726581423}
   m_Layer: 14
   m_Name: Violeta
   m_TagString: Jugador
@@ -206,7 +207,7 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 40
+  m_Radius: 25
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!143 &3002010986360654495
 CharacterController:
@@ -333,6 +334,20 @@ MonoBehaviour:
   saltoFrz: 2
   aranyazoFrz: 1
   rangoAtq: 0
+--- !u!114 &4511691215726581423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3002010986360654483}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b705b9784357aab4a96a15b1bd047b74, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  salud: 3
+  invulnerabilidadTmp: 0.75
 --- !u!1 &3368480631471841218
 GameObject:
   m_ObjectHideFlags: 0

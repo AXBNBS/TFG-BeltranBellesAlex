@@ -90,11 +90,13 @@ public class Ataque : MonoBehaviour
     {
         if (other.CompareTag ("Rebote") == true) 
         {
+            Enemigo enemigo = other.transform.parent.GetComponent<Enemigo> ();
+            
             saltado = false;
 
-            if (other.transform.parent.GetComponent<Enemigo>().ChecarDerrotado () == true && movimientoScr.input == false) 
+            if (enemigo.ChecarDerrotado () == true && movimientoScr.input == false) 
             {
-                movimientoScr.PosicionEnemigoCercano ();
+                movimientoScr.PosicionEnemigoCercano (enemigo);
             }
         }
     }
@@ -129,7 +131,7 @@ public class Ataque : MonoBehaviour
             enemigo.Danyar (aranyazoFrz, false);
             if (enemigo.ChecarDerrotado () == true && movimientoScr.input == false) 
             {
-                movimientoScr.PosicionEnemigoCercano ();
+                movimientoScr.PosicionEnemigoCercano (enemigo);
             }
         }
         /*RaycastHit rayoDat;
