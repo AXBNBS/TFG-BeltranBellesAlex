@@ -99,7 +99,7 @@ MonoBehaviour:
     m_Bits: 32055
   capasSinAvt:
     serializedVersion: 2
-    m_Bits: 15671
+    m_Bits: 11575
 --- !u!114 &281096939554376450
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -214,6 +214,7 @@ MonoBehaviour:
   objetivo: {fileID: 0}
   detras: {fileID: 0}
   movimientoVel: 500
+  cambioPosVel: 0
   abajoLim: -10
   arribaLim: 60
   sensibilidad: 370

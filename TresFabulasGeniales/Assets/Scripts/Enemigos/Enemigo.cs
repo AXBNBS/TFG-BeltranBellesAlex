@@ -15,11 +15,11 @@ public class Enemigo : MonoBehaviour
     [SerializeField] private int saltoDef, aranyazoDef, aleatoriedad, velocidadMov, velocidadRot, distanciaMaxObj;
     private LayerMask jugadorCap;
     private bool perseguir, reposicionado, objetivo1, alcanzadoObj, parado, atacado;
-    [SerializeField] private bool cercanoAvt;
+    private bool cercanoAvt;
     private Vector3 posicionIni, destinoRnd;
     private NavMeshAgent agente;
     private CharacterController personajeCtr;
-    private Transform objetivoTrf, ataqueCenTrf;
+    [SerializeField] private Transform objetivoTrf, ataqueCenTrf;
     private Vector3 offsetObj;
     private List<Transform> companyerosCer;
     private AreaEnemiga zona;
@@ -164,7 +164,11 @@ public class Enemigo : MonoBehaviour
 
         float distanciaMin = float.MaxValue;
 
-        indicePnt = -1;
+        if (indicePnt != -1) 
+        {
+            zona.tomadosPnt[indicePnt] = false;
+            indicePnt = -1;
+        }
         perseguir = true;
         avatarTrf = jugador;
         objetivoTrf = jugador.GetChild (3);
@@ -184,6 +188,7 @@ public class Enemigo : MonoBehaviour
         if (indicePnt != -1)
         {
             zona.tomadosPnt[indicePnt] = true;
+            print (objetivoTrf.parent.name);
         }
     }
 
@@ -192,7 +197,7 @@ public class Enemigo : MonoBehaviour
     public void Parar () 
     {
         perseguir = false;
-        objetivoTrf = null;
+        //objetivoTrf = null;
         parado = true;
         agente.destination = posicionIni;
 
@@ -229,6 +234,13 @@ public class Enemigo : MonoBehaviour
 
             return true;
         }
+    }
+
+
+    // Simplemente devuelve true si el enemigo tiene su salud por debajo de 0.
+    public bool Vencido () 
+    {
+        return (puntosGol < 0);
     }
 
 

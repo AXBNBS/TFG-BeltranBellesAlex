@@ -8,9 +8,10 @@ using UnityEngine;
 public class AreaEnemiga : MonoBehaviour
 {
     public Enemigo[] enemigos;
-    public int perseguidores0, perseguidores1, vivos;
+    public int vivos;
     public bool[] tomadosPnt;
 
+    [SerializeField] private int perseguidores0, perseguidores1;
     private List<Transform> dentro;
     private Transform violetaTrf;
     private bool apartandose, apartandoseUltFrm, violeta1, dentroVio;
@@ -47,9 +48,9 @@ public class AreaEnemiga : MonoBehaviour
     {
         if (vivos == 0) 
         {
-            this.gameObject.SetActive (false);
             jugadoresMov[0].CombateTerminado ();
             jugadoresMov[1].CombateTerminado ();
+            this.gameObject.SetActive (false);
         }
 
         apartandose = violetaTrf.position.y > enemigosY;
@@ -81,27 +82,15 @@ public class AreaEnemiga : MonoBehaviour
             perseguidores1 = 0;
 
             dentro.Add (other.transform);
-            for (int e = 0; e < enemigos.Length; e += 1)
+            DividirEnemigos ();
+
+            if (dentro.Count > 1)
             {
-                if (dentro.Count > 1 && e >= enemigos.Length / 2)
-                {
-                    if (dentro[1].name == "Abedul" || apartandose == false) 
-                    {
-                        enemigos[e].AtacarA (dentro[1], true);
-                    }
-
-                    perseguidores1 += 1;
-                    violeta1 = dentro[1] == violetaTrf ? true : false;
-                }
-                else
-                {
-                    if (dentro[0].name == "Abedul" || apartandose == false)
-                    {
-                        enemigos[e].AtacarA (dentro[0], false);
-                    }
-
-                    perseguidores0 += 1;
-                }
+                violeta1 = dentro[1] == violetaTrf;
+            }
+            else 
+            {
+                violeta1 = false;
             }
             if (dentro[dentro.Count - 1] == violetaTrf) 
             {
@@ -117,28 +106,35 @@ public class AreaEnemiga : MonoBehaviour
     {
         if (other.CompareTag ("Jugador") == true) 
         {
+            perseguidores0 = 0;
+            perseguidores1 = 0;
+
             dentro.Remove (other.transform);
             if (dentro.Count == 0)
             {
                 foreach (Enemigo e in enemigos)
                 {
-                    e.Parar ();
+                    if (e.Vencido () == false) 
+                    {
+                        e.Parar ();
+                    }
                 }
                 ReiniciarArrayBooleanos (true);
 
-                perseguidores0 = 0;
-                perseguidores1 = 0;
                 dentroVio = false;
             }
             else
             {
                 foreach (Enemigo e in enemigos)
                 {
-                    e.AtacarA (dentro[0], false);
+                    if (e.Vencido () == false) 
+                    {
+                        perseguidores0 += 1;
+
+                        e.AtacarA (dentro[0], false);
+                    }
                 }
 
-                perseguidores0 = enemigos.Length;
-                perseguidores1 = 0;
                 if (dentro[0] != violetaTrf) 
                 {
                     dentroVio = false;
@@ -148,12 +144,12 @@ public class AreaEnemiga : MonoBehaviour
     }
 
 
-    // Reiniciamos la array de booleanos, poniéndolos todos a falso o sólo la mitad que corresponda a violeta.
+    // Reiniciamos la array de booleanos, poniéndolos todos a falso o sólo la mitad que corresponda a Violeta.
     public void ReiniciarArrayBooleanos (bool todos) 
     {
         if (todos == false)
         {
-            int inicio = violeta1 == false ? 0 : 4;
+            int inicio = violeta1 == false ? 0 : tomadosPnt.Length / 2;
             int fin = inicio + tomadosPnt.Length / 2;
 
             for (int t = inicio; t < fin; t += 1) 
@@ -174,12 +170,96 @@ public class AreaEnemiga : MonoBehaviour
     // Tras eliminar a un enemigo, hacemos que sus compañeros que compartían objetivo se reorganicen para atacar al mismo.
     public void APor (Transform objetivo, bool uno) 
     {
+        if (uno == false)
+        {
+            perseguidores0 = 0;
+        }
+        else 
+        {
+            perseguidores1 = 0;
+        }  
         foreach (Enemigo e in enemigos) 
         {
-            if (e.isActiveAndEnabled == true && e.avatarTrf == objetivo) 
+            if (e.Vencido () == false && e.avatarTrf == objetivo) 
             {
+                if (uno == false)
+                {
+                    perseguidores0 += 1;
+                }
+                else
+                {
+                    perseguidores1 += 1;
+                }
+
                 e.AtacarA (objetivo, uno);
             }
         }
+    }
+
+
+    // Hacemos que la mitad de los enemigos se dirigan hacia uno de los jugadores en caso de que ambos estén en la zona, sino todos irán hacia el único que haya.
+    private void DividirEnemigos () 
+    {
+        int enemigoInd = 0;
+
+        foreach (Enemigo e in enemigos) 
+        {
+            if (e.Vencido () == false) 
+            {
+                if (dentro.Count == 1 || enemigoInd < vivos / 2)
+                {
+                    if (apartandose == false || dentro[0].name == "Abedul")
+                    {
+                        e.AtacarA (dentro[0], false);
+
+                        perseguidores0 += 1;
+                    }
+                    else 
+                    {
+                        e.avatarTrf = dentro[0];
+                    }
+                }
+                else 
+                {
+                    if (apartandose == false || dentro[1].name == "Abedul") 
+                    {
+                        e.AtacarA (dentro[1], true);
+
+                        perseguidores1 += 1;
+                    }
+                    else
+                    {
+                        e.avatarTrf = dentro[1];
+                    }
+                }
+                enemigoInd += 1;
+            }
+        }
+
+
+        /*for (int e = 0; e < enemigos.Length; e += 1)
+        {
+            if (enemigos[e].Vencido () == false) 
+            {
+                if (dentro.Count > 1 && e >= enemigos.Length / 2)
+                {
+                    if (dentro[1].name == "Abedul" || apartandose == false)
+                    {
+                        enemigos[e].AtacarA (dentro[1], true);
+
+                        perseguidores1 += 1;
+                    }
+                }
+                else
+                {
+                    if (dentro[0].name == "Abedul" || apartandose == false)
+                    {
+                        enemigos[e].AtacarA (dentro[0], false);
+
+                        perseguidores0 += 1;
+                    }
+                }
+            }
+        }*/
     }
 }

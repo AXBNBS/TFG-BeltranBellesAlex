@@ -32,6 +32,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     private AreaEnemiga areaEng;
     private Ataque ataqueScr;
     private Salud saludScr;
+    private Enemigo enemigoScr;
 
 
     // Inicialización de variables.
@@ -104,6 +105,7 @@ public class MovimientoHistoria2 : MonoBehaviour
                     SaltarIA ();
                 }
                 IrHaciaEnemigo ();
+                MirarSiCambiarBlanco ();
 
                 break;
         }
@@ -181,14 +183,7 @@ public class MovimientoHistoria2 : MonoBehaviour
             enemigosCer = true;
             areaEng = other.GetComponent<AreaEnemiga> ();
 
-            if (estado == Estado.normal)
-            {
-                companyeroMov.ComenzarAtaque (areaEng);
-            }
-            else 
-            {
-                ComenzarAtaque (areaEng);
-            }
+            ComenzarAtaque ();
         }
     }
 
@@ -203,7 +198,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     }*/
 
 
-    // .
+    // Si el avatar ha salido de una zona con enemigos, desactivamos el booleano que indica si hay enemigos cerca.
     private void OnTriggerExit (Collider other)
     {
         if (other.CompareTag ("AreaEnemiga") == true) 
@@ -265,13 +260,14 @@ public class MovimientoHistoria2 : MonoBehaviour
 
 
     // El compañero pasa a atacar y encuentra el enemigo más cercano a elle dentro de la zona actual.
-    public void ComenzarAtaque (AreaEnemiga zona) 
+    public void ComenzarAtaque () 
     {
-        if (estado == Estado.siguiendo) 
+        if (enemigosCer == true && input == false) 
         {
             estado = Estado.atacando;
+            mallaAgtNav.baseOffset = offsetBas;
+            mallaAgtNav.enabled = true;
             mallaAgtNav.stoppingDistance = pararDstAtq;
-            areaEng = zona;
             CambioDePersonajesYAgrupacion.instancia.juntos = false;
 
             PosicionEnemigoCercano ();
@@ -280,7 +276,7 @@ public class MovimientoHistoria2 : MonoBehaviour
 
 
     // Obtiene la posición del enemigo más cercano dentro de la zona en la que se encuentra el jugador actualmente.
-    public void PosicionEnemigoCercano (Enemigo excluido = null)
+    public void PosicionEnemigoCercano ()
     {
         float evaluada;
 
@@ -289,7 +285,7 @@ public class MovimientoHistoria2 : MonoBehaviour
 
         foreach (Enemigo e in areaEng.enemigos)
         {
-            if (e.isActiveAndEnabled == true && e != excluido)
+            if (e.Vencido () == false)
             {
                 evaluada = Vector3.Distance (this.transform.position, e.transform.position);
                 if (evaluada < distanciaMin)
@@ -300,10 +296,19 @@ public class MovimientoHistoria2 : MonoBehaviour
             }
         }
         enemigoTrf = resultado;
+
+        if (enemigoTrf != null)
+        {
+            enemigoScr = enemigoTrf.GetComponent<Enemigo> ();
+        }
+        else 
+        {
+            CombateTerminado ();
+        }
     }
 
 
-    // .
+    // Si el combate ha terminado (se han eliminado todos los enemigos de la zona), el avatar vuelve al estado normal, se desactiva el NavMeshAgent y se le indica que no hay enemigos cerca.
     public void CombateTerminado () 
     {
         estado = Estado.normal;
@@ -385,7 +390,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     }
 
 
-    // Es que si no flota.
+    // Es que sino flota.
     private void AplicarGravedad () 
     {
         switch (estado) 
@@ -508,17 +513,27 @@ public class MovimientoHistoria2 : MonoBehaviour
                     mallaAgtNav.SetDestination (this.transform.position);
                     ataqueScr.IniciarAtaque ();
                 }
+
+                if (saltador == false || Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (enemigoTrf.position.x, enemigoTrf.position.z)) > radioRotAtq)
+                {
+                    this.transform.rotation = Quaternion.Lerp (this.transform.rotation, Quaternion.Euler (this.transform.rotation.eulerAngles.x,
+                        Quaternion.LookRotation(this.transform.position - enemigoTrf.position).eulerAngles.y - 90, this.transform.rotation.eulerAngles.z), Time.deltaTime * rotacionVel);
+                }
             }
             else 
             {
                 mallaAgtNav.SetDestination (this.transform.position);
             }
         }
+    }
 
-        if (Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (enemigoTrf.position.x, enemigoTrf.position.z)) > radioRotAtq) 
+
+    // En el caso de que el blanco actual haya sido vencido, buscamos a un nuevo objetivo al que atacar.
+    private void MirarSiCambiarBlanco () 
+    {
+        if (enemigoScr.Vencido () == true) 
         {
-            this.transform.rotation = Quaternion.Lerp (this.transform.rotation, Quaternion.Euler (this.transform.rotation.eulerAngles.x,
-                Quaternion.LookRotation(this.transform.position - enemigoTrf.position).eulerAngles.y - 90, this.transform.rotation.eulerAngles.z), Time.deltaTime * rotacionVel);
+            PosicionEnemigoCercano ();
         }
     }
 

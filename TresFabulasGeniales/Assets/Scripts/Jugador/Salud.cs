@@ -15,6 +15,7 @@ public class Salud : MonoBehaviour
     private MovimientoHistoria2 movimientoScr;
     private Ataque ataqueScr;
     private Empujar empujeScr;
+    private SeguimientoCamara camaraScr;
 
     
     // Inicialización de variables.
@@ -27,6 +28,7 @@ public class Salud : MonoBehaviour
         movimientoScr = this.GetComponent<MovimientoHistoria2> ();
         ataqueScr = this.GetComponent<Ataque> ();
         empujeScr = this.GetComponent<Empujar> ();
+        camaraScr = GameObject.FindGameObjectWithTag("CamaraPrincipal").transform.parent.GetComponent<SeguimientoCamara> ();
     }
 
 
@@ -37,11 +39,13 @@ public class Salud : MonoBehaviour
         {
             if (animador.GetCurrentAnimatorStateInfo(0).IsTag ("Aturdimiento") == false && animador.GetAnimatorTransitionInfo(0).IsName ("AnyState -> RecibirDaño") == false)
             {
-                invulnerable = true;
                 aturdido = false;
 
-                this.Invoke ("InvulnerabilidadPerdida", invulnerabilidadTmp);
-                ControlarInput (true);
+                if (CambioDePersonajesYAgrupacion.instancia.ActivarInputAutorizado (this) == true)
+                {
+                    ControlarInput (true);
+                }
+                InvulnerabilidadTemporal ();
             }
         }
     }
@@ -50,7 +54,7 @@ public class Salud : MonoBehaviour
     // Si el jugador no está aturdido, pierde salud si está siendo controlado y no puede moverse durante unos pocos segundos debido al aturdimiento, también activamos una animación que indica que ha recibido daño.
     public void RecibirDanyo () 
     {
-        if (invulnerable == false && animador.GetCurrentAnimatorStateInfo(0).IsTag ("Aturdimiento") == false)
+        if (invulnerable == false && camaraScr.cambioCmp == true && animador.GetCurrentAnimatorStateInfo(0).IsTag ("Aturdimiento") == false)
         {
             if (movimientoScr.input == true)
             {
@@ -62,6 +66,15 @@ public class Salud : MonoBehaviour
             Animar (true);
             this.Invoke ("PararAnimacion", 0.5f);
         }
+    }
+
+
+    // El personaje es invulnerable durante un pequeño periodo de tiempo.
+    public void InvulnerabilidadTemporal () 
+    {
+        invulnerable = true;
+
+        this.Invoke ("InvulnerabilidadPerdida", invulnerabilidadTmp);
     }
 
 
@@ -85,7 +98,7 @@ public class Salud : MonoBehaviour
     }
 
 
-    // Usada como corutina para desactivar la invulnerabilidad tras poco tiempo.
+    // Invocada para desactivar la invulnerabilidad tras poco tiempo.
     private void InvulnerabilidadPerdida () 
     {
         invulnerable = false;

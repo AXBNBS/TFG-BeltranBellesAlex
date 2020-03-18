@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class SeguimientoCamara : MonoBehaviour
 {
-    public bool input, centrar, transicionando;
+    public bool input, centrar, transicionando, cambioCmp;
     public Transform objetivo, detras;
 
     [SerializeField] private int movimientoVel, cambioPosVel, abajoLim, arribaLim, sensibilidad, centradoVel;
@@ -25,6 +25,7 @@ public class SeguimientoCamara : MonoBehaviour
         //Cursor.visible = false;
         centrar = true;
         transicionando = false;
+        cambioCmp = true;
         dialogando = false;
     }
 
@@ -78,7 +79,10 @@ public class SeguimientoCamara : MonoBehaviour
         {
             if (CambioDePersonajesYAgrupacion.instancia != null && this.transform.position == objetivo.position) 
             {
+                cambioCmp = true;
+
                 CambioDePersonajesYAgrupacion.instancia.PermitirInput ();
+                CambioDePersonajesYAgrupacion.instancia.ActivarIACombate ();
             }
 
             if (dialogando == true) 

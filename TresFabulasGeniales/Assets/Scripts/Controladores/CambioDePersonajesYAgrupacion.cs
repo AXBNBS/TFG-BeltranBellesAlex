@@ -13,6 +13,7 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     [SerializeField] private LayerMask avataresCap, capasSinAvt;
     private MovimientoHistoria2[] personajesMov;
     private Ataque[] personajesAtq;
+    private Salud[] personajesSld;
     private Empujar abedulEmp;
     private Transform[] personajesTrf, detrases, puntosSeg;
     private SeguimientoCamara camara;
@@ -31,6 +32,9 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
         personajesAtq = new Ataque[2];
         personajesAtq[0] = personajesMov[0].GetComponent<Ataque> ();
         personajesAtq[1] = personajesMov[1].GetComponent<Ataque> ();
+        personajesSld = new Salud[2];
+        personajesSld[0] = personajesMov[0].GetComponent<Salud> ();
+        personajesSld[1] = personajesMov[1].GetComponent<Salud> ();
         if (personajesMov[0].GetComponent<Empujar> () != null)
         {
             abedulEmp = personajesMov[0].GetComponent<Empujar> ();
@@ -118,6 +122,38 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     }
 
 
+    // Recibe un script de salud de uno de los personajes y devuelve true si este se corresponde con el del personaje actualmente controlado.
+    public bool ActivarInputAutorizado (Salud saludScr) 
+    {
+        int indiceScr = saludScr == personajesSld[0] ? 0 : 1;
+
+        return (indiceScr == personajeAct);
+    }
+
+
+    // Si la cámara ha llegado al personaje que ha de seguir, se activará la IA de combate del no controlado (esto sólo acabará sucediendo si hay enemigos cerca).
+    public void ActivarIACombate () 
+    {
+        personajesMov[personajeAct == 0 ? 1 : 0].ComenzarAtaque ();
+    }
+
+
+    // Una vez la cámara ha alcanzado el nuevo personaje controlado, permitimos de nuevo el input en este script, el movimiento de la cámara, el ataque y movimiento de este nuevo personaje (si es Abedul, también el empuje) y que la cámara se ajuste
+    //en base a las colisiones con el entorno.
+    public void PermitirInput ()
+    {
+        input = true;
+        camara.input = true;
+        personajesMov[personajeAct].input = true;
+        personajesAtq[personajeAct].input = true;
+        if (violetaAct == false)
+        {
+            abedulEmp.input = true;
+        }
+        camaraHij.enabled = true;
+    }
+
+
     // Al cambiar de personaje, dejamos de permitir el input en este script, impedimos el movimiento de la cámara, que el personaje controlado hasta ahora pueda moverse y atacar (también empujar si este era Abedul) y que la cámara se ajuste en base
     //a las colisiones con el entorno.
     private void PararInput () 
@@ -134,22 +170,6 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     }
 
 
-    // Una vez la cámara ha alcanzado el nuevo personaje controlado, permitimos de nuevo el input en este script, el movimiento de la cámara, el ataque y movimiento de este nuevo personaje (si es Abedul, también el empuje) y que la cámara se ajuste
-    //en base a las colisiones con el entorno.
-    public void PermitirInput () 
-    {
-        input = true;
-        camara.input = true;
-        personajesMov[personajeAct].input = true;
-        personajesAtq[personajeAct].input = true;
-        if (violetaAct == false) 
-        {
-            abedulEmp.input = true;
-        }
-        camaraHij.enabled = true;
-    }
-
-
     // La cámara pasa a seguir al nuevo personaje y se desactiva el movimiento del otro, en caso de que el botón de cambio se haya pulsado cuando el personaje desde el que se cambia no está en el aire.
     private void CambiarA (int nuevo, int anterior)
     {
@@ -160,6 +180,7 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
             camara.objetivo = personajesTrf[nuevo];
             camara.detras = detrases[nuevo];
             personajeAct = nuevo;
+            camara.cambioCmp = false;
             if (Vector3.Distance (personajesTrf[nuevo].position, personajesTrf[anterior].position) > 500 || Physics.Linecast (personajesTrf[anterior].position, personajesTrf[nuevo].position, capasSinAvt, QueryTriggerInteraction.Ignore) == true)
             {
                 camara.transicionando = true;
