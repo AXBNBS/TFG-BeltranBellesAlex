@@ -60,6 +60,13 @@ public class AreaEnemiga : MonoBehaviour
             if (apartandose == true && apartandoseUltFrm == false)
             {
                 ReiniciarArrayBooleanos (false);
+                foreach (Enemigo e in enemigos) 
+                {
+                    if (e.avatarTrf == violetaTrf) 
+                    {
+                        e.SinBlanco ();
+                    }
+                }
             }
 
             if (apartandose == false && apartandoseUltFrm == true)
@@ -182,6 +189,10 @@ public class AreaEnemiga : MonoBehaviour
         {
             if (e.Vencido () == false && e.avatarTrf == objetivo) 
             {
+                /*foreach (bool p in tomadosPnt) 
+                {
+                    print (p);
+                }*/
                 if (uno == false)
                 {
                     perseguidores0 += 1;

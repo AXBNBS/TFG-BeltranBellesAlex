@@ -83,6 +83,7 @@ public class SeguimientoCamara : MonoBehaviour
 
                 CambioDePersonajesYAgrupacion.instancia.PermitirInput ();
                 CambioDePersonajesYAgrupacion.instancia.ActivarIACombate ();
+                objetivo.parent.GetComponent<Salud>().InvulnerabilidadTemporal ();
             }
 
             if (dialogando == true) 

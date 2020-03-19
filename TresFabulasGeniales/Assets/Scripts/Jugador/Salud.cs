@@ -64,7 +64,7 @@ public class Salud : MonoBehaviour
 
             ControlarInput (false);
             Animar (true);
-            this.Invoke ("PararAnimacion", 0.5f);
+            this.Invoke ("PararAnimacion", 0.3f);
         }
     }
 
