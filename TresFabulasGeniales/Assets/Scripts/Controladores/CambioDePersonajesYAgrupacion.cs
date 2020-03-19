@@ -117,8 +117,6 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     {
         personajesMov[0].GestionarSeguimiento (false);
         personajesMov[1].GestionarSeguimiento (false);
-
-        juntos = false;
     }
 
 
@@ -208,8 +206,6 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
             {
                 personajesMov[0].GestionarSeguimiento (true);
             }
-            
-            juntos = true;
         }
     }
 }

@@ -22,7 +22,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     private bool saltarInp, yendo, empujando, limitadoX, enemigosCer, saltado, cambiando, siguiendoAcb;
     private CharacterController characterCtr;
     private float horizontalInp, verticalInp, offsetBas, sueloDst, radioRotAtq;
-    [SerializeField] private Transform camaraTrf, objetivoSeg, companyeroTrf, enemigoTrf;
+    private Transform camaraTrf, objetivoSeg, companyeroTrf, enemigoTrf;
     private Animator animator;
     private Vector3 empuje;
     private NavMeshAgent mallaAgtNav;
@@ -83,6 +83,10 @@ public class MovimientoHistoria2 : MonoBehaviour
         movimiento.x = 0;
         movimiento.z = 0;
         sueleado = Sueleado ();
+        if (mallaAgtNav.enabled == false) 
+        {
+            mallaAgtNav.baseOffset = offsetBas;
+        }
 
         switch (estado) 
         {
@@ -229,16 +233,16 @@ public class MovimientoHistoria2 : MonoBehaviour
     {
         mallaAgtNav.enabled = comenzar;
         estado = comenzar == true ? Estado.siguiendo : Estado.normal;
-        mallaAgtNav.stoppingDistance = pararDstSeg;
-        if (comenzar == true)
+        if (enemigosCer == false) 
         {
-            mallaAgtNav.baseOffset = offsetBas;
-        }
-        else 
-        {
-            siguiendoAcb = true;
+            mallaAgtNav.stoppingDistance = pararDstSeg;
+            CambioDePersonajesYAgrupacion.instancia.juntos = comenzar;
+            if (comenzar == false)
+            {
+                siguiendoAcb = true;
 
-            this.Invoke ("FinalizarSeguimiento", 0.1f);
+                this.Invoke ("FinalizarSeguimiento", 0.1f);
+            }
         }
     }
 
@@ -265,7 +269,6 @@ public class MovimientoHistoria2 : MonoBehaviour
         if (enemigosCer == true && input == false) 
         {
             estado = Estado.atacando;
-            mallaAgtNav.baseOffset = offsetBas;
             mallaAgtNav.enabled = true;
             mallaAgtNav.stoppingDistance = pararDstAtq;
             CambioDePersonajesYAgrupacion.instancia.juntos = false;

@@ -9,29 +9,30 @@ using UnityEngine.AI;
 public class Enemigo : MonoBehaviour
 {
     public Transform avatarTrf;
+    public bool acercarse;
     [HideInInspector] public int indice;
 
-    [SerializeField] private float puntosGol, rangoAtq;
+    [SerializeField] private float puntosGol, rangoAtq, limiteY;
     [SerializeField] private int saltoDef, aranyazoDef, aleatoriedad, velocidadMov, velocidadRot, distanciaMaxObj;
     private LayerMask jugadorCap;
-    private bool perseguir, reposicionado, objetivo1, alcanzadoObj, parado, atacado;
-    private bool cercanoAvt;
+    private bool perseguir, reposicionado, objetivo1, alcanzadoObj, parado, atacado, cercanoAvt;
     private Vector3 posicionIni, destinoRnd;
     private NavMeshAgent agente;
     private CharacterController personajeCtr;
-    [SerializeField] private Transform objetivoTrf, ataqueCenTrf;
+    private Transform objetivoTrf, ataqueCenTrf;
     private Vector3 offsetObj;
-    private List<Transform> companyerosCer;
+    private EspacioPersonalEnemigo espacioPer;
     private AreaEnemiga zona;
     private int indicePnt;
     private Animator animador;
     private GameObject rebotador;
-    private float cooldown;
+    private float cooldown, acercarseDst;
 
     
     // Inicialización de variables.
     private void Start ()
     {
+        acercarse = false;
         jugadorCap = LayerMask.GetMask (new string[] { "Violeta", "Abedul" });
         perseguir = false;
         reposicionado = false;
@@ -46,10 +47,12 @@ public class Enemigo : MonoBehaviour
         personajeCtr = this.GetComponent<CharacterController> ();
         objetivoTrf = null;
         ataqueCenTrf = this.transform.GetChild (1);
-        companyerosCer = new List<Transform> ();
+        espacioPer = this.GetComponentInChildren<EspacioPersonalEnemigo> ();
         zona = this.transform.parent.GetComponent<AreaEnemiga> ();
+        indicePnt = -1;
         animador = this.GetComponentInChildren<Animator> ();
         rebotador = this.transform.GetChild(0).gameObject;
+        acercarseDst = GameObject.FindGameObjectWithTag("Jugador").GetComponent<SphereCollider>().radius * 3;
     }
 
 
@@ -57,46 +60,52 @@ public class Enemigo : MonoBehaviour
     //caiga sobre él y le haga daño, la nueva posición se definirá cada cierto tiempo.
     private void Update ()
     {
-        alcanzadoObj = Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (agente.destination.x, agente.destination.z)) < distanciaMaxObj;
+        RevisarLista ();
+        
         cooldown -= Time.deltaTime;
-        if (perseguir == true) 
-        {
-            StopAllCoroutines ();
-            if (avatarTrf.name == "Abedul" || this.transform.position.y >= objetivoTrf.position.y) 
+        //if (companyerosCer.Count == 0 || offsetObj != Vector3.zero) 
+        //{
+            alcanzadoObj = acercarse == false ? Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (agente.destination.x, agente.destination.z)) < distanciaMaxObj :
+                espacioPer.companyerosCer.Count != 0 || Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (objetivoTrf.position.x, objetivoTrf.position.z)) < acercarseDst;
+            if (perseguir == true)
             {
-                MoverAgenteYControlador (objetivoTrf.position + offsetObj, true, true);
-                if (this.IsInvoking () == true) 
+                this.StopAllCoroutines ();
+                if (avatarTrf.name == "Abedul" || this.transform.position.y >= objetivoTrf.position.y)
                 {
-                    this.CancelInvoke ("Reposicionado");
-                }
-                MirarSiAtaco ();
-            }
-            else 
-            {
-                MoverAgenteYControlador (destinoRnd);
-
-                if (reposicionado == false)
-                {
-                    if (this.IsInvoking () == false)
+                    MoverAgenteYControlador (objetivoTrf.position + offsetObj, true, true);
+                    if (this.IsInvoking () == true)
                     {
-                        destinoRnd = new Vector3 (avatarTrf.position.x + Random.Range (-aleatoriedad, +aleatoriedad), this.transform.position.y, avatarTrf.position.z + Random.Range (-aleatoriedad, +aleatoriedad));
-
-                        this.Invoke ("Reposicionado", Random.Range (1f, 2f));
+                        this.CancelInvoke ("Reposicionado");
                     }
+                    MirarSiAtaco ();
                 }
                 else
                 {
-                    reposicionado = false;
+                    MoverAgenteYControlador (destinoRnd);
+
+                    if (reposicionado == false)
+                    {
+                        if (this.IsInvoking () == false)
+                        {
+                            destinoRnd = new Vector3 (avatarTrf.position.x + Random.Range (-aleatoriedad, +aleatoriedad), this.transform.position.y, avatarTrf.position.z + Random.Range (-aleatoriedad, +aleatoriedad));
+
+                            this.Invoke ("Reposicionado", Random.Range(1f, 2f));
+                        }
+                    }
+                    else
+                    {
+                        reposicionado = false;
+                    }
                 }
             }
-        }
-        else 
-        {
-            if (alcanzadoObj == false && puntosGol >= 0)
+            else
             {
-                StartCoroutine ("VolverAPosicionInicial");
+                if (alcanzadoObj == false && puntosGol >= 0)
+                {
+                    this.StartCoroutine ("VolverAPosicionInicial");
+                }
             }
-        }
+        //}
 
         Animar ();
     }
@@ -105,9 +114,9 @@ public class Enemigo : MonoBehaviour
     // Si el enemigo ha muerto, lo acercamos lentamente al suelo para que cuadre con la animación de muerte.
     private void FixedUpdate ()
     {
-        if (puntosGol < 0) 
+        if (puntosGol < 0 && this.transform.position.y > limiteY) 
         {
-            this.transform.Translate (new Vector3 (0, -0.4f, 0));
+            this.transform.Translate (new Vector3 (0, -0.6f, 0));
         }
     }
 
@@ -115,14 +124,18 @@ public class Enemigo : MonoBehaviour
     // Puede servir para ver que hacer cuando no podemos llegar al punto.
     /*private void OnControllerColliderHit (ControllerColliderHit hit)
     {
-        print (this.name + ": " + hit.transform.name);
+        if (acercarse == true && hit.transform.CompareTag ("Enemigo") == true && companyerosCer.ContainsKey (hit.transform) == false) 
+        {
+            companyerosCer.Add (hit.transform, Vector3.Distance (hit.transform.position, this.transform.position));
+            hit.transform.GetComponent<Enemigo>().companyerosCer.Remove (this.transform);
+        }
     }*/
 
 
     // Si el enemigo entra en la esfera que cubre al jugador que es su blanco, consideramos que se encuentra cerca del mismo.
     private void OnTriggerEnter (Collider other)
     {
-        if (other.CompareTag ("Jugador") == true && other.transform == avatarTrf) 
+        if (other.CompareTag ("Jugador") == true && other.transform == avatarTrf)
         {
             cercanoAvt = true;
             cooldown = 1.25f;
@@ -164,11 +177,6 @@ public class Enemigo : MonoBehaviour
 
         float distanciaMin = float.MaxValue;
 
-        if (indicePnt != -1) 
-        {
-            zona.tomadosPnt[indicePnt] = false;
-            indicePnt = -1;
-        }
         perseguir = true;
         avatarTrf = jugador;
         objetivoTrf = jugador.GetChild (3);
@@ -176,7 +184,7 @@ public class Enemigo : MonoBehaviour
         objetivo1 = uno;
         for (int p = 0; p < objetivoTrf.childCount; p += 1)
         {
-            indiceArr = objetivo1 == false ? p : p + 4;
+            indiceArr = objetivo1 == false ? p : p + zona.tomadosPnt.Length / 2;
             distanciaChc = Vector3.Distance (objetivoTrf.GetChild(p).position, this.transform.position);
             if (zona.tomadosPnt[indiceArr] == false && distanciaChc < distanciaMin)
             {
@@ -188,7 +196,10 @@ public class Enemigo : MonoBehaviour
         if (indicePnt != -1)
         {
             zona.tomadosPnt[indicePnt] = true;
-            print (objetivoTrf.parent.name);
+        }
+        else 
+        {
+            acercarse = true;
         }
     }
 
@@ -230,7 +241,7 @@ public class Enemigo : MonoBehaviour
             personajeCtr.enabled = false;
 
             rebotador.SetActive (false);
-            this.Invoke ("Desaparecer", 0.7f);
+            this.Invoke ("Desaparecer", 1.5f);
 
             return true;
         }
@@ -241,6 +252,13 @@ public class Enemigo : MonoBehaviour
     public bool Vencido () 
     {
         return (puntosGol < 0);
+    }
+
+
+    // Nos aseguramos de que el punto seguido por el enemigo vuelve a ser nulo.
+    public void SinBlanco () 
+    {
+        indicePnt = -1;
     }
 
 
@@ -341,6 +359,25 @@ public class Enemigo : MonoBehaviour
         {
             atacado = false;
         }
+    }
+
+
+    // .
+    private void RevisarLista () 
+    {
+        /*List<Transform> eliminar = new List<Transform> ();
+
+        foreach (KeyValuePair<Transform, float> c in companyerosCer)
+        {
+            if (Vector3.Distance (c.Key.position, this.transform.position) > c.Value) 
+            {
+                eliminar.Add (c.Key);
+            }
+        }
+        foreach (Transform e in eliminar) 
+        {
+            companyerosCer.Remove (e);
+        }*/
     }
 
 
