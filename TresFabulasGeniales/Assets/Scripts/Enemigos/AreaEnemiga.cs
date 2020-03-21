@@ -33,11 +33,11 @@ public class AreaEnemiga : MonoBehaviour
         apartandoseUltFrm = true;
         violeta1 = false;
         dentroVio = false;
-        enemigosY = enemigos[0].transform.position.y;
+        enemigosY = enemigos[0].transform.GetChild(3).position.y;
         jugadoresMov = GameObject.FindObjectsOfType<MovimientoHistoria2> ();
         for (int i = 0; i < enemigos.Length; i += 1) 
         {
-            enemigos[i].indice = i;
+            enemigos[i].prioridad = i;
         }
     }
 
@@ -89,6 +89,7 @@ public class AreaEnemiga : MonoBehaviour
             perseguidores1 = 0;
 
             dentro.Add (other.transform);
+            ReiniciarArrayBooleanos (true);
             DividirEnemigos ();
 
             if (dentro.Count > 1)
@@ -117,6 +118,7 @@ public class AreaEnemiga : MonoBehaviour
             perseguidores1 = 0;
 
             dentro.Remove (other.transform);
+            ReiniciarArrayBooleanos (true);
             if (dentro.Count == 0)
             {
                 foreach (Enemigo e in enemigos)
@@ -126,7 +128,6 @@ public class AreaEnemiga : MonoBehaviour
                         e.Parar ();
                     }
                 }
-                ReiniciarArrayBooleanos (true);
 
                 dentroVio = false;
             }
@@ -202,7 +203,21 @@ public class AreaEnemiga : MonoBehaviour
                     perseguidores1 += 1;
                 }
 
+                //print (this.name + ": a por " + objetivo.name);
                 e.AtacarA (objetivo, uno);
+            }
+        }
+    }
+
+
+    // Todas las ranuras alrededor del avatar pasan a estar desocupadas.
+    public void LiberarRanuras (Transform avatar) 
+    {
+        foreach (Enemigo e in enemigos) 
+        {
+            if (e.avatarTrf == avatar) 
+            {
+                e.SinBlanco ();
             }
         }
     }
@@ -219,6 +234,7 @@ public class AreaEnemiga : MonoBehaviour
             {
                 if (dentro.Count == 1 || enemigoInd < vivos / 2)
                 {
+                    //print ("Otro pal 0.");
                     if (apartandose == false || dentro[0].name == "Abedul")
                     {
                         e.AtacarA (dentro[0], false);
@@ -232,6 +248,7 @@ public class AreaEnemiga : MonoBehaviour
                 }
                 else 
                 {
+                    //print ("Otro pal 1.");
                     if (apartandose == false || dentro[1].name == "Abedul") 
                     {
                         e.AtacarA (dentro[1], true);

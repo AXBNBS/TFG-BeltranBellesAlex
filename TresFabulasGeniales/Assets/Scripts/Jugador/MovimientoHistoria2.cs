@@ -22,7 +22,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     private bool saltarInp, yendo, empujando, limitadoX, enemigosCer, saltado, cambiando, siguiendoAcb;
     private CharacterController characterCtr;
     private float horizontalInp, verticalInp, offsetBas, sueloDst, radioRotAtq;
-    private Transform camaraTrf, objetivoSeg, companyeroTrf, enemigoTrf;
+    [SerializeField] private Transform camaraTrf, objetivoSeg, companyeroTrf, enemigoTrf;
     private Animator animator;
     private Vector3 empuje;
     private NavMeshAgent mallaAgtNav;
@@ -104,12 +104,15 @@ public class MovimientoHistoria2 : MonoBehaviour
 
                 break;
             default:
-                if (saltador == true) 
+                if (enemigoTrf != null)
                 {
-                    SaltarIA ();
+                    if (saltador == true)
+                    {
+                        SaltarIA ();
+                    }
+                    IrHaciaEnemigo ();
+                    MirarSiCambiarBlanco ();
                 }
-                IrHaciaEnemigo ();
-                MirarSiCambiarBlanco ();
 
                 break;
         }
@@ -273,7 +276,7 @@ public class MovimientoHistoria2 : MonoBehaviour
             mallaAgtNav.stoppingDistance = pararDstAtq;
             CambioDePersonajesYAgrupacion.instancia.juntos = false;
 
-            PosicionEnemigoCercano ();
+            this.Invoke ("PosicionEnemigoCercano", 0.1f);
         }
     }
 
@@ -288,13 +291,29 @@ public class MovimientoHistoria2 : MonoBehaviour
 
         foreach (Enemigo e in areaEng.enemigos)
         {
-            if (e.Vencido () == false)
+            if (e.Vencido () == false && e.avatarTrf == this.transform)
             {
                 evaluada = Vector3.Distance (this.transform.position, e.transform.position);
                 if (evaluada < distanciaMin)
                 {
                     distanciaMin = evaluada;
                     resultado = e.transform;
+                }
+            }
+        }
+        enemigoTrf = resultado;
+        if (enemigoTrf == null)
+        {
+            foreach (Enemigo e in areaEng.enemigos)
+            {
+                if (e.Vencido () == false)
+                {
+                    evaluada = Vector3.Distance (this.transform.position, e.transform.position);
+                    if (evaluada < distanciaMin)
+                    {
+                        distanciaMin = evaluada;
+                        resultado = e.transform;
+                    }
                 }
             }
         }

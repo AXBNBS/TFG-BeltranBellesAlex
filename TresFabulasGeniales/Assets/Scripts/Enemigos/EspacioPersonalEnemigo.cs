@@ -30,7 +30,7 @@ public class EspacioPersonalEnemigo : MonoBehaviour
     // .
     private void OnTriggerEnter (Collider other)
     {
-        if (enemigoScr.acercarse == true && other.CompareTag ("Enemigo") == true && Vector3.Distance (enemigoScr.avatarTrf.position, other.transform.position) < Vector3.Distance (enemigoScr.avatarTrf.position, this.transform.position)) 
+        if (enemigoScr.acercarse == true && other.CompareTag ("Enemigo") == true && other.GetComponent<Enemigo>().prioridad > enemigoScr.prioridad) 
         {
             companyerosCer.Add (other);
         }

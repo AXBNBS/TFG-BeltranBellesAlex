@@ -93,13 +93,13 @@ MonoBehaviour:
   suavizado: 10
   capasVio:
     serializedVersion: 2
-    m_Bits: 48439
+    m_Bits: 44343
   capasAbd:
     serializedVersion: 2
-    m_Bits: 32055
+    m_Bits: 27959
   capasSinAvt:
     serializedVersion: 2
-    m_Bits: 11575
+    m_Bits: 15671
 --- !u!114 &281096939554376450
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -211,6 +211,7 @@ MonoBehaviour:
   input: 1
   centrar: 0
   transicionando: 0
+  cambioCmp: 0
   objetivo: {fileID: 0}
   detras: {fileID: 0}
   movimientoVel: 500

@@ -10,12 +10,12 @@ public class Enemigo : MonoBehaviour
 {
     public Transform avatarTrf;
     public bool acercarse;
-    [HideInInspector] public int indice;
+    [HideInInspector] public int prioridad;
 
     [SerializeField] private float puntosGol, rangoAtq, limiteY;
     [SerializeField] private int saltoDef, aranyazoDef, aleatoriedad, velocidadMov, velocidadRot, distanciaMaxObj;
     private LayerMask jugadorCap;
-    private bool perseguir, reposicionado, objetivo1, alcanzadoObj, parado, atacado, cercanoAvt;
+    private bool perseguir, reposicionado, objetivo1, alcanzadoObj, parado, atacado, cercanoAvt, danyado;
     private Vector3 posicionIni, destinoRnd;
     private NavMeshAgent agente;
     private CharacterController personajeCtr;
@@ -26,7 +26,7 @@ public class Enemigo : MonoBehaviour
     private int indicePnt;
     private Animator animador;
     private GameObject rebotador;
-    private float cooldown, acercarseDst;
+    private float cooldown, acercarseDst, centroY;
 
     
     // Inicialización de variables.
@@ -53,6 +53,7 @@ public class Enemigo : MonoBehaviour
         animador = this.GetComponentInChildren<Animator> ();
         rebotador = this.transform.GetChild(0).gameObject;
         acercarseDst = GameObject.FindGameObjectWithTag("Jugador").GetComponent<SphereCollider>().radius * 3;
+        centroY = this.transform.GetChild(3).position.y;
     }
 
 
@@ -60,51 +61,51 @@ public class Enemigo : MonoBehaviour
     //caiga sobre él y le haga daño, la nueva posición se definirá cada cierto tiempo.
     private void Update ()
     {
-        RevisarLista ();
-        
         cooldown -= Time.deltaTime;
         //if (companyerosCer.Count == 0 || offsetObj != Vector3.zero) 
         //{
-            alcanzadoObj = acercarse == false ? Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (agente.destination.x, agente.destination.z)) < distanciaMaxObj :
-                espacioPer.companyerosCer.Count != 0 || Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (objetivoTrf.position.x, objetivoTrf.position.z)) < acercarseDst;
-            if (perseguir == true)
+        alcanzadoObj = acercarse == false ? Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (agente.destination.x, agente.destination.z)) < distanciaMaxObj :
+            espacioPer.companyerosCer.Count != 0 || Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (objetivoTrf.position.x, objetivoTrf.position.z)) < acercarseDst;
+        if (perseguir == true)
+        {
+            this.StopCoroutine ("VolverAPosicionInicial");
+            if (avatarTrf.name == "Abedul" || objetivoTrf.position.y < centroY)
             {
-                this.StopAllCoroutines ();
-                if (avatarTrf.name == "Abedul" || this.transform.position.y >= objetivoTrf.position.y)
+                //print (this.name + ": siguiendo a " + objetivoTrf.parent.name);
+                MoverAgenteYControlador (objetivoTrf.position + offsetObj, true, true);
+                if (this.IsInvoking () == true)
                 {
-                    MoverAgenteYControlador (objetivoTrf.position + offsetObj, true, true);
-                    if (this.IsInvoking () == true)
-                    {
-                        this.CancelInvoke ("Reposicionado");
-                    }
-                    MirarSiAtaco ();
+                    this.CancelInvoke ("Reposicionado");
                 }
-                else
-                {
-                    MoverAgenteYControlador (destinoRnd);
-
-                    if (reposicionado == false)
-                    {
-                        if (this.IsInvoking () == false)
-                        {
-                            destinoRnd = new Vector3 (avatarTrf.position.x + Random.Range (-aleatoriedad, +aleatoriedad), this.transform.position.y, avatarTrf.position.z + Random.Range (-aleatoriedad, +aleatoriedad));
-
-                            this.Invoke ("Reposicionado", Random.Range(1f, 2f));
-                        }
-                    }
-                    else
-                    {
-                        reposicionado = false;
-                    }
-                }
+                MirarSiAtaco ();
             }
             else
             {
-                if (alcanzadoObj == false && puntosGol >= 0)
+                //print (this.name + ": evitando a " + objetivoTrf.parent.name);
+                MoverAgenteYControlador (destinoRnd);
+
+                if (reposicionado == false)
                 {
-                    this.StartCoroutine ("VolverAPosicionInicial");
+                    if (this.IsInvoking () == false)
+                    {
+                        destinoRnd = new Vector3 (avatarTrf.position.x + Random.Range (-aleatoriedad, +aleatoriedad), this.transform.position.y, avatarTrf.position.z + Random.Range (-aleatoriedad, +aleatoriedad));
+
+                        this.Invoke ("Reposicionado", Random.Range (1f, 2f));
+                    }
+                }
+                else
+                {
+                    reposicionado = false;
                 }
             }
+        }
+        else
+        {
+            if (alcanzadoObj == false && puntosGol >= 0)
+            {
+                this.StartCoroutine ("VolverAPosicionInicial");
+            }
+        }
         //}
 
         Animar ();
@@ -122,14 +123,20 @@ public class Enemigo : MonoBehaviour
 
 
     // Puede servir para ver que hacer cuando no podemos llegar al punto.
-    /*private void OnControllerColliderHit (ControllerColliderHit hit)
+    private void OnControllerColliderHit (ControllerColliderHit hit)
     {
-        if (acercarse == true && hit.transform.CompareTag ("Enemigo") == true && companyerosCer.ContainsKey (hit.transform) == false) 
+        Vector3 movimiento = Vector3.Cross (-hit.normal, hit.moveDirection);
+
+        movimiento.y = 0;
+
+        hit.transform.Translate (movimiento);
+        //hit.transform.GetComponent<CharacterController>().Move (-hit.normal);
+        /*if (acercarse == true && hit.transform.CompareTag ("Enemigo") == true && companyerosCer.ContainsKey (hit.transform) == false) 
         {
             companyerosCer.Add (hit.transform, Vector3.Distance (hit.transform.position, this.transform.position));
             hit.transform.GetComponent<Enemigo>().companyerosCer.Remove (this.transform);
-        }
-    }*/
+        }*/
+    }
 
 
     // Si el enemigo entra en la esfera que cubre al jugador que es su blanco, consideramos que se encuentra cerca del mismo.
@@ -195,6 +202,7 @@ public class Enemigo : MonoBehaviour
         }
         if (indicePnt != -1)
         {
+            acercarse = false;
             zona.tomadosPnt[indicePnt] = true;
         }
         else 
@@ -208,7 +216,6 @@ public class Enemigo : MonoBehaviour
     public void Parar () 
     {
         perseguir = false;
-        //objetivoTrf = null;
         parado = true;
         agente.destination = posicionIni;
 
@@ -220,6 +227,9 @@ public class Enemigo : MonoBehaviour
     public void Danyar (float danyo, bool salto) 
     {
         puntosGol -= salto  == true ? danyo / saltoDef : danyo / aranyazoDef;
+        danyado = true;
+
+        this.Invoke ("AcabarAturdimiento", 0.3f);
     }
 
 
@@ -232,10 +242,12 @@ public class Enemigo : MonoBehaviour
         }
         else
         {
+            /*print (this.name + ": hay que quitar el punto " + indicePnt);
             if (indicePnt != -1) 
             {
+                print (this.name + ": quitado el punto " + indicePnt);
                 zona.tomadosPnt[indicePnt] = false;
-            }
+            }*/
             posicionIni = this.transform.position;
             perseguir = false;
             personajeCtr.enabled = false;
@@ -258,7 +270,11 @@ public class Enemigo : MonoBehaviour
     // Nos aseguramos de que el punto seguido por el enemigo vuelve a ser nulo.
     public void SinBlanco () 
     {
-        indicePnt = -1;
+        if (indicePnt != -1) 
+        {
+            zona.tomadosPnt[indicePnt] = false;
+            indicePnt = -1;
+        }
     }
 
 
@@ -272,36 +288,39 @@ public class Enemigo : MonoBehaviour
     // Si el nuevo objetivo es distinto al anteriormente asignado y no estamos cerca del jugador.
     private void MoverAgenteYControlador (Vector3 objetivo, bool mirarObj = false, bool importaCer = false)
     {
-        objetivo.y = this.transform.position.y;
-
-        if ((importaCer == false || cercanoAvt == false) && agente.destination != objetivo) 
+        if (danyado == false) 
         {
-            agente.SetDestination (objetivo);
-        }
+            objetivo.y = this.transform.position.y;
 
-        if (alcanzadoObj == false)
-        {
-            personajeCtr.Move (agente.desiredVelocity.normalized * Time.deltaTime * velocidadMov);
-
-            agente.velocity = personajeCtr.velocity;
-            this.transform.position = new Vector3 (this.transform.position.x, posicionIni.y, this.transform.position.z);
-            if (agente.velocity != Vector3.zero)
+            if ((importaCer == false || cercanoAvt == false) && agente.destination != objetivo)
             {
-                this.transform.rotation = Quaternion.Lerp (this.transform.rotation, Quaternion.Euler (this.transform.rotation.eulerAngles.x, Mathf.Atan2 (personajeCtr.velocity.x, personajeCtr.velocity.z) * Mathf.Rad2Deg, 
-                    this.transform.rotation.eulerAngles.z), Time.deltaTime * velocidadRot);
+                agente.SetDestination (objetivo);
             }
-            parado = false;
-        }
-        else 
-        {
-            if (mirarObj == true) 
-            {
-                this.transform.rotation = Quaternion.Lerp (this.transform.rotation, Quaternion.Euler (this.transform.rotation.eulerAngles.x, Quaternion.LookRotation(this.transform.position - avatarTrf.position).eulerAngles.y + 180, 
-                    this.transform.rotation.eulerAngles.z), Time.deltaTime * velocidadRot);
-            }
-        }
 
-        agente.nextPosition = this.transform.position;
+            if (alcanzadoObj == false)
+            {
+                personajeCtr.Move (agente.desiredVelocity.normalized * Time.deltaTime * velocidadMov);
+
+                agente.velocity = personajeCtr.velocity;
+                this.transform.position = new Vector3 (this.transform.position.x, posicionIni.y, this.transform.position.z);
+                if (agente.velocity != Vector3.zero)
+                {
+                    this.transform.rotation = Quaternion.Lerp (this.transform.rotation, Quaternion.Euler (this.transform.rotation.eulerAngles.x, Mathf.Atan2 (personajeCtr.velocity.x, personajeCtr.velocity.z) * Mathf.Rad2Deg,
+                        this.transform.rotation.eulerAngles.z), Time.deltaTime * velocidadRot);
+                }
+                parado = false;
+            }
+            else
+            {
+                if (mirarObj == true)
+                {
+                    this.transform.rotation = Quaternion.Lerp (this.transform.rotation, Quaternion.Euler (this.transform.rotation.eulerAngles.x, Quaternion.LookRotation(this.transform.position - avatarTrf.position).eulerAngles.y + 180,
+                        this.transform.rotation.eulerAngles.z), Time.deltaTime * velocidadRot);
+                }
+            }
+
+            agente.nextPosition = this.transform.position;
+        }
     }
 
 
@@ -315,7 +334,8 @@ public class Enemigo : MonoBehaviour
         else 
         {
             animador.SetBool ("moviendose", alcanzadoObj == false && parado == false);
-            if (cercanoAvt == true && cooldown < 0 && this.transform.position.y >= objetivoTrf.position.y) 
+            animador.SetBool ("aturdido", danyado);
+            if (cercanoAvt == true && cooldown < 0 && objetivoTrf.position.y < centroY) 
             {
                 cooldown = 1.25f;
 
@@ -328,7 +348,8 @@ public class Enemigo : MonoBehaviour
     // Tras completar su animación de muerte, desactivamos el objeto que representa al enemigo.
     private void Desaparecer () 
     {
-        if (avatarTrf.name == "Abedul" || this.transform.position.y >= objetivoTrf.position.y)
+        zona.LiberarRanuras (avatarTrf);
+        if (avatarTrf.name == "Abedul" || objetivoTrf.position.y < centroY)
         {
             zona.APor (avatarTrf, objetivo1);
         }
@@ -338,12 +359,12 @@ public class Enemigo : MonoBehaviour
     }
 
 
-    // .
+    // Si se está realizando la animación de ataque, todavía no se ha causado daño a nadie durante la reproducción de esta, y se ha realizado ya más de 55% de la misma, todos los avatares dentro de un cierto rango reciben daños.
     private void MirarSiAtaco () 
     {
         if (animador.GetCurrentAnimatorStateInfo(0).IsTag ("Ataque") == true)
         {
-            if (atacado == false && animador.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.4f)
+            if (atacado == false && animador.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.55f)
             {
                 Collider[] avataresCol = Physics.OverlapSphere (ataqueCenTrf.position, rangoAtq, jugadorCap, QueryTriggerInteraction.Ignore);
 
@@ -362,22 +383,10 @@ public class Enemigo : MonoBehaviour
     }
 
 
-    // .
-    private void RevisarLista () 
+    // Para desactivar la animación de aturdimiento tras un tiempo.
+    private void AcabarAturdimiento () 
     {
-        /*List<Transform> eliminar = new List<Transform> ();
-
-        foreach (KeyValuePair<Transform, float> c in companyerosCer)
-        {
-            if (Vector3.Distance (c.Key.position, this.transform.position) > c.Value) 
-            {
-                eliminar.Add (c.Key);
-            }
-        }
-        foreach (Transform e in eliminar) 
-        {
-            companyerosCer.Remove (e);
-        }*/
+        danyado = false;
     }
 
 

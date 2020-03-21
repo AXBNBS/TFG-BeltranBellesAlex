@@ -46,7 +46,7 @@ public class Ataque : MonoBehaviour
         }
         if (animador.GetCurrentAnimatorStateInfo(0).IsTag ("Ataque") == true)
         {
-            if (aranyado == false && animador.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f)
+            if (aranyado == false && animador.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.5f)
             {
                 Atacar ();
 
@@ -100,13 +100,13 @@ public class Ataque : MonoBehaviour
 
 
     // Pal debug.
-    /*private void OnDrawGizmos ()
+    private void OnDrawGizmos ()
     {
         if (ataqueCenTrf != null) 
         {
             Gizmos.DrawWireSphere (ataqueCenTrf.position, rangoAtq);
         }
-    }*/
+    }
 
 
     // Activamos el trigger del animador que permite que se reproduzca la animación de atacar.
