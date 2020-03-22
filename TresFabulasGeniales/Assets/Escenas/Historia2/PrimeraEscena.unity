@@ -2147,6 +2147,7 @@ MonoBehaviour:
   tomadosPnt: 
   perseguidores0: 0
   perseguidores1: 0
+  alertaRng: 75
 --- !u!135 &152568019
 SphereCollider:
   m_ObjectHideFlags: 0

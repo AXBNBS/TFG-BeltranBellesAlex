@@ -465,7 +465,7 @@ MonoBehaviour:
   input: 0
   saltoFrz: 1
   aranyazoFrz: 2
-  rangoAtq: 5
+  rangoAtq: 8
 --- !u!114 &6535258772666537683
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -478,6 +478,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b705b9784357aab4a96a15b1bd047b74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  aturdido: 0
   salud: 3
   invulnerabilidadTmp: 0.75
 --- !u!114 &2026491328868539950

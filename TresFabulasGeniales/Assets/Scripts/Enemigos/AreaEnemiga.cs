@@ -11,10 +11,10 @@ public class AreaEnemiga : MonoBehaviour
     public int vivos;
     public bool[] tomadosPnt;
 
-    [SerializeField] private int perseguidores0, perseguidores1;
+    [SerializeField] private int perseguidores0, perseguidores1, alertaRng;
     private List<Transform> dentro;
     private Transform violetaTrf;
-    private bool apartandose, apartandoseUltFrm, violeta1, dentroVio;
+    private bool apartandose, apartandoseUltFrm, violeta1, dentroVio, corrutinaActVio, corrutinaActAbd;
     private float enemigosY;
     private MovimientoHistoria2[] jugadoresMov;
 
@@ -223,6 +223,20 @@ public class AreaEnemiga : MonoBehaviour
     }
 
 
+    // .
+    public void Alerta (Transform enemigo, Transform avatar) 
+    {
+        if (corrutinaActVio == false && violetaTrf == avatar) 
+        {
+            this.StartCoroutine ("EsquivarVioleta", enemigo);
+        }
+        if (corrutinaActAbd == false && violetaTrf != avatar)
+        {
+            this.StartCoroutine ("EsquivarAbedul", enemigo);
+        }
+    }
+
+
     // Hacemos que la mitad de los enemigos se dirigan hacia uno de los jugadores en caso de que ambos estén en la zona, sino todos irán hacia el único que haya.
     private void DividirEnemigos () 
     {
@@ -263,31 +277,43 @@ public class AreaEnemiga : MonoBehaviour
                 enemigoInd += 1;
             }
         }
+    }
 
 
-        /*for (int e = 0; e < enemigos.Length; e += 1)
+    // .
+    private IEnumerator EsquivarVioleta (Transform enemigo) 
+    {
+        corrutinaActVio = true;
+
+        yield return new WaitForSeconds (0.3f);
+
+        foreach (Enemigo e in enemigos) 
         {
-            if (enemigos[e].Vencido () == false) 
+            if (e.danyado == false && e.Vencido () == false && e.transform != enemigo && e.avatarTrf == violetaTrf && Vector3.Distance (e.transform.position, enemigo.position) < alertaRng) 
             {
-                if (dentro.Count > 1 && e >= enemigos.Length / 2)
-                {
-                    if (dentro[1].name == "Abedul" || apartandose == false)
-                    {
-                        enemigos[e].AtacarA (dentro[1], true);
-
-                        perseguidores1 += 1;
-                    }
-                }
-                else
-                {
-                    if (dentro[0].name == "Abedul" || apartandose == false)
-                    {
-                        enemigos[e].AtacarA (dentro[0], false);
-
-                        perseguidores0 += 1;
-                    }
-                }
+                e.Saltar ();
             }
-        }*/
+        }
+
+        corrutinaActVio = false;
+    }
+
+
+    // .
+    private IEnumerator EsquivarAbedul (Transform enemigo)
+    {
+        corrutinaActAbd = true;
+
+        yield return new WaitForSeconds (0.3f);
+
+        foreach (Enemigo e in enemigos)
+        {
+            if (e.danyado == false && e.Vencido () == false && e.transform != enemigo && e.avatarTrf != violetaTrf && Vector3.Distance (e.transform.position, enemigo.position) < alertaRng)
+            {
+                e.Saltar ();
+            }
+        }
+
+        corrutinaActAbd = false;
     }
 }

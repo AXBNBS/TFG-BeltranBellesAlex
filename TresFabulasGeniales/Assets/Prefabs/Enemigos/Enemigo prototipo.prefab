@@ -133,6 +133,64 @@ Transform:
   m_Father: {fileID: 6347342489798359407}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3054910323927108831
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7346194168527204092}
+  - component: {fileID: 1204760572526846072}
+  - component: {fileID: 3285885175079433442}
+  m_Layer: 12
+  m_Name: Espalda
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7346194168527204092
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3054910323927108831}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 3.19, z: -2.14}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 6347342489798359407}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1204760572526846072
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3054910323927108831}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2.5, y: 5.0260234, z: 1.687084}
+  m_Center: {x: 0, y: 0.039269857, z: -0.34354156}
+--- !u!114 &3285885175079433442
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3054910323927108831}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 894ac906336db2746af4b4e02c0c7909, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  obstaculos: []
 --- !u!1 &5449259126033505380
 GameObject:
   m_ObjectHideFlags: 0
@@ -197,6 +255,7 @@ Transform:
   - {fileID: 6551008583596750944}
   - {fileID: 7299801523004952157}
   - {fileID: 7470799224072633723}
+  - {fileID: 7346194168527204092}
   - {fileID: 8512296710492695024}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -255,6 +314,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   avatarTrf: {fileID: 0}
   acercarse: 0
+  danyado: 0
   prioridad: 0
   puntosGol: 5
   rangoAtq: 12.5
@@ -265,7 +325,11 @@ MonoBehaviour:
   velocidadMov: 150
   velocidadRot: 10
   distanciaMaxObj: 4
-  indicePnt: 0
+  saltoRayDst: 110
+  pararSalDst: 30
+  capasSal:
+    serializedVersion: 2
+    m_Bits: 57143
 --- !u!1001 &3700679116156895978
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -316,7 +380,7 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: 010a93940d13fe346b8fe9c54f214080,
         type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 010a93940d13fe346b8fe9c54f214080,
         type: 3}

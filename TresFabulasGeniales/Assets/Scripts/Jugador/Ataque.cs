@@ -40,7 +40,7 @@ public class Ataque : MonoBehaviour
     // .
     private void Update ()
     {
-        if (input == true && Input.GetButtonDown ("Atacar") == true) 
+        if (input == true && Input.GetButtonDown ("Atacar") == true && animador.GetCurrentAnimatorStateInfo(0).IsTag ("Ataque") == false) 
         {
             IniciarAtaque ();
         }

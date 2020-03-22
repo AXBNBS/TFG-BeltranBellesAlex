@@ -9,24 +9,25 @@ using UnityEngine.AI;
 public class Enemigo : MonoBehaviour
 {
     public Transform avatarTrf;
-    public bool acercarse;
+    public bool acercarse, danyado;
     [HideInInspector] public int prioridad;
 
     [SerializeField] private float puntosGol, rangoAtq, limiteY;
-    [SerializeField] private int saltoDef, aranyazoDef, aleatoriedad, velocidadMov, velocidadRot, distanciaMaxObj;
+    [SerializeField] private int saltoDef, aranyazoDef, aleatoriedad, velocidadMov, velocidadRot, distanciaMaxObj, saltoRayDst, pararSalDst;
+    [SerializeField] private LayerMask capasSal;
     private LayerMask jugadorCap;
-    private bool perseguir, reposicionado, objetivo1, alcanzadoObj, parado, atacado, cercanoAvt, danyado;
-    private Vector3 posicionIni, destinoRnd;
+    private bool perseguir, reposicionado, objetivo1, alcanzadoObj, parado, atacado, cercanoAvt, saltando;
+    private Vector3 posicionIni, destinoRnd, offsetObj, destinoSal;
     private NavMeshAgent agente;
     private CharacterController personajeCtr;
-    private Transform objetivoTrf, ataqueCenTrf;
-    private Vector3 offsetObj;
+    private Transform objetivoTrf, ataqueCenTrf, centro;
     private EspacioPersonalEnemigo espacioPer;
     private AreaEnemiga zona;
-    private int indicePnt;
+    private int indicePnt, gravedad;
     private Animator animador;
     private GameObject rebotador;
-    private float cooldown, acercarseDst, centroY;
+    private float cooldown, acercarseDst, centroY, saltoDst, distanciaPntSal;
+    private EspaldaEnemigo espalda;
 
     
     // Inicialización de variables.
@@ -47,13 +48,17 @@ public class Enemigo : MonoBehaviour
         personajeCtr = this.GetComponent<CharacterController> ();
         objetivoTrf = null;
         ataqueCenTrf = this.transform.GetChild (1);
+        centro = this.transform.GetChild (3);
         espacioPer = this.GetComponentInChildren<EspacioPersonalEnemigo> ();
         zona = this.transform.parent.GetComponent<AreaEnemiga> ();
         indicePnt = -1;
+        gravedad = -10;
         animador = this.GetComponentInChildren<Animator> ();
         rebotador = this.transform.GetChild(0).gameObject;
         acercarseDst = GameObject.FindGameObjectWithTag("Jugador").GetComponent<SphereCollider>().radius * 3;
-        centroY = this.transform.GetChild(3).position.y;
+        centroY = centro.position.y;
+        saltoDst = saltoRayDst - this.transform.localScale.x * personajeCtr.radius;
+        espalda = this.GetComponentInChildren<EspaldaEnemigo> ();
     }
 
 
@@ -125,17 +130,19 @@ public class Enemigo : MonoBehaviour
     // Puede servir para ver que hacer cuando no podemos llegar al punto.
     private void OnControllerColliderHit (ControllerColliderHit hit)
     {
-        Vector3 movimiento = Vector3.Cross (-hit.normal, hit.moveDirection);
-
-        movimiento.y = 0;
-
-        hit.transform.Translate (movimiento);
-        //hit.transform.GetComponent<CharacterController>().Move (-hit.normal);
-        /*if (acercarse == true && hit.transform.CompareTag ("Enemigo") == true && companyerosCer.ContainsKey (hit.transform) == false) 
+        if (saltando == true && espalda.obstaculos.Contains (hit.collider) == true) 
         {
-            companyerosCer.Add (hit.transform, Vector3.Distance (hit.transform.position, this.transform.position));
-            hit.transform.GetComponent<Enemigo>().companyerosCer.Remove (this.transform);
-        }*/
+            print (this.name + ": encontré el obstáculo " + hit.transform.name + " mientras saltaba.");
+            saltando = false;
+        }
+        if (hit.transform.CompareTag ("Enemigo") == true || hit.transform.CompareTag ("Jugador") == true) 
+        {
+            Vector3 movimiento = Vector3.Cross (-hit.normal, hit.moveDirection);
+
+            movimiento.y = 0;
+
+            hit.transform.Translate (movimiento);
+        }
     }
 
 
@@ -145,7 +152,7 @@ public class Enemigo : MonoBehaviour
         if (other.CompareTag ("Jugador") == true && other.transform == avatarTrf)
         {
             cercanoAvt = true;
-            cooldown = 1.25f;
+            cooldown = Random.Range (1.15f, 1.35f);
         }
     }
 
@@ -165,14 +172,18 @@ public class Enemigo : MonoBehaviour
     {
         Gizmos.color = Color.red;
 
-        if (agente != null) 
+        /*if (agente != null) 
         {
             Gizmos.DrawWireSphere (agente.destination, 1);
         }
         if (ataqueCenTrf != null) 
         {
             Gizmos.DrawWireSphere (ataqueCenTrf.position, rangoAtq);
-        }
+        }*/
+        /*if (centro != null) 
+        {
+            Gizmos.DrawRay (centro.position, -this.transform.forward * saltoDst);
+        }*/
     }
 
 
@@ -228,7 +239,10 @@ public class Enemigo : MonoBehaviour
     {
         puntosGol -= salto  == true ? danyo / saltoDef : danyo / aranyazoDef;
         danyado = true;
+        parado = false;
 
+        zona.Alerta (this.transform, avatarTrf);
+        this.CancelInvoke ("Moverse");
         this.Invoke ("AcabarAturdimiento", 0.3f);
     }
 
@@ -278,6 +292,30 @@ public class Enemigo : MonoBehaviour
     }
 
 
+    // Si detectamos un obstáculo detrás, saltamos una distancia algo anterior a la del mismo; en caso contrario, saltamos la distancia de salto por defecto.
+    public void Saltar () 
+    {
+        RaycastHit infoRay;
+
+        if (Physics.Raycast (centro.position, -this.transform.forward, out infoRay, saltoRayDst, capasSal, QueryTriggerInteraction.Ignore) == true)
+        {
+            if (personajeCtr.radius * 3 < infoRay.distance) 
+            {
+                destinoSal = this.transform.position - this.transform.forward * (infoRay.distance - this.transform.localScale.x * personajeCtr.radius);
+                saltando = true;
+                print (this.name + ": encontré el obstáculo " + infoRay.transform.name + " antes de saltar.");
+            }
+        }
+        else 
+        {
+            destinoSal = this.transform.position - this.transform.forward * saltoDst;
+            saltando = true;
+        }
+        destinoSal.y = posicionIni.y;
+        distanciaPntSal = Vector3.Distance (this.transform.position, destinoSal);
+    }
+
+
     // Tras cierto tiempo, marcamos como verdadero que el enemigo se ha reposicionado para poder hacerlo de nuevo.
     private void Reposicionado () 
     {
@@ -288,37 +326,59 @@ public class Enemigo : MonoBehaviour
     // Si el nuevo objetivo es distinto al anteriormente asignado y no estamos cerca del jugador.
     private void MoverAgenteYControlador (Vector3 objetivo, bool mirarObj = false, bool importaCer = false)
     {
-        if (danyado == false) 
+        if (parado == false) 
         {
-            objetivo.y = this.transform.position.y;
-
-            if ((importaCer == false || cercanoAvt == false) && agente.destination != objetivo)
+            if (saltando == false)
             {
-                agente.SetDestination (objetivo);
-            }
-
-            if (alcanzadoObj == false)
-            {
-                personajeCtr.Move (agente.desiredVelocity.normalized * Time.deltaTime * velocidadMov);
-
-                agente.velocity = personajeCtr.velocity;
-                this.transform.position = new Vector3 (this.transform.position.x, posicionIni.y, this.transform.position.z);
-                if (agente.velocity != Vector3.zero)
+                if (danyado == false)
                 {
-                    this.transform.rotation = Quaternion.Lerp (this.transform.rotation, Quaternion.Euler (this.transform.rotation.eulerAngles.x, Mathf.Atan2 (personajeCtr.velocity.x, personajeCtr.velocity.z) * Mathf.Rad2Deg,
-                        this.transform.rotation.eulerAngles.z), Time.deltaTime * velocidadRot);
+                    objetivo.y = this.transform.position.y;
+
+                    if ((importaCer == false || cercanoAvt == false) && agente.destination != objetivo)
+                    {
+                        agente.SetDestination (objetivo);
+                    }
+
+                    if (alcanzadoObj == false)
+                    {
+                        personajeCtr.Move(agente.desiredVelocity.normalized * Time.deltaTime * velocidadMov);
+
+                        agente.velocity = personajeCtr.velocity;
+                        if (agente.velocity != Vector3.zero)
+                        {
+                            this.transform.rotation = Quaternion.Lerp(this.transform.rotation, Quaternion.Euler(this.transform.rotation.eulerAngles.x, Mathf.Atan2(personajeCtr.velocity.x, personajeCtr.velocity.z) * Mathf.Rad2Deg,
+                                this.transform.rotation.eulerAngles.z), Time.deltaTime * velocidadRot);
+                        }
+                    }
+                    else
+                    {
+                        if (mirarObj == true)
+                        {
+                            this.transform.rotation = Quaternion.Lerp(this.transform.rotation, Quaternion.Euler(this.transform.rotation.eulerAngles.x, Quaternion.LookRotation(this.transform.position - avatarTrf.position).eulerAngles.y + 180,
+                                this.transform.rotation.eulerAngles.z), Time.deltaTime * velocidadRot);
+                        }
+                    }
                 }
-                parado = false;
             }
             else
             {
-                if (mirarObj == true)
+                if (agente.destination != destinoSal)
                 {
-                    this.transform.rotation = Quaternion.Lerp (this.transform.rotation, Quaternion.Euler (this.transform.rotation.eulerAngles.x, Quaternion.LookRotation(this.transform.position - avatarTrf.position).eulerAngles.y + 180,
-                        this.transform.rotation.eulerAngles.z), Time.deltaTime * velocidadRot);
+                    agente.SetDestination(destinoSal);
+                }
+                personajeCtr.Move(agente.desiredVelocity.normalized * Time.deltaTime * Vector3.Distance(this.transform.position, destinoSal) * velocidadMov * 2 / distanciaPntSal);
+
+                agente.velocity = personajeCtr.velocity;
+                if (Vector3.Distance (this.transform.position, destinoSal) < pararSalDst)
+                {
+                    saltando = false;
+                    parado = true;
+
+                    this.Invoke ("Moverse", 1.5f);
                 }
             }
 
+            this.transform.position = new Vector3(this.transform.position.x, posicionIni.y, this.transform.position.z);
             agente.nextPosition = this.transform.position;
         }
     }
@@ -335,9 +395,10 @@ public class Enemigo : MonoBehaviour
         {
             animador.SetBool ("moviendose", alcanzadoObj == false && parado == false);
             animador.SetBool ("aturdido", danyado);
-            if (cercanoAvt == true && cooldown < 0 && objetivoTrf.position.y < centroY) 
+            animador.SetBool ("saltando", saltando);
+            if (cercanoAvt == true && danyado == false && cooldown < 0 && objetivoTrf.position.y < centroY) 
             {
-                cooldown = 1.25f;
+                cooldown = Random.Range (1.15f, 1.35f);
 
                 animador.SetTrigger ("atacado");
             }
@@ -387,6 +448,16 @@ public class Enemigo : MonoBehaviour
     private void AcabarAturdimiento () 
     {
         danyado = false;
+        cooldown = 2;
+
+        this.Invoke ("Saltar", 0.4f);
+    }
+
+
+    // .
+    private void Moverse () 
+    {
+        parado = false;
     }
 
 
@@ -396,8 +467,10 @@ public class Enemigo : MonoBehaviour
     {
         yield return new WaitForSeconds (2);
 
+        parado = false;
+
         MoverAgenteYControlador (posicionIni);
-        if (alcanzadoObj == true) 
+        if (Vector3.Distance (this.transform.position, posicionIni) < 5) 
         {
             this.StopAllCoroutines ();
         }
