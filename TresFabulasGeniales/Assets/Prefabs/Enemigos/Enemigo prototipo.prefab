@@ -327,9 +327,16 @@ MonoBehaviour:
   distanciaMaxObj: 4
   saltoRayDst: 110
   pararSalDst: 30
+  saltoVel: 170
   capasSal:
     serializedVersion: 2
     m_Bits: 57143
+  capsulaCap:
+    serializedVersion: 2
+    m_Bits: 7479
+  rayoCap:
+    serializedVersion: 2
+    m_Bits: 1335
 --- !u!1001 &3700679116156895978
 PrefabInstance:
   m_ObjectHideFlags: 0

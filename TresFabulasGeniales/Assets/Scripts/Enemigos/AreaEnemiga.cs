@@ -20,7 +20,7 @@ public class AreaEnemiga : MonoBehaviour
 
 
     // Inicialización de variables.
-    private void Start ()
+    private void Awake ()
     {
         enemigos = this.GetComponentsInChildren<Enemigo> ();
         perseguidores0 = 0;
