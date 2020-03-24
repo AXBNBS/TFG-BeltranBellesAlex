@@ -346,8 +346,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b705b9784357aab4a96a15b1bd047b74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  aturdido: 0
   salud: 3
   invulnerabilidadTmp: 0.75
+  aturdimientoVelY: 75
 --- !u!1 &3368480631471841218
 GameObject:
   m_ObjectHideFlags: 0

@@ -318,16 +318,17 @@ MonoBehaviour:
   prioridad: 0
   puntosGol: 5
   rangoAtq: 12.5
-  limiteY: -12
+  limiteY: -11.75
   saltoDef: 1
   aranyazoDef: 1
-  aleatoriedad: 50
+  aleatoriedad: 100
   velocidadMov: 150
   velocidadRot: 10
   distanciaMaxObj: 4
-  saltoRayDst: 110
-  pararSalDst: 30
-  saltoVel: 170
+  saltoRayDst: 80
+  pararSalDst: 25
+  saltoVel: 130
+  aturdimientoVelY: 100
   capasSal:
     serializedVersion: 2
     m_Bits: 57143

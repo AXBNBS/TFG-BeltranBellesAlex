@@ -10,12 +10,16 @@ public class Salud : MonoBehaviour
     public bool aturdido;
 
     [SerializeField] private float salud, invulnerabilidadTmp;
+    [SerializeField] private int aturdimientoVelY;
     private bool devolverInp, invulnerable;
+    private float movimientoY, aturdimientoY; 
+    private int gravedad;
     private Animator animador;
     private MovimientoHistoria2 movimientoScr;
     private Ataque ataqueScr;
     private Empujar empujeScr;
     private SeguimientoCamara camaraScr;
+    private CharacterController personajeCtr;
 
     
     // Inicialización de variables.
@@ -24,11 +28,13 @@ public class Salud : MonoBehaviour
         aturdido = false;
         devolverInp = false;
         invulnerable = false;
+        gravedad = -10;
         animador = this.GetComponentInChildren<Animator> ();
         movimientoScr = this.GetComponent<MovimientoHistoria2> ();
         ataqueScr = this.GetComponent<Ataque> ();
         empujeScr = this.GetComponent<Empujar> ();
         camaraScr = GameObject.FindGameObjectWithTag("CamaraPrincipal").transform.parent.GetComponent<SeguimientoCamara> ();
+        personajeCtr = this.GetComponent<CharacterController> ();
     }
 
 
@@ -51,6 +57,20 @@ public class Salud : MonoBehaviour
     }
 
 
+    // .
+    /*private void OnControllerColliderHit (ControllerColliderHit hit)
+    {
+        if (this.name == "Violeta" && hit.transform.name.Contains ("Enemigo") == true) 
+        {
+            print (hit.transform.name);
+        }
+        if (aturdido == true && hit.transform.CompareTag ("Enemigo") == true) 
+        {
+            hit.transform.Translate (new Vector3(-hit.normal.x, 0, -hit.normal.z).normalized);
+        }
+    }*/
+
+
     // Si el jugador no está aturdido, pierde salud si está siendo controlado y no puede moverse durante unos pocos segundos debido al aturdimiento, también activamos una animación que indica que ha recibido daño.
     public void RecibirDanyo () 
     {
@@ -61,10 +81,13 @@ public class Salud : MonoBehaviour
                 salud -= 1;
             }
             aturdido = true;
+            movimientoY = aturdimientoVelY;
+            aturdimientoY = this.transform.position.y;
 
             ControlarInput (false);
             Animar (true);
             this.Invoke ("PararAnimacion", 0.3f);
+            MoverEnY ();
         }
     }
 
@@ -109,5 +132,17 @@ public class Salud : MonoBehaviour
     private void PararAnimacion () 
     {
         Animar (false);
+    }
+
+
+    // Si el personaje está aturdido, lo mueve ligeramente en el eje Y.
+    private void MoverEnY () 
+    {
+        /*movimientoScr.movimiento.y = aturdimientoVelY;
+
+        if (movimientoScr.input == true) 
+        {
+            personajeCtr.Move (new Vector3 (0, aturdimientoVelY, 0) * Time.deltaTime);
+        }*/
     }
 }

@@ -60,10 +60,13 @@ public class AreaEnemiga : MonoBehaviour
             if (apartandose == true && apartandoseUltFrm == false)
             {
                 ReiniciarArrayBooleanos (false);
+
                 foreach (Enemigo e in enemigos) 
                 {
                     if (e.avatarTrf == violetaTrf) 
                     {
+                        e.acercarse = false;
+
                         e.SinBlanco ();
                     }
                 }

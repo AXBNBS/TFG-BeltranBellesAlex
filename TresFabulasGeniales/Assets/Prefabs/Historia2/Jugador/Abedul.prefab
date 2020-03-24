@@ -481,6 +481,7 @@ MonoBehaviour:
   aturdido: 0
   salud: 3
   invulnerabilidadTmp: 0.75
+  aturdimientoVelY: 75
 --- !u!114 &2026491328868539950
 MonoBehaviour:
   m_ObjectHideFlags: 0
