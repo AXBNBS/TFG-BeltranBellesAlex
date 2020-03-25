@@ -418,7 +418,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         switch (estado) 
         {
             case Estado.normal:
-                if (sueleado == true && saltado == false)
+                if (sueleado == true && saltado == false && saludScr.aturdido == false)
                 {
                     movimiento.y = -3;
                     empuje = Vector3.zero;

@@ -58,17 +58,17 @@ public class Salud : MonoBehaviour
 
 
     // .
-    /*private void OnControllerColliderHit (ControllerColliderHit hit)
+    private void OnControllerColliderHit (ControllerColliderHit hit)
     {
-        if (this.name == "Violeta" && hit.transform.name.Contains ("Enemigo") == true) 
+        /*if (this.name == "Abedul" && hit.transform.CompareTag ("Enemigo") == true) 
         {
             print (hit.transform.name);
-        }
-        if (aturdido == true && hit.transform.CompareTag ("Enemigo") == true) 
+        }*/
+        /*if (aturdido == true && hit.transform.CompareTag ("Enemigo") == true) 
         {
             hit.transform.Translate (new Vector3(-hit.normal.x, 0, -hit.normal.z).normalized);
-        }
-    }*/
+        }*/
+    }
 
 
     // Si el jugador no está aturdido, pierde salud si está siendo controlado y no puede moverse durante unos pocos segundos debido al aturdimiento, también activamos una animación que indica que ha recibido daño.
@@ -78,16 +78,15 @@ public class Salud : MonoBehaviour
         {
             if (movimientoScr.input == true)
             {
+                MoverEnY ();
+
                 salud -= 1;
             }
             aturdido = true;
-            movimientoY = aturdimientoVelY;
-            aturdimientoY = this.transform.position.y;
 
             ControlarInput (false);
             Animar (true);
             this.Invoke ("PararAnimacion", 0.3f);
-            MoverEnY ();
         }
     }
 
@@ -138,11 +137,8 @@ public class Salud : MonoBehaviour
     // Si el personaje está aturdido, lo mueve ligeramente en el eje Y.
     private void MoverEnY () 
     {
-        /*movimientoScr.movimiento.y = aturdimientoVelY;
+        movimientoScr.movimiento.y = aturdimientoVelY;
 
-        if (movimientoScr.input == true) 
-        {
-            personajeCtr.Move (new Vector3 (0, aturdimientoVelY, 0) * Time.deltaTime);
-        }*/
+        personajeCtr.Move (new Vector3 (0, aturdimientoVelY, 0) * Time.deltaTime);
     }
 }

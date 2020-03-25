@@ -17,7 +17,7 @@ public class Enemigo : MonoBehaviour
     [SerializeField] private LayerMask capasSal, capsulaCap, rayoCap;
     private LayerMask jugadorCap;
     private bool perseguir, reposicionado, objetivo1, alcanzadoObj, parado, atacado, cercanoAvt, saltando, esperar;
-    private Vector3 posicionIni, destinoRnd, offsetObj, destinoSal, capsulaIni, capsulaFin;
+    private Vector3 posicionIni, destinoRnd, offsetObj, destinoSal, capsulaIni, capsulaFin, destino;
     private NavMeshAgent agente;
     private CharacterController personajeCtr;
     private Transform objetivoTrf, ataqueCenTrf, centro;
@@ -45,8 +45,8 @@ public class Enemigo : MonoBehaviour
         agente.updateRotation = false;
         agente.destination = posicionIni;
         personajeCtr = this.GetComponent<CharacterController> ();
-        capsulaIni = new Vector3 (personajeCtr.bounds.center.x, personajeCtr.bounds.center.y + this.transform.localScale.y * (personajeCtr.height / 2 - personajeCtr.radius), personajeCtr.bounds.center.z);
-        capsulaIni += this.transform.forward * personajeCtr.radius * this.transform.localScale.x * 2;
+        capsulaIni = new Vector3 (personajeCtr.bounds.center.x, personajeCtr.bounds.center.y + this.transform.localScale.y * (personajeCtr.height / 2 - personajeCtr.radius), personajeCtr.bounds.center.z) + this.transform.localScale.x * 
+            this.transform.forward * personajeCtr.radius * 2;
         capsulaFin = new Vector3 (capsulaIni.x, capsulaIni.y - this.transform.localScale.y * (personajeCtr.height - personajeCtr.radius * 2), capsulaIni.z);
         objetivoTrf = null;
         ataqueCenTrf = this.transform.GetChild (1);
@@ -91,7 +91,9 @@ public class Enemigo : MonoBehaviour
             this.StopCoroutine ("VolverAPosicionInicial");
             if (avatarTrf.name == "Abedul" || objetivoTrf.position.y < centroY)
             {
-                MoverAgenteYControlador (objetivoTrf.position + offsetObj, true, true);
+                destino = objetivoTrf.position + offsetObj;
+
+                MoverAgenteYControlador (destino, true, true);
                 //print (this.name + ": siguiendo a " + objetivoTrf.parent.name + " yendo al punto " + agente.destination);
                 if (this.IsInvoking ("Reposicionando") == true)
                 {
@@ -104,6 +106,11 @@ public class Enemigo : MonoBehaviour
                 if (this.IsInvoking ("Reposicionado") == false)
                 {
                     destinoRnd = new Vector3 (avatarTrf.position.x + Random.Range (-aleatoriedad, +aleatoriedad), this.transform.position.y, avatarTrf.position.z + Random.Range (-aleatoriedad, +aleatoriedad));
+                    while (Vector2.Distance (new Vector2 (avatarTrf.position.x, avatarTrf.position.z), new Vector2 (destinoRnd.x, destinoRnd.z)) > personajeCtrRad) 
+                    {
+                        destinoRnd = new Vector3 (avatarTrf.position.x + Random.Range (-aleatoriedad, +aleatoriedad), this.transform.position.y, avatarTrf.position.z + Random.Range (-aleatoriedad, +aleatoriedad));
+                    }
+                    destino = destinoRnd;
 
                     this.Invoke ("Reposicionado", Random.Range (1f, 2f));
                 }
@@ -160,11 +167,12 @@ public class Enemigo : MonoBehaviour
         }
         if (hit.transform.CompareTag ("Enemigo") == true || hit.transform.CompareTag ("Jugador") == true) 
         {
-            Vector3 movimiento = Vector3.Cross (-hit.normal, hit.moveDirection);
+            Transform tocadoTrf = hit.transform;
+            Vector3 movimiento = Mathf.Abs (Vector2.Angle (new Vector2 (hit.moveDirection.x, hit.moveDirection.z), new Vector2 (tocadoTrf.forward.x, tocadoTrf.forward.z)) - 90) < Mathf.Abs (Vector2.Angle 
+                (new Vector2 (hit.moveDirection.x, hit.moveDirection.z), new Vector2 (tocadoTrf.right.x, tocadoTrf.right.z)) - 90) ? tocadoTrf.forward : tocadoTrf.right;
 
-            movimiento.y = 0;
-
-            hit.transform.Translate (movimiento);
+            tocadoTrf.Translate (movimiento);
+            //print (this.name + ": me choqué con " + tocadoTrf.name + " mientras me movía. Le apliqué una fuerza de " + movimiento + " para apartarle (magnitud: " + movimiento.magnitude + ").");
         }
     }
 
@@ -212,7 +220,7 @@ public class Enemigo : MonoBehaviour
         {
             Gizmos.DrawRay (centro.position, -this.transform.forward * saltoDst);
         }*/
-        Gizmos.DrawRay (this.transform.position,  -this.transform.forward * saltoDst);
+        //Gizmos.DrawRay (this.transform.position,  -this.transform.forward * saltoDst);
         //Gizmos.DrawWireCube (this.transform.position, new Vector3 (300, 0, 300));
     }
 
@@ -361,7 +369,7 @@ public class Enemigo : MonoBehaviour
     // Si el nuevo objetivo es distinto al anteriormente asignado y no estamos cerca del jugador.
     private void MoverAgenteYControlador (Vector3 objetivo, bool mirarObj = false, bool importaCer = false)
     {
-        if (parado == false) 
+        if (parado == false && esperar == false) 
         {
             if (saltando == false)
             {
@@ -387,14 +395,6 @@ public class Enemigo : MonoBehaviour
                                 this.transform.rotation.eulerAngles.z), Time.deltaTime * velocidadRot);
                         }
                     }
-                    else
-                    {
-                        if (mirarObj == true)
-                        {
-                            this.transform.rotation = Quaternion.Lerp (this.transform.rotation, Quaternion.Euler (this.transform.rotation.eulerAngles.x, Quaternion.LookRotation(this.transform.position - avatarTrf.position).eulerAngles.y + 180,
-                                this.transform.rotation.eulerAngles.z), Time.deltaTime * velocidadRot);
-                        }
-                    }
                 }
             }
             else
@@ -417,6 +417,11 @@ public class Enemigo : MonoBehaviour
 
             agente.nextPosition = this.transform.position;
         }
+        if (mirarObj == true && (alcanzadoObj == true || esperar == true))
+        {
+            this.transform.rotation = Quaternion.Lerp (this.transform.rotation, Quaternion.Euler (this.transform.rotation.eulerAngles.x, Quaternion.LookRotation(this.transform.position - avatarTrf.position).eulerAngles.y + 180,
+                this.transform.rotation.eulerAngles.z), Time.deltaTime * velocidadRot);
+        }
     }
 
 
@@ -429,7 +434,7 @@ public class Enemigo : MonoBehaviour
         }
         else 
         {
-            animador.SetBool ("moviendose", alcanzadoObj == false && parado == false);
+            animador.SetBool ("moviendose", alcanzadoObj == false && parado == false && esperar == false);
             animador.SetBool ("aturdido", danyado);
             animador.SetBool ("saltando", saltando);
             if (cercanoAvt == true && danyado == false && saltando == false && cooldown < 0 && objetivoTrf.position.y < centroY) 
@@ -525,10 +530,10 @@ public class Enemigo : MonoBehaviour
     {
         if (perseguir == true && acercarse == false && alcanzadoObj == false && parado == false && danyado == false && saltando == false && puntosGol >= 0)
         {
-            Vector3 esferaCen1 = new Vector3 (agente.destination.x, personajeCtr.bounds.center.y + this.transform.localScale.y * (personajeCtr.height / 2 - personajeCtr.radius), agente.destination.z);
+            Vector3 esferaCen1 = new Vector3 (destino.x, personajeCtr.bounds.center.y + this.transform.localScale.y * (personajeCtr.height / 2 - personajeCtr.radius), destino.z);
             Vector3 esferaCen2 = new Vector3 (esferaCen1.x, esferaCen1.y - this.transform.localScale.y * (personajeCtr.height - personajeCtr.radius * 2), esferaCen1.z);
 
-            if (Physics.CheckCapsule (esferaCen1, esferaCen2, personajeCtrRad, capsulaCap, QueryTriggerInteraction.Ignore) == true || Physics.Linecast (centro.position, new Vector3 (agente.destination.x, centro.position.y, agente.destination.z), 
+            if (Physics.CheckCapsule (esferaCen1, esferaCen2, personajeCtrRad, capsulaCap, QueryTriggerInteraction.Ignore) == true || Physics.Linecast (centro.position, new Vector3 (destino.x, centro.position.y, destino.z), 
                 rayoCap, QueryTriggerInteraction.Ignore) == true)
             {
                 esperar = true;

@@ -334,7 +334,7 @@ MonoBehaviour:
     m_Bits: 57143
   capsulaCap:
     serializedVersion: 2
-    m_Bits: 7479
+    m_Bits: 3383
   rayoCap:
     serializedVersion: 2
     m_Bits: 1335

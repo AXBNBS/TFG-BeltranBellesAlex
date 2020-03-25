@@ -33308,8 +33308,8 @@ MonoBehaviour:
   m_IgnoreNavMeshObstacle: 1
   m_OverrideTileSize: 0
   m_TileSize: 256
-  m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.016666668
+  m_OverrideVoxelSize: 1
+  m_VoxelSize: 0.047
   m_BuildHeightMesh: 0
   m_NavMeshData: {fileID: 23800000, guid: 25f0789fc72e29c4ebeb165143bfc2c2, type: 2}
 --- !u!4 &1928859381 stripped
