@@ -8,23 +8,23 @@ using UnityEngine.AI;
 
 public class MovimientoHistoria2 : MonoBehaviour
 {
-    public bool input, sueleado;
+    public bool input, sueleado, perseguir, descansar;
     public Vector3 movimiento;
     public int saltoVel;
     [HideInInspector] public float offsetY, offsetXZ;
 
-    [SerializeField] private int movimientoVel, rotacionVel, saltoDst;
+    [SerializeField] private int movimientoVel, rotacionVel, saltoDst, aleatoriedad;
     [SerializeField] private LayerMask capas, capasSinAvt;
     [SerializeField] private MovimientoHistoria2 companyeroMov;
     [SerializeField] private float pararDstSeg, pararDstAtq, ajusteCaiDst;
     [SerializeField] private bool saltador;
     private int gravedad, empujeVel;
-    private bool saltarInp, yendo, empujando, limitadoX, enemigosCer, saltado, cambiando, siguiendoAcb;
+    [SerializeField] private bool saltarInp, yendo, empujando, limitadoX, enemigosCer, saltado, cambiando, siguiendoAcb, evitando;
     private CharacterController characterCtr;
     private float horizontalInp, verticalInp, offsetBas, sueloDst, radioRotAtq;
-    [SerializeField] private Transform camaraTrf, objetivoSeg, companyeroTrf, enemigoTrf;
+    private Transform camaraTrf, objetivoSeg, companyeroTrf, enemigoTrf;
     private Animator animator;
-    private Vector3 empuje;
+    private Vector3 empuje, puntoAlt;
     private NavMeshAgent mallaAgtNav;
     private ObjetoMovil empujado;
     private enum Estado { normal, siguiendo, atacando };
@@ -87,6 +87,8 @@ public class MovimientoHistoria2 : MonoBehaviour
         {
             mallaAgtNav.baseOffset = offsetBas;
         }
+        //print (this.name + ": " + mallaAgtNav.destination);
+        //print (this.name + ": " + puntoAlt);
 
         switch (estado) 
         {
@@ -272,17 +274,90 @@ public class MovimientoHistoria2 : MonoBehaviour
         if (enemigosCer == true && input == false) 
         {
             estado = Estado.atacando;
+            perseguir = true;
             mallaAgtNav.enabled = true;
             mallaAgtNav.stoppingDistance = pararDstAtq;
             CambioDePersonajesYAgrupacion.instancia.juntos = false;
 
-            this.Invoke ("PosicionEnemigoCercano", 0.1f);
+            //if (saltador == true)
+            //{
+                this.Invoke ("PosicionEnemigoCercano", 0.1f);
+            /*}
+            else 
+            {
+                this.Invoke ("PosicionEnemigoLejano", 0.1f);
+            }*/
         }
     }
 
 
-    // Obtiene la posición del enemigo más cercano dentro de la zona en la que se encuentra el jugador actualmente.
-    public void PosicionEnemigoCercano ()
+    // Si el combate ha terminado (se han eliminado todos los enemigos de la zona), el avatar vuelve al estado normal, se desactiva el NavMeshAgent y se le indica que no hay enemigos cerca.
+    public void CombateTerminado () 
+    {
+        estado = Estado.normal;
+        mallaAgtNav.enabled = false;
+        enemigosCer = false;
+    }
+
+
+    // Obtiene la posición del enemigo más lejano dentro de la zona en la que se encuentra el jugador actualmente, prefiriendo aquellos enemigos que tengan como objetivo al avatar que llama a esta función.
+    public void PosicionEnemigoLejano ()
+    {
+        /*puntoAlt = new Vector3 (Random.Range (-aleatoriedad, +aleatoriedad) + enemigoTrf.position.x, this.transform.position.y, Random.Range (-aleatoriedad, +aleatoriedad) + enemigoTrf.position.z);
+        while (Vector2.Distance (new Vector2 (enemigoTrf.position.x, enemigoTrf.position.z), new Vector2 (puntoAlt.x, puntoAlt.z)) < 
+            enemigoTrf.GetComponent<CharacterController>().radius * enemigoTrf.localScale.x + this.transform.localScale.x * characterCtr.radius) 
+        {
+            puntoAlt = new Vector3 (Random.Range (-aleatoriedad, +aleatoriedad) + enemigoTrf.position.x, this.transform.position.y, Random.Range (-aleatoriedad, +aleatoriedad) + enemigoTrf.position.z);
+        }
+        evitando = true;*/
+        float evaluada;
+
+        Transform resultado = null;
+        float distanciaMax = 0;
+
+        foreach (Enemigo e in areaEng.enemigos)
+        {
+            if (e.Vencido () == false && e.avatarTrf == this.transform)
+            {
+                evaluada = Vector3.Distance (e.transform.position, this.transform.position);
+                if (evaluada > distanciaMax)
+                {
+                    distanciaMax = evaluada;
+                    resultado = e.transform;
+                }
+            }
+        }
+        enemigoTrf = resultado;
+        if (enemigoTrf == null)
+        {
+            foreach (Enemigo e in areaEng.enemigos)
+            {
+                if (e.Vencido () == false)
+                {
+                    evaluada = Vector3.Distance (e.transform.position, this.transform.position);
+                    if (evaluada > distanciaMax)
+                    {
+                        distanciaMax = evaluada;
+                        resultado = e.transform;
+                    }
+                }
+            }
+        }
+        enemigoTrf = resultado;
+
+        if (enemigoTrf != null)
+        {
+            enemigoScr = enemigoTrf.GetComponent<Enemigo> ();
+        }
+        else
+        {
+            CombateTerminado ();
+        }
+    }
+
+
+    // Obtiene la posición del enemigo más cercano dentro de la zona en la que se encuentra el jugador actualmente, prefiriendo aquellos enemigos que tengan como objetivo al avatar que llama a esta función.
+    private void PosicionEnemigoCercano ()
     {
         float evaluada;
 
@@ -323,19 +398,10 @@ public class MovimientoHistoria2 : MonoBehaviour
         {
             enemigoScr = enemigoTrf.GetComponent<Enemigo> ();
         }
-        else 
+        else
         {
             CombateTerminado ();
         }
-    }
-
-
-    // Si el combate ha terminado (se han eliminado todos los enemigos de la zona), el avatar vuelve al estado normal, se desactiva el NavMeshAgent y se le indica que no hay enemigos cerca.
-    public void CombateTerminado () 
-    {
-        estado = Estado.normal;
-        mallaAgtNav.enabled = false;
-        enemigosCer = false;
     }
 
 
@@ -359,7 +425,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     // El personaje controlado por IA salta si está en el suelo y suficientemente cerca del enemigo, simulamos aplicar gravedad cambiando el "base offset" del agente.
     private void SaltarIA () 
     {
-        if (saludScr.aturdido == false && mallaAgtNav.baseOffset == offsetBas && mallaAgtNav.remainingDistance < saltoDst) 
+        if (saludScr.aturdido == false && mallaAgtNav.baseOffset == offsetBas && Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (enemigoTrf.position.x, enemigoTrf.position.z)) < saltoDst) 
         {
             SaltarNormal ();
         }
@@ -368,6 +434,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         if (mallaAgtNav.baseOffset <= offsetBas) 
         {
             mallaAgtNav.baseOffset = offsetBas;
+            perseguir = true;
         }
     }
 
@@ -522,18 +589,36 @@ public class MovimientoHistoria2 : MonoBehaviour
     // Hacemos que la posición del enemigo a atacar sea el destino del agente.
     private void IrHaciaEnemigo () 
     {
-        if (sueleado == true || mallaAgtNav.baseOffset - offsetBas > ajusteCaiDst) 
+        if (perseguir == true && (mallaAgtNav.baseOffset == offsetBas || mallaAgtNav.baseOffset - offsetBas > ajusteCaiDst)) 
         {
+            /*if (mallaAgtNav.baseOffset - offsetBas > ajusteCaiDst) 
+            {
+                print ("Ajustando a la altura de " + mallaAgtNav.baseOffset);
+            }*/
             if (saludScr.aturdido == false)
             {
-                if (saltador == true || Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (enemigoTrf.position.x, enemigoTrf.position.z)) > pararDstAtq)
+                if (saltador == true)
                 {
                     mallaAgtNav.SetDestination (enemigoTrf.position);
                 }
                 else
                 {
-                    mallaAgtNav.SetDestination (this.transform.position);
-                    ataqueScr.IniciarAtaque ();
+                    if (descansar == false)
+                    {
+                        if (Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (enemigoTrf.position.x, enemigoTrf.position.z)) > pararDstAtq)
+                        {
+                            mallaAgtNav.SetDestination (enemigoTrf.position);
+                        }
+                        else 
+                        {
+                            mallaAgtNav.SetDestination (this.transform.position);
+                            ataqueScr.IniciarAtaque ();
+                        }
+                    }
+                    else 
+                    {
+                        mallaAgtNav.SetDestination (this.transform.position);
+                    }
                 }
 
                 if (saltador == false || Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (enemigoTrf.position.x, enemigoTrf.position.z)) > radioRotAtq)

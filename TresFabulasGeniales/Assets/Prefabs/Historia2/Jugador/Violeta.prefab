@@ -237,7 +237,7 @@ NavMeshAgent:
   m_Enabled: 0
   m_AgentTypeID: 0
   m_Radius: 5
-  m_Speed: 200
+  m_Speed: 150
   m_Acceleration: 1000
   avoidancePriority: 50
   m_AngularSpeed: 0
@@ -296,13 +296,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   input: 1
   sueleado: 0
+  perseguir: 0
+  descansar: 0
   movimiento: {x: 0, y: 0, z: 0}
   saltoVel: 300
   offsetY: 0
   offsetXZ: 0
   movimientoVel: 200
   rotacionVel: 10
-  saltoDst: 7
+  saltoDst: 20
+  aleatoriedad: 0
   capas:
     serializedVersion: 2
     m_Bits: 7223
@@ -312,12 +315,17 @@ MonoBehaviour:
   companyeroMov: {fileID: 0}
   pararDstSeg: 2
   pararDstAtq: 0
-  ajusteCaiDst: 50
+  ajusteCaiDst: 95
   saltador: 1
-  camaraTrf: {fileID: 0}
-  objetivoSeg: {fileID: 0}
-  companyeroTrf: {fileID: 0}
-  enemigoTrf: {fileID: 0}
+  saltarInp: 0
+  yendo: 0
+  empujando: 0
+  limitadoX: 0
+  enemigosCer: 0
+  saltado: 0
+  cambiando: 0
+  siguiendoAcb: 0
+  evitando: 0
 --- !u!114 &1105000601539949260
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -334,6 +342,7 @@ MonoBehaviour:
   saltoFrz: 2
   aranyazoFrz: 1
   rangoAtq: 0
+  cooldownIAMax: 0
 --- !u!114 &4511691215726581423
 MonoBehaviour:
   m_ObjectHideFlags: 0

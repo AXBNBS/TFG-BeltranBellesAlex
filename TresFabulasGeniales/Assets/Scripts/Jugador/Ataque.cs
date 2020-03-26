@@ -10,10 +10,10 @@ public class Ataque : MonoBehaviour
 {
     public bool input;
 
-    [SerializeField] private float saltoFrz, aranyazoFrz, rangoAtq;
+    [SerializeField] private float saltoFrz, aranyazoFrz, rangoAtq, cooldownIAMax;
     private MovimientoHistoria2 movimientoScr;
     private CharacterController characterCtr;
-    private float reboteVel, longitudRay;
+    private float reboteVel, longitudRay, cooldownIAAct;
     private NavMeshAgent agente;
     private bool saltado, aranyado;
     private Animator animador;
@@ -40,6 +40,7 @@ public class Ataque : MonoBehaviour
     // .
     private void Update ()
     {
+        cooldownIAAct -= Time.deltaTime;
         if (input == true && movimientoScr.sueleado == true && Input.GetButtonDown ("Atacar") == true && animador.GetCurrentAnimatorStateInfo(0).IsTag ("Ataque") == false) 
         {
             IniciarAtaque ();
@@ -76,8 +77,9 @@ public class Ataque : MonoBehaviour
             else
             {
                 //REDUCIR DAÑO DESPUES
-                other.transform.parent.GetComponent<Enemigo>().Danyar (saltoFrz, true);
+                other.transform.parent.GetComponent<Enemigo>().Danyar (saltoFrz / 5, true);
 
+                movimientoScr.perseguir = false;
                 agente.baseOffset += reboteVel * Time.deltaTime;
             }
         }
@@ -112,34 +114,48 @@ public class Ataque : MonoBehaviour
     // Activamos el trigger del animador que permite que se reproduzca la animación de atacar.
     public void IniciarAtaque () 
     {
-        animador.SetTrigger ("atacando");
+        if (input == true || cooldownIAAct < 0) 
+        {
+            animador.SetTrigger ("atacando");
+
+            cooldownIAAct = cooldownIAMax;
+        }
     }
 
 
-    // .
+    // Al llegar a un cierto punto de su animación de ataque, miramos si el collider de algún enemigo se encuentra dentro del rango en el que Abedul puede causar daños. En caso afirmativo, este recibe el daño correspondiente.
     private void Atacar () 
     {
         Collider[] enemigosCol = Physics.OverlapSphere (ataqueCenTrf.position, rangoAtq, enemigosCap, QueryTriggerInteraction.Ignore);
+
+        if (movimientoScr.input == false && enemigosCol.Length > 0) 
+        {
+            enemigosCol = new Collider[] { enemigosCol[0] };
+        }
 
         foreach (Collider e in enemigosCol) 
         {
             Enemigo enemigo = e.GetComponent<Enemigo> ();
 
-            enemigo.Danyar (aranyazoFrz, false);
+            enemigo.Danyar (movimientoScr.input == false ? aranyazoFrz / 5 : aranyazoFrz, false);
             enemigo.ChecarDerrotado ();
         }
-        /*RaycastHit rayoDat;
-
-        if (Physics.Raycast (centroTrf.position, -this.transform.right, out rayoDat, longitudRay, enemigosCap, QueryTriggerInteraction.Ignore) == true) 
+        if (enemigosCol.Length > 0) 
         {
-            Enemigo enemigo = rayoDat.transform.gameObject.GetComponent<Enemigo> ();
-            print ("Le dí");
+            this.StartCoroutine ("EsperarYBuscar");
+        }
+    }
 
-            enemigo.Danyar (aranyazoFrz, false);
-            if (enemigo.ChecarDerrotado () == true && movimientoScr.input == false) 
-            {
-                movimientoScr.PosicionEnemigoCercano ();
-            }
-        }*/
+
+    // .
+    private IEnumerator EsperarYBuscar () 
+    {
+        movimientoScr.descansar = true;
+
+        yield return new WaitForSeconds (1.5f);
+
+        movimientoScr.PosicionEnemigoLejano ();
+
+        movimientoScr.descansar = false;
     }
 }

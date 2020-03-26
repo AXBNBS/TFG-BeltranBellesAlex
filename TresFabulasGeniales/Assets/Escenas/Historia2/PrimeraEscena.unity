@@ -3081,12 +3081,6 @@ PrefabInstance:
       objectReference: {fileID: 9100000, guid: f17b1ebe0f37d5e46b87721cf1386060, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 769a4e27a03c11e4c8067d7825289c31, type: 3}
---- !u!137 &212585517 stripped
-SkinnedMeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 2586197570190800012, guid: e62e0f3bd881f3b4bba9d99e0e727efa,
-    type: 3}
-  m_PrefabInstance: {fileID: 1287820263}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &221870215
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21153,16 +21147,6 @@ PrefabInstance:
     - target: {fileID: 8454711757566032773, guid: e62e0f3bd881f3b4bba9d99e0e727efa,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 76765330659955744, guid: e62e0f3bd881f3b4bba9d99e0e727efa,
-        type: 3}
-      propertyPath: renderer
-      value: 
-      objectReference: {fileID: 212585517}
-    - target: {fileID: 76765330659955744, guid: e62e0f3bd881f3b4bba9d99e0e727efa,
-        type: 3}
-      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

@@ -359,7 +359,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 5
-  m_Speed: 200
+  m_Speed: 150
   m_Acceleration: 1000
   avoidancePriority: 50
   m_AngularSpeed: 0
@@ -383,7 +383,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fddaf6bc17db32409bf94f76546b366, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  renderer: {fileID: 0}
+  renderer: {fileID: 2586197570190800012}
   materialesIni:
   - {fileID: 2100000, guid: f2dd99a20b9fab744a9c6f22e0ab4fe5, type: 2}
   - {fileID: 2100000, guid: 464c62c673f984142bbbc14c451ac934, type: 2}
@@ -428,6 +428,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   input: 0
   sueleado: 0
+  perseguir: 0
+  descansar: 0
   movimiento: {x: 0, y: 0, z: 0}
   saltoVel: 150
   offsetY: 0
@@ -435,6 +437,7 @@ MonoBehaviour:
   movimientoVel: 200
   rotacionVel: 10
   saltoDst: 7
+  aleatoriedad: 50
   capas:
     serializedVersion: 2
     m_Bits: 7223
@@ -443,13 +446,18 @@ MonoBehaviour:
     m_Bits: 3383
   companyeroMov: {fileID: 0}
   pararDstSeg: 2
-  pararDstAtq: 23
+  pararDstAtq: 20
   ajusteCaiDst: 5
   saltador: 0
-  camaraTrf: {fileID: 0}
-  objetivoSeg: {fileID: 0}
-  companyeroTrf: {fileID: 0}
-  enemigoTrf: {fileID: 0}
+  saltarInp: 0
+  yendo: 0
+  empujando: 0
+  limitadoX: 0
+  enemigosCer: 0
+  saltado: 0
+  cambiando: 0
+  siguiendoAcb: 0
+  evitando: 0
 --- !u!114 &9139600075987871173
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -466,6 +474,7 @@ MonoBehaviour:
   saltoFrz: 1
   aranyazoFrz: 2
   rangoAtq: 8
+  cooldownIAMax: 3.5
 --- !u!114 &6535258772666537683
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -713,6 +722,12 @@ PrefabInstance:
 --- !u!4 &1622452286831830628 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: b95bfcc4b80f0dc409dbc1ddfe424f94,
+    type: 3}
+  m_PrefabInstance: {fileID: 6052467418464783742}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &2586197570190800012 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -1145414106354058766, guid: b95bfcc4b80f0dc409dbc1ddfe424f94,
     type: 3}
   m_PrefabInstance: {fileID: 6052467418464783742}
   m_PrefabAsset: {fileID: 0}

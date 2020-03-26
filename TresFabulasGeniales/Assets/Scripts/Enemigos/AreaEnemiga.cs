@@ -122,8 +122,10 @@ public class AreaEnemiga : MonoBehaviour
 
             dentro.Remove (other.transform);
             ReiniciarArrayBooleanos (true);
+
             if (dentro.Count == 0)
             {
+                this.StopAllCoroutines ();
                 foreach (Enemigo e in enemigos)
                 {
                     if (e.Vencido () == false) 
