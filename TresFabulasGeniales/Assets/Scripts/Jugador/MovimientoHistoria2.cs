@@ -13,13 +13,13 @@ public class MovimientoHistoria2 : MonoBehaviour
     public int saltoVel;
     [HideInInspector] public float offsetY, offsetXZ;
 
-    [SerializeField] private int movimientoVel, rotacionVel, saltoDst, aleatoriedad;
+    [SerializeField] private int movimientoVelNor, movimientoVelRed, rotacionVel, saltoDst, aleatoriedad;
     [SerializeField] private LayerMask capas, capasSinAvt;
     [SerializeField] private MovimientoHistoria2 companyeroMov;
-    [SerializeField] private float pararDstSeg, pararDstAtq, ajusteCaiDst;
+    [SerializeField] private float pararDstSeg, pararDstAtq, ajusteCaiDst, multiplicadorSalBaj;
     [SerializeField] private bool saltador;
-    private int gravedad, empujeVel;
-    [SerializeField] private bool saltarInp, yendo, empujando, limitadoX, enemigosCer, saltado, cambiando, siguiendoAcb, evitando;
+    private int gravedad, movimientoVel, empujeVel, bichos;
+    private bool saltarInp, yendo, empujando, limitadoX, enemigosCer, saltado, cambiando, siguiendoAcb, evitando;
     private CharacterController characterCtr;
     private float horizontalInp, verticalInp, offsetBas, sueloDst, radioRotAtq;
     private Transform camaraTrf, objetivoSeg, companyeroTrf, enemigoTrf;
@@ -40,6 +40,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     {
         sueleado = true;
         gravedad = -11;
+        movimientoVel = movimientoVelNor;
         empujeVel = movimientoVel / 3;
         yendo = false;
         empujando = false;
@@ -57,6 +58,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         companyeroTrf = companyeroMov.transform;
         animator = this.GetComponentInChildren<Animator> ();
         mallaAgtNav = this.GetComponent<NavMeshAgent> ();
+        mallaAgtNav.speed = movimientoVelNor;
         offsetBas = mallaAgtNav.baseOffset;
         estado = Estado.normal;
         ataqueScr = this.GetComponent<Ataque> ();
@@ -97,7 +99,7 @@ public class MovimientoHistoria2 : MonoBehaviour
                 {
                     SaltarNormal ();
                 }
-                Mover ();
+                Mover (); 
 
                 break;
             case Estado.siguiendo:
@@ -300,6 +302,19 @@ public class MovimientoHistoria2 : MonoBehaviour
     }
 
 
+    // .
+    public void Pegado () 
+    {
+        bichos += 1;
+
+        if (bichos > 3) 
+        {
+            movimientoVel = movimientoVelRed;
+            mallaAgtNav.speed = movimientoVelRed;
+        }
+    }
+
+
     // Obtiene la posición del enemigo más lejano dentro de la zona en la que se encuentra el jugador actualmente, prefiriendo aquellos enemigos que tengan como objetivo al avatar que llama a esta función.
     public void PosicionEnemigoLejano ()
     {
@@ -492,7 +507,14 @@ public class MovimientoHistoria2 : MonoBehaviour
                 }
                 else 
                 {
-                    movimiento.y += gravedad;
+                    if (input == true && saltador == true && movimiento.y > 0 && Input.GetButton ("Salto") == false) 
+                    {
+                        movimiento.y += gravedad * multiplicadorSalBaj;
+                    }
+                    else 
+                    {
+                        movimiento.y += gravedad;
+                    }
                 }
 
                 break;

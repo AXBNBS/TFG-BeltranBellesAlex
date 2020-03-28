@@ -233,6 +233,7 @@ GameObject:
   - component: {fileID: 228597389880811284}
   - component: {fileID: 6347342489798359403}
   - component: {fileID: 6347342489798359404}
+  - component: {fileID: 5172297356252652768}
   m_Layer: 12
   m_Name: Enemigo prototipo
   m_TagString: Enemigo
@@ -338,6 +339,20 @@ MonoBehaviour:
   rayoCap:
     serializedVersion: 2
     m_Bits: 1335
+--- !u!114 &5172297356252652768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6347342489798359402}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fddaf6bc17db32409bf94f76546b366, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cambiar: 040000000500000006000000070000000800000009000000
+  materialAlt: {fileID: 2100000, guid: 4bdb3276ffb199347a4285b06a6ae2e3, type: 2}
 --- !u!1001 &3700679116156895978
 PrefabInstance:
   m_ObjectHideFlags: 0

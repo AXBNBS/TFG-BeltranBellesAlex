@@ -25,13 +25,6 @@ public class Fundido : MonoBehaviour
 
 
     // .
-    private void Update ()
-    {
-        
-    }
-
-
-    // .
     public void FundidoAPosicion (Vector3 pos) 
     {
         animador.SetTrigger ("fundido");
@@ -48,12 +41,6 @@ public class Fundido : MonoBehaviour
         {
             camara.transform.position = posicion;
             camara.transicionando = false;
-
-            //CambioDePersonajesYAgrupacion.instancia.PermitirInput ();
-        }
-        else 
-        {
-
         }
     }
 }

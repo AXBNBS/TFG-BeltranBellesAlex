@@ -17,7 +17,7 @@ public class Enemigo : MonoBehaviour
     [SerializeField] private LayerMask capasSal, capsulaCap, rayoCap;
     private LayerMask jugadorCap;
     private bool perseguir, reposicionado, objetivo1, alcanzadoObj, parado, atacado, cercanoAvt, saltando, esperar;
-    private Vector3 posicionIni, destinoRnd, offsetObj, destinoSal, capsulaIni, capsulaFin, destino;
+    private Vector3 posicionIni, destinoRnd, offsetObj, destinoSal, destino;
     private NavMeshAgent agente;
     private CharacterController personajeCtr;
     private Transform objetivoTrf, ataqueCenTrf, centro;
@@ -45,9 +45,6 @@ public class Enemigo : MonoBehaviour
         agente.updateRotation = false;
         agente.destination = posicionIni;
         personajeCtr = this.GetComponent<CharacterController> ();
-        capsulaIni = new Vector3 (personajeCtr.bounds.center.x, personajeCtr.bounds.center.y + this.transform.localScale.y * (personajeCtr.height / 2 - personajeCtr.radius), personajeCtr.bounds.center.z) + this.transform.localScale.x * 
-            this.transform.forward * personajeCtr.radius * 2;
-        capsulaFin = new Vector3 (capsulaIni.x, capsulaIni.y - this.transform.localScale.y * (personajeCtr.height - personajeCtr.radius * 2), capsulaIni.z);
         objetivoTrf = null;
         ataqueCenTrf = this.transform.GetChild (1);
         centro = this.transform.GetChild (3);
@@ -75,15 +72,6 @@ public class Enemigo : MonoBehaviour
     //caiga sobre él y le haga daño, la nueva posición se definirá cada cierto tiempo.
     private void Update ()
     {
-        /*if (this.name == "Enemigo prototipo (1)") 
-        {
-            Collider[] colliders = Physics.OverlapCapsule (capsulaIni, capsulaFin, this.transform.localScale.x * personajeCtr.radius, capasSal, QueryTriggerInteraction.Ignore);
-
-            foreach (Collider c in colliders) 
-            {
-                print (c.name);
-            }
-        }*/
         cooldown -= Time.deltaTime;
         alcanzadoObj = acercarse == false ? Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (agente.destination.x, agente.destination.z)) < distanciaMaxObj :
             espacioPer.companyerosCer.Count != 0 || Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (objetivoTrf.position.x, objetivoTrf.position.z)) < acercarseDst;
@@ -107,15 +95,13 @@ public class Enemigo : MonoBehaviour
             {
                 if (this.IsInvoking ("Reposicionado") == false)
                 {
-                    destinoRnd = new Vector3 (avatarTrf.position.x + Random.Range (-aleatoriedad, +aleatoriedad), this.transform.position.y, avatarTrf.position.z + Random.Range (-aleatoriedad, +aleatoriedad));
-                    destino = destinoRnd;
                     //print (this.name + ": mi nueva posición es " + destinoRnd);
 
                     this.Invoke ("Reposicionado", Random.Range (1f, 2f));
                 }
 
                 //print (this.name + ": evitando a " + objetivoTrf.parent.name + " yendo al punto " + destinoRnd);
-                MoverAgenteYControlador (destinoRnd);
+                MoverAgenteYControlador (destino);
                 /*if (reposicionado == false)
                 {
                     if (this.IsInvoking ("Reposicionado") == false)
@@ -367,7 +353,7 @@ public class Enemigo : MonoBehaviour
     // Tras cierto tiempo, marcamos como verdadero que el enemigo se ha reposicionado para poder hacerlo de nuevo.
     private void Reposicionado () 
     {
-        reposicionado = true;
+        destino = new Vector3 (avatarTrf.position.x + Random.Range (-aleatoriedad, +aleatoriedad), this.transform.position.y, avatarTrf.position.z + Random.Range (-aleatoriedad, +aleatoriedad));
     }
 
 

@@ -37,7 +37,8 @@ public class Ataque : MonoBehaviour
     }
 
 
-    // .
+    // Se tienen en cuenta varias cosas relativas a Abedul: bajamos el cooldown de su ataque en caso de que esté siendo controlado por la IA, comprobamos si se cumplen las condiciones para que el jugador pueda iniciar un nuevo ataque, llamamos
+    //a la función que detecta y causa daño a los enemigos correspondientes si Abedul está atacando y desactivamos el booleano que indica que ha causado daños si su animación de ataque ha finalizado ya.
     private void Update ()
     {
         cooldownIAAct -= Time.deltaTime;
@@ -61,7 +62,7 @@ public class Ataque : MonoBehaviour
     }
 
 
-    // Hacemos que el avatar rebote tras tocar la cabeza del enemigo y además le cause daño.
+    // Hacemos que Violeta rebote tras tocar la cabeza del enemigo y además le cause daño.
     private void OnTriggerStay (Collider other)
     {
         if (saltado == false && movimientoScr.sueleado == false && other.CompareTag ("Rebote") == true && movimientoScr.movimiento.y < 0 && this.name != "Abedul") 
@@ -76,7 +77,6 @@ public class Ataque : MonoBehaviour
             }
             else
             {
-                //REDUCIR DAÑO DESPUES
                 other.transform.parent.GetComponent<Enemigo>().Danyar (saltoFrz / 5, true);
 
                 movimientoScr.perseguir = false;
@@ -92,8 +92,6 @@ public class Ataque : MonoBehaviour
     {
         if (other.CompareTag ("Rebote") == true) 
         {
-            //Enemigo enemigo = other.transform.parent.GetComponent<Enemigo> ();
-            
             saltado = false;
 
             other.transform.parent.GetComponent<Enemigo>().ChecarDerrotado ();
@@ -111,7 +109,7 @@ public class Ataque : MonoBehaviour
     }
 
 
-    // Activamos el trigger del animador que permite que se reproduzca la animación de atacar.
+    // Activamos el trigger del animador que permite que se reproduzca la animación de atacar, tenemos en cuenta el cooldown en el caso de que ataque la IA.
     public void IniciarAtaque () 
     {
         if (input == true || cooldownIAAct < 0) 
@@ -123,12 +121,19 @@ public class Ataque : MonoBehaviour
     }
 
 
-    // Al llegar a un cierto punto de su animación de ataque, miramos si el collider de algún enemigo se encuentra dentro del rango en el que Abedul puede causar daños. En caso afirmativo, este recibe el daño correspondiente.
+    // Al llegar a un cierto punto de su animación de ataque, miramos si el collider de algún enemigo se encuentra dentro del rango en el que Abedul puede causar daños. En caso afirmativo, este recibe el daño correspondiente. Llamamos también una
+    //corrutina que afecta a la IA en el caso de que esta esté controlando a Abedul.
     private void Atacar () 
     {
         Collider[] enemigosCol = Physics.OverlapSphere (ataqueCenTrf.position, rangoAtq, enemigosCap, QueryTriggerInteraction.Ignore);
+        BichoPegajoso[] bichosPeg = this.GetComponentsInChildren<BichoPegajoso> ();
 
-        if (movimientoScr.input == false && enemigosCol.Length > 0) 
+        foreach (BichoPegajoso b in bichosPeg) 
+        {
+            b.SalirVolando ();
+        }
+
+        if (input == false && enemigosCol.Length > 0) 
         {
             enemigosCol = new Collider[] { enemigosCol[0] };
         }
@@ -137,17 +142,17 @@ public class Ataque : MonoBehaviour
         {
             Enemigo enemigo = e.GetComponent<Enemigo> ();
 
-            enemigo.Danyar (movimientoScr.input == false ? aranyazoFrz / 5 : aranyazoFrz, false);
+            enemigo.Danyar (input == false ? aranyazoFrz / 5 : aranyazoFrz, false);
             enemigo.ChecarDerrotado ();
         }
-        if (enemigosCol.Length > 0) 
+        if (input == false && enemigosCol.Length > 0) 
         {
             this.StartCoroutine ("EsperarYBuscar");
         }
     }
 
 
-    // .
+    // Corutina usada por la IA de Abedul justo después de causar daños a un enemigo con éxito: se espera un poco y busca a un nuevo enemigo para atacarle.
     private IEnumerator EsperarYBuscar () 
     {
         movimientoScr.descansar = true;

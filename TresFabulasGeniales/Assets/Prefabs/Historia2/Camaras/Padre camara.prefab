@@ -218,5 +218,5 @@ MonoBehaviour:
   cambioPosVel: 0
   abajoLim: -10
   arribaLim: 60
-  sensibilidad: 370
+  sensibilidad: 250
   centradoVel: 10

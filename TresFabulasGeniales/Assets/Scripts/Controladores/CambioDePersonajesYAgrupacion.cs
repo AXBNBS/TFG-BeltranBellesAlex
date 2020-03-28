@@ -185,6 +185,10 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
 
                 Fundido.instancia.FundidoAPosicion (personajesTrf[nuevo].position);
             }
+            else 
+            {
+                camara.desplazandose = true;
+            }
 
             personajesMov[nuevo].GestionarCambio ();
         }

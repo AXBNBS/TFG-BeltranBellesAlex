@@ -359,7 +359,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 5
-  m_Speed: 150
+  m_Speed: 200
   m_Acceleration: 1000
   avoidancePriority: 50
   m_AngularSpeed: 0
@@ -383,37 +383,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fddaf6bc17db32409bf94f76546b366, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  renderer: {fileID: 2586197570190800012}
-  materialesIni:
-  - {fileID: 2100000, guid: f2dd99a20b9fab744a9c6f22e0ab4fe5, type: 2}
-  - {fileID: 2100000, guid: 464c62c673f984142bbbc14c451ac934, type: 2}
-  - {fileID: 2100000, guid: 82bac58fcab42474f85c2200adec3848, type: 2}
-  - {fileID: 2100000, guid: 37556f6ae693600448657daed32d82dc, type: 2}
-  - {fileID: 2100000, guid: 29b1b4acff431074a879985048f2b1bd, type: 2}
-  - {fileID: 2100000, guid: 82bac58fcab42474f85c2200adec3848, type: 2}
-  - {fileID: 2100000, guid: 29b1b4acff431074a879985048f2b1bd, type: 2}
-  - {fileID: 2100000, guid: f3a6a1b3459a45b4dbbdab0ce94c43ac, type: 2}
-  - {fileID: 2100000, guid: 37556f6ae693600448657daed32d82dc, type: 2}
-  - {fileID: 2100000, guid: d17a2308ed3a03f40b9f8ebe55431033, type: 2}
-  - {fileID: 2100000, guid: d17a2308ed3a03f40b9f8ebe55431033, type: 2}
-  - {fileID: 2100000, guid: f2dd99a20b9fab744a9c6f22e0ab4fe5, type: 2}
-  - {fileID: 2100000, guid: 82bac58fcab42474f85c2200adec3848, type: 2}
-  - {fileID: 2100000, guid: d17a2308ed3a03f40b9f8ebe55431033, type: 2}
-  materialesAlt:
-  - {fileID: 2100000, guid: f2dd99a20b9fab744a9c6f22e0ab4fe5, type: 2}
-  - {fileID: 2100000, guid: 464c62c673f984142bbbc14c451ac934, type: 2}
-  - {fileID: 2100000, guid: 82bac58fcab42474f85c2200adec3848, type: 2}
-  - {fileID: 2100000, guid: 37556f6ae693600448657daed32d82dc, type: 2}
-  - {fileID: 2100000, guid: 82bac58fcab42474f85c2200adec3848, type: 2}
-  - {fileID: 2100000, guid: 82bac58fcab42474f85c2200adec3848, type: 2}
-  - {fileID: 2100000, guid: 82bac58fcab42474f85c2200adec3848, type: 2}
-  - {fileID: 2100000, guid: 82bac58fcab42474f85c2200adec3848, type: 2}
-  - {fileID: 2100000, guid: 82bac58fcab42474f85c2200adec3848, type: 2}
-  - {fileID: 2100000, guid: d17a2308ed3a03f40b9f8ebe55431033, type: 2}
-  - {fileID: 2100000, guid: d17a2308ed3a03f40b9f8ebe55431033, type: 2}
-  - {fileID: 2100000, guid: f2dd99a20b9fab744a9c6f22e0ab4fe5, type: 2}
-  - {fileID: 2100000, guid: 82bac58fcab42474f85c2200adec3848, type: 2}
-  - {fileID: 2100000, guid: d17a2308ed3a03f40b9f8ebe55431033, type: 2}
+  cambiar: 
+  materialAlt: {fileID: 0}
 --- !u!114 &8454711757566032795
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -434,7 +405,8 @@ MonoBehaviour:
   saltoVel: 150
   offsetY: 0
   offsetXZ: 0
-  movimientoVel: 200
+  movimientoVelNor: 200
+  movimientoVelRed: 50
   rotacionVel: 10
   saltoDst: 7
   aleatoriedad: 50
@@ -448,16 +420,8 @@ MonoBehaviour:
   pararDstSeg: 2
   pararDstAtq: 20
   ajusteCaiDst: 5
+  multiplicadorSalBaj: 0
   saltador: 0
-  saltarInp: 0
-  yendo: 0
-  empujando: 0
-  limitadoX: 0
-  enemigosCer: 0
-  saltado: 0
-  cambiando: 0
-  siguiendoAcb: 0
-  evitando: 0
 --- !u!114 &9139600075987871173
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -722,12 +686,6 @@ PrefabInstance:
 --- !u!4 &1622452286831830628 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: b95bfcc4b80f0dc409dbc1ddfe424f94,
-    type: 3}
-  m_PrefabInstance: {fileID: 6052467418464783742}
-  m_PrefabAsset: {fileID: 0}
---- !u!137 &2586197570190800012 stripped
-SkinnedMeshRenderer:
-  m_CorrespondingSourceObject: {fileID: -1145414106354058766, guid: b95bfcc4b80f0dc409dbc1ddfe424f94,
     type: 3}
   m_PrefabInstance: {fileID: 6052467418464783742}
   m_PrefabAsset: {fileID: 0}
