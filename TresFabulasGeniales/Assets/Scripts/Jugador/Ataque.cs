@@ -17,7 +17,7 @@ public class Ataque : MonoBehaviour
     private NavMeshAgent agente;
     private bool saltado, aranyado;
     private Animator animador;
-    private LayerMask enemigosCap;
+    private LayerMask enemigosCap, bichosCap;
     private Transform ataqueCenTrf;
 
     
@@ -33,7 +33,11 @@ public class Ataque : MonoBehaviour
         aranyado = false;
         animador = this.GetComponentInChildren<Animator> ();
         enemigosCap = LayerMask.GetMask ("Enemigos");
-        ataqueCenTrf = this.transform.GetChild (4);
+        bichosCap = LayerMask.GetMask ("Bichos");
+        if (this.transform.childCount >= 7)
+        {
+            ataqueCenTrf = this.transform.GetChild (6);
+        }
     }
 
 
@@ -126,12 +130,8 @@ public class Ataque : MonoBehaviour
     private void Atacar () 
     {
         Collider[] enemigosCol = Physics.OverlapSphere (ataqueCenTrf.position, rangoAtq, enemigosCap, QueryTriggerInteraction.Ignore);
+        Collider[] bichosCol = Physics.OverlapSphere (ataqueCenTrf.position, rangoAtq, bichosCap, QueryTriggerInteraction.Collide);
         BichoPegajoso[] bichosPeg = this.GetComponentsInChildren<BichoPegajoso> ();
-
-        foreach (BichoPegajoso b in bichosPeg) 
-        {
-            b.SalirVolando ();
-        }
 
         if (input == false && enemigosCol.Length > 0) 
         {
@@ -145,6 +145,26 @@ public class Ataque : MonoBehaviour
             enemigo.Danyar (input == false ? aranyazoFrz / 5 : aranyazoFrz, false);
             enemigo.ChecarDerrotado ();
         }
+
+        foreach (Collider b in bichosCol) 
+        {
+            BichoPegajoso bicho = b.GetComponent<BichoPegajoso> ();
+
+            if (bicho.pegado == false) 
+            {
+                bicho.Derrotado ();
+            }
+        }
+
+        if (bichosPeg.Length > 0)
+        {
+            foreach (BichoPegajoso b in bichosPeg)
+            {
+                b.SalirVolando ();
+            }
+            movimientoScr.TodosDespegados ();
+        }
+
         if (input == false && enemigosCol.Length > 0) 
         {
             this.StartCoroutine ("EsperarYBuscar");
