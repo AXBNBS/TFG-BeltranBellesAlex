@@ -7,14 +7,9 @@ using UnityEngine;
 
 public class AreaBichosPegajosos : MonoBehaviour
 {
-    public BichoPegajoso[] bichos;
-    public int vivos;
-    public bool[] tomadosPnt;
-
-    [SerializeField] private int perseguidores0, perseguidores1, alertaRng;
+    private BichoPegajoso[] bichos;
+    private int vivos;
     private List<Transform> dentro;
-    private Transform violetaTrf;
-    private bool apartandose, apartandoseUltFrm, violeta1, dentroVio, corrutinaActVio, corrutinaActAbd;
     private float enemigosY;
     private MovimientoHistoria2[] jugadoresMov;
 
@@ -222,14 +217,10 @@ public class AreaBichosPegajosos : MonoBehaviour
                 if (dentro.Count == 1 || indice < vivos / 2)
                 {
                     b.AtacarA (dentro[0]);
-
-                    perseguidores0 += 1;
                 }
                 else
                 {
                     b.AtacarA (dentro[1]);
-
-                    perseguidores1 += 1;
                 }
                 indice += 1;
             }

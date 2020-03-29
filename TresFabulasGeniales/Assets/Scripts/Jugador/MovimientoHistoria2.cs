@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using System.Linq;
 
 
 
@@ -11,6 +12,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     public bool input, sueleado, perseguir, descansar;
     public Vector3 movimiento;
     public int saltoVel;
+    public List<Transform> huesos;
     [HideInInspector] public float offsetY, offsetXZ;
 
     [SerializeField] private int movimientoVelNor, movimientoVelRed, rotacionVel, saltoDst, aleatoriedad;
@@ -39,6 +41,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     private void Start ()
     {
         sueleado = true;
+        huesos = this.transform.GetChild(5).GetChild(0).GetComponentsInChildren<Transform>().ToList<Transform> ();
         gravedad = -11;
         movimientoVel = movimientoVelNor;
         empujeVel = movimientoVel / 3;
@@ -63,6 +66,8 @@ public class MovimientoHistoria2 : MonoBehaviour
         estado = Estado.normal;
         ataqueScr = this.GetComponent<Ataque> ();
         saludScr = this.GetComponent<Salud> ();
+
+        huesos.RemoveAt (0);
     }
 
 
@@ -312,6 +317,15 @@ public class MovimientoHistoria2 : MonoBehaviour
             movimientoVel = movimientoVelRed;
             mallaAgtNav.speed = movimientoVelRed;
         }
+    }
+
+
+    // .
+    public void TodosDespegados () 
+    {
+        bichos = 0;
+        movimientoVel = movimientoVelNor;
+        mallaAgtNav.speed = movimientoVelNor;
     }
 
 

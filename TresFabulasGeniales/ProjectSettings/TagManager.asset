@@ -21,6 +21,7 @@ TagManager:
   - EspacioEnemigo
   - Bicho
   - AreaBichos
+  - CuerpoGato
   layers:
   - Default
   - TransparentFX
@@ -40,8 +41,8 @@ TagManager:
   - Abedul
   - BarrerasTodo
   - BarrerasBolas
-  - 
-  - 
+  - Bichos
+  - SuperficieAdherible
   - 
   - 
   - 
