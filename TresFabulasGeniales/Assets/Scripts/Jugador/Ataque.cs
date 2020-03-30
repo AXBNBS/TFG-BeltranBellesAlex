@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using System.Linq;
 
 
 
@@ -11,20 +12,23 @@ public class Ataque : MonoBehaviour
     public bool input;
 
     [SerializeField] private float saltoFrz, aranyazoFrz, rangoAtq, cooldownIAMax;
-    private MovimientoHistoria2 movimientoScr;
+    private MovimientoHistoria2 movimientoScr, companyeroMovScr;
     private CharacterController characterCtr;
     private float reboteVel, longitudRay, cooldownIAAct;
     private NavMeshAgent agente;
     private bool saltado, aranyado;
     private Animator animador;
-    private LayerMask enemigosCap, bichosCap;
+    private LayerMask golpeablesCap, bichosCap;
     private Transform ataqueCenTrf;
 
     
     // Inicialización de variables.
     private void Start ()
     {
+        GameObject[] avataresObj = GameObject.FindGameObjectsWithTag ("Jugador");
+
         movimientoScr = this.GetComponent<MovimientoHistoria2> ();
+        companyeroMovScr = movimientoScr.gameObject == avataresObj[0] ? avataresObj[1].GetComponent<MovimientoHistoria2> () : avataresObj[0].GetComponent<MovimientoHistoria2> ();
         characterCtr = this.GetComponent<CharacterController> ();
         reboteVel = +movimientoScr.saltoVel;
         longitudRay = this.transform.localScale.x * characterCtr.radius * 2;
@@ -32,7 +36,7 @@ public class Ataque : MonoBehaviour
         saltado = false;
         aranyado = false;
         animador = this.GetComponentInChildren<Animator> ();
-        enemigosCap = LayerMask.GetMask ("Enemigos");
+        golpeablesCap = LayerMask.GetMask (new string[] { "Enemigos", "Bichos" });
         bichosCap = LayerMask.GetMask ("Bichos");
         if (this.transform.childCount >= 7)
         {
@@ -104,13 +108,18 @@ public class Ataque : MonoBehaviour
 
 
     // Pal debug.
-    private void OnDrawGizmos ()
+    /*private void OnDrawGizmos ()
     {
         if (ataqueCenTrf != null) 
         {
-            Gizmos.DrawWireSphere (ataqueCenTrf.position, rangoAtq);
+            Vector3 esferaCenSup = new Vector3 (ataqueCenTrf.position.x, characterCtr.bounds.center.y + this.transform.localScale.y * (characterCtr.height / 2 - characterCtr.radius), ataqueCenTrf.position.z);
+
+            Gizmos.color = Color.red;
+
+            Gizmos.DrawWireSphere (esferaCenSup, rangoAtq);
+            Gizmos.DrawWireSphere (new Vector3 (esferaCenSup.x, esferaCenSup.y - this.transform.localScale.y * (characterCtr.height - characterCtr.radius * 2), esferaCenSup.z), rangoAtq);
         }
-    }
+    }*/
 
 
     // Activamos el trigger del animador que permite que se reproduzca la animación de atacar, tenemos en cuenta el cooldown en el caso de que ataque la IA.
@@ -129,43 +138,75 @@ public class Ataque : MonoBehaviour
     //corrutina que afecta a la IA en el caso de que esta esté controlando a Abedul.
     private void Atacar () 
     {
-        Collider[] enemigosCol = Physics.OverlapSphere (ataqueCenTrf.position, rangoAtq, enemigosCap, QueryTriggerInteraction.Ignore);
-        Collider[] bichosCol = Physics.OverlapSphere (ataqueCenTrf.position, rangoAtq, bichosCap, QueryTriggerInteraction.Collide);
-        BichoPegajoso[] bichosPeg = this.GetComponentsInChildren<BichoPegajoso> ();
+        Vector3 esferaCenSup = new Vector3 (ataqueCenTrf.position.x, characterCtr.bounds.center.y + this.transform.localScale.y * (characterCtr.height / 2 - characterCtr.radius), ataqueCenTrf.position.z);
+        List<Collider> colliders = Physics.OverlapCapsule (esferaCenSup, new Vector3 (esferaCenSup.x, esferaCenSup.y - this.transform.localScale.y * (characterCtr.height - characterCtr.radius * 2), esferaCenSup.z), rangoAtq, golpeablesCap, 
+            QueryTriggerInteraction.Collide).ToList<Collider> ();
+        List<Collider> eliminados = new List<Collider> ();
+        bool enemigoGol = false;
+        List<BichoPegajoso> despegarVio = new List<BichoPegajoso> (); 
 
-        if (input == false && enemigosCol.Length > 0) 
+        if (input == false && colliders.Count > 0) 
         {
-            enemigosCol = new Collider[] { enemigosCol[0] };
+            Collider collider = colliders[0];
+
+            colliders.Clear ();
+            colliders.Add (collider);
         }
 
-        foreach (Collider e in enemigosCol) 
+        foreach (Collider e in colliders) 
         {
             Enemigo enemigo = e.GetComponent<Enemigo> ();
 
-            enemigo.Danyar (input == false ? aranyazoFrz / 5 : aranyazoFrz, false);
-            enemigo.ChecarDerrotado ();
-        }
-
-        foreach (Collider b in bichosCol) 
-        {
-            BichoPegajoso bicho = b.GetComponent<BichoPegajoso> ();
-
-            if (bicho.pegado == false) 
+            if (enemigo != null) 
             {
-                bicho.Derrotado ();
+                enemigo.Danyar (input == false ? aranyazoFrz / 5 : aranyazoFrz, false);
+                enemigo.ChecarDerrotado ();
+                eliminados.Add (e);
+
+                enemigoGol = true;
             }
         }
 
-        if (bichosPeg.Length > 0)
+        foreach (Collider c in eliminados) 
+        {
+            colliders.Remove (c);
+        }
+        eliminados.Clear ();
+
+        foreach (Collider b in colliders) 
+        {
+            BichoPegajoso bicho = b.GetComponent<BichoPegajoso> ();
+
+            if (bicho != null) 
+            {
+                if (bicho.pegado == false)
+                {
+                    bicho.Derrotado ();
+                }
+                else 
+                {
+                    if (bicho.pegadoA == companyeroMovScr) 
+                    {
+                        despegarVio.Add (bicho);
+                    }
+                }
+            }
+        }
+
+        companyeroMovScr.Despegar (despegarVio);
+
+        List<BichoPegajoso> bichosPeg = this.GetComponentsInChildren<BichoPegajoso>().ToList<BichoPegajoso> ();
+
+        if (bichosPeg.Count > 0)
         {
             foreach (BichoPegajoso b in bichosPeg)
             {
                 b.SalirVolando ();
             }
-            movimientoScr.TodosDespegados ();
+            movimientoScr.Despegar (bichosPeg);
         }
 
-        if (input == false && enemigosCol.Length > 0) 
+        if (input == false && enemigoGol == true)
         {
             this.StartCoroutine ("EsperarYBuscar");
         }

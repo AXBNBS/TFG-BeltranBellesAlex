@@ -9,34 +9,39 @@ using UnityEngine.AI;
 public class BichoPegajoso : MonoBehaviour
 {
     public bool pegado;
+    public MovimientoHistoria2 pegadoA;
 
-    [SerializeField] private int empujeDst, empujeVel, saltoVel, pruebaVel;
-    [SerializeField] private float aleatoriedad;
+    [SerializeField] private int empujeDst, empujeVel, saltoVel, distanciaPar;
+    [SerializeField] private float objetivoRnd, saltoRnd;
     private NavMeshAgent agente;
     private Transform objetivoTrf, padre;
-    private Vector3 posicionIni, objetivoOff, pegadoOff, puntoVue;
-    private bool volando;
+    private Vector3 posicionIni, objetivoOff, pegadoOff, puntoVue, escalaIni;
+    private bool volando, sueloToc, parado;
     private CharacterController personajeCtr;
     private float puntoVueDst, gravedad, baseOff, fuerzaY;
+    private Rigidbody cuerpoRig;
 
 
     // .
     private void Start ()
     {
         agente = this.GetComponent<NavMeshAgent> ();
-        posicionIni = this.transform.position;
         padre = this.transform.parent;
+        posicionIni = this.transform.position;
+        escalaIni = this.transform.localScale;
         personajeCtr = this.GetComponent<CharacterController> ();
         gravedad = -10;
         baseOff = agente.baseOffset;
+        cuerpoRig = this.GetComponent<Rigidbody> ();
     }
 
 
     // .
     private void Update ()
     {
+        parado = objetivoTrf == null && Vector3.Distance (this.transform.position, posicionIni) < distanciaPar;
+
         PerseguirObjetivo ();
-        Pegarse ();
     }
 
 
@@ -45,16 +50,27 @@ public class BichoPegajoso : MonoBehaviour
     {
         if (other.CompareTag ("CuerpoGato") == true) 
         {
-            MovimientoHistoria2 avatarMov = objetivoTrf.GetComponent<MovimientoHistoria2> ();
+            print (this.name + ": ME SUSEDIÓ.");
+            MovimientoHistoria2 avatarMov = other.transform.parent.parent.GetComponent<MovimientoHistoria2> ();
 
+            cuerpoRig.detectCollisions = false;
             pegado = true;
-            agente.isStopped = true;
-            //this.transform.parent = objetivoTrf;
+            agente.enabled = false;
+            personajeCtr.enabled = true;
+            pegadoA = avatarMov;
 
-            avatarMov.Pegado ();
+            avatarMov.Pegado (this);
             EncontrarHuesoCercano (avatarMov);
+        }
+    }
 
-            //pegadoOff = this.transform.position - this.transform.parent.position;
+
+    // .
+    private void OnControllerColliderHit (ControllerColliderHit hit)
+    {
+        if (hit.transform.CompareTag ("CuerpoGato") == false && (personajeCtr.collisionFlags & CollisionFlags.Sides) != 0) 
+        {
+            puntoVue = this.transform.position;
         }
     }
 
@@ -63,7 +79,7 @@ public class BichoPegajoso : MonoBehaviour
     public void AtacarA (Transform jugadorTrf) 
     {
         objetivoTrf = jugadorTrf;
-        objetivoOff = new Vector3 (Random.Range (-aleatoriedad, +aleatoriedad), 0, Random.Range (-aleatoriedad, +aleatoriedad));
+        objetivoOff = new Vector3 (Random.Range (-objetivoRnd, +objetivoRnd), 0, Random.Range (-objetivoRnd, +objetivoRnd));
     }
 
 
@@ -78,12 +94,13 @@ public class BichoPegajoso : MonoBehaviour
     public void SalirVolando () 
     {
         this.transform.parent = padre;
+        this.transform.localScale = escalaIni;
         pegado = false;
         volando = true;
         puntoVue = this.transform.position - this.transform.forward * empujeDst;
         puntoVueDst = Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (puntoVue.x, puntoVue.z));
-        agente.enabled = false;
-        personajeCtr.enabled = true;
+        agente.baseOffset = baseOff;
+        fuerzaY = 0;
     }
 
 
@@ -109,34 +126,41 @@ public class BichoPegajoso : MonoBehaviour
                 {
                     agente.SetDestination (objetivoTrf.position + objetivoOff);
                 }
-                DarSaltitos ();
 
                 agente.velocity = agente.baseOffset > baseOff ? agente.desiredVelocity : Vector3.zero;
             }
             else 
             {
-                personajeCtr.Move ((puntoVue - this.transform.position).normalized * Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (puntoVue.x, puntoVue.z)) * empujeVel / puntoVueDst * 
-                    Time.deltaTime);
-                if (this.IsInvoking ("SalirDeAturdimiento") == false && Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (puntoVue.x, puntoVue.z)) < agente.stoppingDistance) 
+                personajeCtr.Move (new Vector3 (puntoVue.x - this.transform.position.x, fuerzaY, puntoVue.z - this.transform.position.z).normalized * Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), 
+                    new Vector2 (puntoVue.x, puntoVue.z)) * empujeVel / puntoVueDst * Time.deltaTime);
+
+                if ((personajeCtr.collisionFlags & CollisionFlags.Below) != 0) 
                 {
-                    this.Invoke ("SalirDeAturdimiento", 1.5f);
+                    sueloToc = true;
+                }
+
+                if (this.IsInvoking ("SalirDeAturdimiento") == false && Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (puntoVue.x, puntoVue.z)) < distanciaPar) 
+                {
+                    this.Invoke ("SalirDeAturdimiento", 2);
                 }
             }
+
+            ControlarGravedad ();
         }
-        else 
+        /*else 
         {
-            /*this.transform.localPosition = pegadoOff;
-            this.transform.localRotation = Quaternion.identity;*/
-        }
+            this.transform.localPosition = pegadoOff;
+            this.transform.localRotation = Quaternion.identity;
+        }*/
     }
 
 
     // .
-    private void Pegarse () 
+    /*private void Pegarse () 
     {
         if (pegado == false && volando == false && objetivoTrf != null && Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (agente.destination.x, agente.destination.z)) < agente.stoppingDistance) 
         {
-            /*agente.enabled = false;
+            agente.enabled = false;
             personajeCtr.enabled = true;
 
             if (this.name == "Bicho pegajoso prototipo (0)") 
@@ -147,15 +171,15 @@ public class BichoPegajoso : MonoBehaviour
             }
 
             personajeCtr.enabled = false;
-            agente.enabled = true;*/
-            /*pegadoOff = this.transform.position - objetivoTrf.position;
+            agente.enabled = true;
+            pegadoOff = this.transform.position - objetivoTrf.position;
             pegado = true;
             this.transform.parent = objetivoTrf;
             agente.isStopped = true;
 
-            objetivoTrf.GetComponent<MovimientoHistoria2>().Pegado ();*/
+            objetivoTrf.GetComponent<MovimientoHistoria2>().Pegado ();
         }
-    }
+    }*/
 
 
     // .
@@ -164,23 +188,45 @@ public class BichoPegajoso : MonoBehaviour
         volando = false;
         personajeCtr.enabled = false;
         agente.enabled = true;
+        cuerpoRig.detectCollisions = true;
+        sueloToc = false;
+        objetivoOff = new Vector3 (Random.Range (-objetivoRnd, +objetivoRnd), 0, Random.Range (-objetivoRnd, +objetivoRnd));
     }
 
 
     // .
-    private void DarSaltitos () 
+    private void ControlarGravedad () 
     {
-        if (agente.baseOffset > baseOff)
+        if (pegado == false) 
         {
-            agente.baseOffset += Time.deltaTime * fuerzaY;
-            fuerzaY += gravedad;
-        }
-        else 
-        {
-            agente.baseOffset = baseOff;
-            if (this.IsInvoking ("Saltar") == false && Vector3.Distance (this.transform.position, agente.destination) > agente.stoppingDistance) 
+            if (volando == false)
             {
-                this.Invoke ("Saltar", Random.Range (0.3f, 0.4f));
+                if (agente.baseOffset > baseOff)
+                {
+                    agente.baseOffset += Time.deltaTime * fuerzaY;
+                    fuerzaY += gravedad;
+                }
+                else
+                {
+                    agente.baseOffset = baseOff;
+                    fuerzaY = 0;
+
+                    if (parado == false && this.IsInvoking ("Saltar") == false)
+                    {
+                        this.Invoke ("Saltar", Random.Range (0.3f, 0.4f));
+                    }
+                }
+            }
+            else
+            {
+                if (sueloToc == false)
+                {
+                    fuerzaY += gravedad;
+                }
+                else
+                {
+                    fuerzaY = 0;
+                }
             }
         }
     }
@@ -189,7 +235,7 @@ public class BichoPegajoso : MonoBehaviour
     // .
     private void Saltar () 
     {
-        fuerzaY = saltoVel;
+        fuerzaY = saltoVel + Random.Range (-saltoRnd, +saltoRnd);
         agente.baseOffset += Time.deltaTime * fuerzaY;
     }
 

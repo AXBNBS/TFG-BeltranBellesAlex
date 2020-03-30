@@ -20,7 +20,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     [SerializeField] private MovimientoHistoria2 companyeroMov;
     [SerializeField] private float pararDstSeg, pararDstAtq, ajusteCaiDst, multiplicadorSalBaj;
     [SerializeField] private bool saltador;
-    private int gravedad, movimientoVel, empujeVel, bichos;
+    private int gravedad, movimientoVel, empujeVel;
     private bool saltarInp, yendo, empujando, limitadoX, enemigosCer, saltado, cambiando, siguiendoAcb, evitando;
     private CharacterController characterCtr;
     private float horizontalInp, verticalInp, offsetBas, sueloDst, radioRotAtq;
@@ -35,6 +35,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     private Ataque ataqueScr;
     private Salud saludScr;
     private Enemigo enemigoScr;
+    private HashSet<BichoPegajoso> bichosPeg;
 
 
     // Inicialización de variables.
@@ -66,6 +67,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         estado = Estado.normal;
         ataqueScr = this.GetComponent<Ataque> ();
         saludScr = this.GetComponent<Salud> ();
+        bichosPeg = new HashSet<BichoPegajoso> ();
 
         huesos.RemoveAt (0);
     }
@@ -307,12 +309,13 @@ public class MovimientoHistoria2 : MonoBehaviour
     }
 
 
-    // .
-    public void Pegado () 
+    // Un bicho se pega al cuerpo del gato, pudiendo reducir la velocidad a la que este puede desplazarse.
+    public void Pegado (BichoPegajoso bicho) 
     {
-        bichos += 1;
+        bichosPeg.Add (bicho);
+        print (bichosPeg.Count);
 
-        if (bichos > 3) 
+        if (bichosPeg.Count > 3) 
         {
             movimientoVel = movimientoVelRed;
             mallaAgtNav.speed = movimientoVelRed;
@@ -320,12 +323,21 @@ public class MovimientoHistoria2 : MonoBehaviour
     }
 
 
-    // .
-    public void TodosDespegados () 
+    // Se despegan los bichos indicados del cuerpo del gato, pudiendo restaurar la velocidad a la que este puede desplazarse.
+    public void Despegar (List<BichoPegajoso> bichos) 
     {
-        bichos = 0;
-        movimientoVel = movimientoVelNor;
-        mallaAgtNav.speed = movimientoVelNor;
+        foreach (BichoPegajoso b in bichos) 
+        {
+            b.SalirVolando ();
+            bichosPeg.Remove (b);
+        }
+        
+        print (bichosPeg.Count);
+        if (bichosPeg.Count < 4)
+        {
+            movimientoVel = movimientoVelNor;
+            mallaAgtNav.speed = movimientoVelNor;
+        }
     }
 
 

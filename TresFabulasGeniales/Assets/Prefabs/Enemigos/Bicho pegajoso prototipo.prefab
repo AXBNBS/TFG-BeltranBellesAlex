@@ -144,7 +144,7 @@ NavMeshAgent:
   m_Acceleration: 200
   avoidancePriority: 50
   m_AngularSpeed: 120
-  m_StoppingDistance: 4
+  m_StoppingDistance: 0
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -168,5 +168,6 @@ MonoBehaviour:
   empujeDst: 50
   empujeVel: 500
   saltoVel: 100
-  pruebaVel: 0
-  aleatoriedad: 4
+  distanciaPar: 4
+  objetivoRnd: 2.9
+  saltoRnd: 20
