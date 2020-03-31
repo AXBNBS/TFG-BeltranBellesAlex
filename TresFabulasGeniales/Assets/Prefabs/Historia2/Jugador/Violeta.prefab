@@ -199,6 +199,7 @@ GameObject:
   - component: {fileID: 3002010986360654495}
   - component: {fileID: 3002010986360654493}
   - component: {fileID: 796876532862441872}
+  - component: {fileID: 8123443483049388732}
   - component: {fileID: 3002010986360654492}
   - component: {fileID: 1105000601539949260}
   - component: {fileID: 4511691215726581423}
@@ -296,6 +297,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cambiar: 030000000400000005000000
   materialAlt: {fileID: 2100000, guid: 8f4b6aba8e55063488e0f34b220e84be, type: 2}
+--- !u!114 &8123443483049388732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3002010986360654483}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1199e3fd3e2e5c4d9176e8dd2d671d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  input: 1
+  texto: []
+  rotacionVel: 10
 --- !u!114 &3002010986360654492
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -314,6 +330,7 @@ MonoBehaviour:
   descansar: 0
   movimiento: {x: 0, y: 0, z: 0}
   saltoVel: 300
+  huesos: []
   offsetY: 0
   offsetXZ: 0
   movimientoVelNor: 200

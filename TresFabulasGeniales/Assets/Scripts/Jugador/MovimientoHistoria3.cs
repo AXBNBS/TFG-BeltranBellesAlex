@@ -19,7 +19,7 @@ public class MovimientoHistoria3 : MonoBehaviour
     private Camera camara;
     private Vector3 direccionMov, previaPos, impulsoBal, impulsoCai, impulsoPar;
     private CharacterController characterCtr;
-    private float sueloDst, offsetBas;
+    private float sueloDst;
     private int verticalInp, horizontalInp;
     private bool saltoInp, engancharseInp, saltado, impulsoMnt;
     private LineRenderer renderizadorLin;
@@ -27,7 +27,6 @@ public class MovimientoHistoria3 : MonoBehaviour
     private Quaternion rotacionBal;
     private enum Estado { normal, trepando, rodando, balanceandose };
     private Estado estado;
-    private NavMeshAgent agente;
 
 
     // Inicialización de variables.
@@ -44,10 +43,6 @@ public class MovimientoHistoria3 : MonoBehaviour
         renderizadorLin = this.GetComponent<LineRenderer> ();
         rotacionesBal = new Quaternion[] { Quaternion.Euler (0, 0, 0), Quaternion.Euler (0, 90, 0), Quaternion.Euler (0, 180, 0), Quaternion.Euler (0, 270, 0) };
         estado = Estado.normal;
-        agente = this.GetComponent<NavMeshAgent> ();
-        offsetBas = agente.baseOffset;
-
-        agente.SetDestination (new Vector3 (0, 0, -50));
     }
 
 
@@ -95,11 +90,6 @@ public class MovimientoHistoria3 : MonoBehaviour
                 break;
         }
 
-        agente.baseOffset += Time.deltaTime * direccionMov.y;
-        if (agente.baseOffset <= offsetBas) 
-        {
-            agente.baseOffset = offsetBas;
-        }
         if (impulsoMnt == false) 
         {
             impulsoBal = Vector3.zero;
@@ -127,10 +117,10 @@ public class MovimientoHistoria3 : MonoBehaviour
 
 
     // A ver si debugueamos.
-    /*private void OnDrawGizmos ()
+    private void OnDrawGizmos ()
     {
         Gizmos.DrawRay (this.transform.position, -Vector3.up * sueloDst);   
-    }*/
+    }
 
 
     // Lanzamos un raycast hacia abajo de no mucha mayor longitud que la altura del personaje para comprobar si este está tocando el suelo o no.
@@ -298,7 +288,7 @@ public class MovimientoHistoria3 : MonoBehaviour
             Rotar ();
         }
 
-        //characterCtr.Move (direccionMov * Time.deltaTime);
+        characterCtr.Move (Time.deltaTime * direccionMov);
 
         if (characterCtr.isGrounded == true) 
         {

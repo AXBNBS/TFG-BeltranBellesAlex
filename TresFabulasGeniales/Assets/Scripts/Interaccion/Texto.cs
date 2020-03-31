@@ -8,7 +8,7 @@ using UnityEngine;
 public class Texto : MonoBehaviour
 {
     [SerializeField] private string[] texto;
-    [SerializeField] private float rotacionVel;
+    private float rotacionVel;
     private Hablar[] jugadores;
     private Hablar jugador;
     private Quaternion rotacionIni, rotacionObj;
@@ -18,17 +18,18 @@ public class Texto : MonoBehaviour
     // Obtenemos las referencias al jugador o jugadores.
     private void Start ()
     {
+        rotacionVel = 10;
         jugadores = GameObject.FindObjectsOfType<Hablar> ();
         jugador = jugadores[0];
         rotacionIni = this.transform.rotation;
-        panelTxt = GameObject.FindGameObjectWithTag ("PanelTexto");
+        panelTxt = GameObject.FindGameObjectWithTag("Interfaz").transform.GetChild(0).GetChild(0).gameObject;
     }
 
 
     // .
     private void Update ()
     {
-        if (panelTxt.activeSelf == false && ((jugadores[0].input == true && jugadores[0].texto != null) || (jugadores.Length > 1 && jugadores[1].input == true && jugadores[1].texto != null)) && Input.GetButtonDown ("Interacción") == true) 
+        if (panelTxt.activeSelf == false && Input.GetButtonDown ("Interacción") == true && ((jugadores[0].input == true && jugadores[0].texto != null) || (jugadores.Length > 1 && jugadores[1].input == true && jugadores[1].texto != null))) 
         {
             rotacionObj = Quaternion.Euler (0, Quaternion.LookRotation(jugador.transform.position - this.transform.position).eulerAngles.y + 90, 0);
         }

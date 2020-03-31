@@ -18,27 +18,47 @@ public class Hablar : MonoBehaviour
     private float tiempoPas;
     private int parrafoAct, letrasEsc;
     private string personaje, frase;
+    private bool escena0;
     private Transform npc;
-    private SeguimientoCamara camara;
-    private MovimientoHistoria1 personajeMov1;
-    private MovimientoHistoria2 personajeMov2;
-    private MovimientoHistoria3 personajeMov3;
+    private MovimientoHistoria1 personajeMov1Scr;
+    private MovimientoHistoria2 personajeMov2Scr;
+    private Ataque ataqueScr;
+    private Empujar empujarScr;
+    private CambioDePersonajesYAgrupacion cambioScr;
+    private MovimientoHistoria3 personajeMov3Scr;
+    private SeguimientoCamara camaraScr;
     private Quaternion rotacionObj;
 
     
     // .
     private void Start ()
     {
-        texto = null;
-        panelTxt = GameObject.FindGameObjectWithTag ("PanelTexto");
+        panelTxt = GameObject.FindGameObjectWithTag("Interfaz").transform.GetChild(0).GetChild(0).gameObject;
         mostradoTxt = panelTxt.GetComponentsInChildren<Text> ();
         tiempoPas = 0;
         parrafoAct = 0;
         letrasEsc = 0;
-        camara = GameObject.FindObjectOfType<SeguimientoCamara> ();
-        personajeMov1 = this.GetComponent<MovimientoHistoria1> ();
-        personajeMov2 = this.GetComponent<MovimientoHistoria2> ();
-        personajeMov3 = this.GetComponent<MovimientoHistoria3> ();
+        escena0 = SceneManager.GetActiveScene().buildIndex == 0;
+        if (escena0 == false)
+        {
+            texto = null;
+            personajeMov1Scr = this.GetComponent<MovimientoHistoria1> ();
+            if (personajeMov1Scr == null)
+            {
+                personajeMov2Scr = this.GetComponent<MovimientoHistoria2> ();
+                if (personajeMov2Scr != null)
+                {
+                    ataqueScr = this.GetComponent<Ataque> ();
+                    empujarScr = this.GetComponent<Empujar> ();
+                    cambioScr = GameObject.FindGameObjectWithTag("Controlador").GetComponent<CambioDePersonajesYAgrupacion> ();
+                }
+                else
+                {
+                    personajeMov3Scr = this.GetComponent<MovimientoHistoria3> ();
+                }
+            }
+            camaraScr = GameObject.FindGameObjectWithTag("CamaraPrincipal").transform.parent.GetComponent<SeguimientoCamara> ();
+        }
 
         panelTxt.SetActive (false);
     }
@@ -53,10 +73,9 @@ public class Hablar : MonoBehaviour
         {
             if (panelTxt.activeSelf == false)
             {
-                panelTxt.SetActive (true);
-                SepararTexto ();
+                IniciarDialogo ();
                 ControlarInput (false);
-                camara.PuntoMedioDialogo (true, this.transform.position, npc.GetComponent<CapsuleCollider>().bounds.center);
+                camaraScr.PuntoMedioDialogo (true, this.transform.position, npc.GetComponent<CapsuleCollider>().bounds.center);
 
                 rotacionObj = Quaternion.Euler (0, Quaternion.LookRotation(npc.position - this.transform.position).eulerAngles.y, 0);
             }
@@ -81,9 +100,9 @@ public class Hablar : MonoBehaviour
                 tiempoPas = 0;
             }
             this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacionObj, Time.deltaTime * rotacionVel);
-            if (Quaternion.Angle (this.transform.rotation, rotacionObj) < 1) 
+            if (camaraScr != null && Quaternion.Angle (this.transform.rotation, rotacionObj) < 1) 
             {
-                camara.CalcularGiro ();
+                camaraScr.CalcularGiro ();
             }
         }
     }
@@ -96,6 +115,14 @@ public class Hablar : MonoBehaviour
         {
             npc = other.transform;
         }
+    }
+
+
+    // .
+    public void IniciarDialogo ()
+    {
+        panelTxt.SetActive (true);
+        SepararTexto ();
     }
 
 
@@ -122,8 +149,15 @@ public class Hablar : MonoBehaviour
             parrafoAct = 0;
 
             panelTxt.SetActive (false);
-            ControlarInput (true);
-            camara.PuntoMedioDialogo (false, Vector3.zero, Vector3.zero);
+            if (escena0 == false)
+            {
+                ControlarInput (true);
+                camaraScr.PuntoMedioDialogo (false, Vector3.zero, Vector3.zero);
+            }
+            else 
+            {
+                Fundido.instancia.FundidoAEscena (AlmacenDatos.instancia.regresarA);
+            }
         }
     }
 
@@ -177,23 +211,27 @@ public class Hablar : MonoBehaviour
     // .
     private void ControlarInput (bool activar) 
     {
-        string escenaNmb = SceneManager.GetActiveScene().name;
-
-        if (escenaNmb.Contains ("Eva") == true)
+        if (personajeMov2Scr != null)
         {
-            personajeMov1.input = activar;
+            personajeMov2Scr.input = activar;
+            ataqueScr.input = activar;
+            if (empujarScr != null) 
+            {
+                empujarScr.input = activar;
+            }
+            cambioScr.input = activar;
         }
-        else 
+        else
         {
-            if (escenaNmb.Contains ("Violeta") == true) 
+            if (personajeMov1Scr != null)
             {
-                personajeMov2.input = activar;
+                personajeMov1Scr.input = activar;
             }
-            else 
+            else
             {
-                personajeMov3.input = activar;
+                personajeMov3Scr.input = activar;
             }
         }
-        camara.input = activar;
+        camaraScr.input = activar;
     }
 }

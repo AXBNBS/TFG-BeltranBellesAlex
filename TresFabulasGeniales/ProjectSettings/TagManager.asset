@@ -22,6 +22,9 @@ TagManager:
   - Bicho
   - AreaBichos
   - CuerpoGato
+  - Controlador
+  - Interfaz
+  - Transicion
   layers:
   - Default
   - TransparentFX

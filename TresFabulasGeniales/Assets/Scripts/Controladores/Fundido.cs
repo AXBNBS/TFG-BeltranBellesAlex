@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 
 
@@ -13,18 +14,48 @@ public class Fundido : MonoBehaviour
     private Animator animador;
     private Vector3 posicion;
     private bool cambiarPos;
+    private int escenaInd;
 
 
-    // .
-    private void Start ()
+    // Inicialización de variables.
+    private void Awake ()
     {
-        instancia = this;
-        camara = GameObject.FindObjectOfType<SeguimientoCamara> ();
+        if (instancia != null)
+        {
+            GameObject.Destroy (this.transform.parent.parent.gameObject);
+        }
+        else
+        {
+            instancia = this;
+
+            GameObject.DontDestroyOnLoad (this.transform.parent.parent.gameObject);
+        }
         animador = this.GetComponent<Animator> ();
     }
 
 
+    // Al cargar una nueva escena, obtenemos la referencia correspondiente al script de la cámara que haya en la misma.
+    private void OnEnable () 
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+
     // .
+    private void OnSceneLoaded (Scene scene, LoadSceneMode mode) 
+    {
+        camara = GameObject.FindObjectOfType<SeguimientoCamara> ();
+    }
+
+
+    // .
+    private void OnDisable ()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+
+    // Activamos un fundido que permite mover la cámara a una posición distinta.
     public void FundidoAPosicion (Vector3 pos) 
     {
         animador.SetTrigger ("fundido");
@@ -34,13 +65,40 @@ public class Fundido : MonoBehaviour
     }
 
 
-    // .
-    public void FundidoCompletado () 
+    // Activamos el fundido para cargar una escena nueva cuando la pantalla esté completamente en negro.
+    public void FundidoAEscena (int escena) 
+    {
+        animador.SetTrigger ("fundido");
+
+        cambiarPos = false;
+        escenaInd = escena;
+        AlmacenDatos.instancia.regresarA = SceneManager.GetActiveScene().buildIndex;
+    }
+
+
+    // Función que se llama al completar el fade out, se encarga de cambiar la cámara de posición o, si queremos cambiar de escena, cargar la nueva.
+    private void EscenaOscura () 
     {
         if (cambiarPos == true)
         {
             camara.transform.position = posicion;
             camara.transicionando = false;
+        }
+        else 
+        {
+            Time.timeScale = 1;
+
+            SceneManager.LoadScene (escenaInd);
+        }
+    }
+
+
+    // Función que se llama al completar el fade in, se encarga de iniciar el diálgo entre los narradores si hemos vuelto a la escena inicial.
+    private void EscenaVisible () 
+    {
+        if (SceneManager.GetActiveScene().buildIndex == 0) 
+        {
+            GameObject.FindObjectOfType<Hablar>().IniciarDialogo ();
         }
     }
 }

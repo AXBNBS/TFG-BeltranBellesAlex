@@ -12,8 +12,6 @@ public class Salud : MonoBehaviour
     [SerializeField] private float salud, invulnerabilidadTmp;
     [SerializeField] private int aturdimientoVelY;
     private bool devolverInp, invulnerable;
-    private float movimientoY, aturdimientoY; 
-    private int gravedad;
     private Animator animador;
     private MovimientoHistoria2 movimientoScr;
     private Ataque ataqueScr;
@@ -28,7 +26,6 @@ public class Salud : MonoBehaviour
         aturdido = false;
         devolverInp = false;
         invulnerable = false;
-        gravedad = -10;
         animador = this.GetComponentInChildren<Animator> ();
         movimientoScr = this.GetComponent<MovimientoHistoria2> ();
         ataqueScr = this.GetComponent<Ataque> ();
@@ -58,17 +55,17 @@ public class Salud : MonoBehaviour
 
 
     // .
-    private void OnControllerColliderHit (ControllerColliderHit hit)
+    /*private void OnControllerColliderHit (ControllerColliderHit hit)
     {
-        /*if (this.name == "Abedul" && hit.transform.CompareTag ("Enemigo") == true) 
+        if (this.name == "Abedul" && hit.transform.CompareTag ("Enemigo") == true) 
         {
             print (hit.transform.name);
-        }*/
-        /*if (aturdido == true && hit.transform.CompareTag ("Enemigo") == true) 
+        }
+        if (aturdido == true && hit.transform.CompareTag ("Enemigo") == true) 
         {
             hit.transform.Translate (new Vector3(-hit.normal.x, 0, -hit.normal.z).normalized);
-        }*/
-    }
+        }
+    }*/
 
 
     // Si el jugador no está aturdido, pierde salud si está siendo controlado y no puede moverse durante unos pocos segundos debido al aturdimiento, también activamos una animación que indica que ha recibido daño.
@@ -81,6 +78,11 @@ public class Salud : MonoBehaviour
                 MoverEnY ();
 
                 salud -= 1;
+
+                if (salud < 0) 
+                {
+                    this.StartCoroutine ("Muerte");
+                }
             }
             aturdido = true;
 
@@ -140,5 +142,16 @@ public class Salud : MonoBehaviour
         movimientoScr.movimiento.y = aturdimientoVelY;
 
         personajeCtr.Move (new Vector3 (0, aturdimientoVelY, 0) * Time.deltaTime);
+    }
+
+
+    // Si el avatar controlado acaba de ser derrotado, esperamos brevemente y lo mandamos a la escena de muerte.
+    private IEnumerator Muerte () 
+    {
+        yield return new WaitForSeconds (0.2f);
+
+        Time.timeScale = 0;
+
+        Fundido.instancia.FundidoAEscena (0);
     }
 }
