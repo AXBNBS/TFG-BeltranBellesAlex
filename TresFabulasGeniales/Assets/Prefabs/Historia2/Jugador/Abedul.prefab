@@ -749,6 +749,86 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[10]
       value: 
       objectReference: {fileID: 2100000, guid: d17a2308ed3a03f40b9f8ebe55431033, type: 2}
+    - target: {fileID: -286949642626103353, guid: b95bfcc4b80f0dc409dbc1ddfe424f94,
+        type: 3}
+      propertyPath: m_TagString
+      value: HuesoRestringido
+      objectReference: {fileID: 0}
+    - target: {fileID: 7481559708213040632, guid: b95bfcc4b80f0dc409dbc1ddfe424f94,
+        type: 3}
+      propertyPath: m_TagString
+      value: HuesoRestringido
+      objectReference: {fileID: 0}
+    - target: {fileID: -6963719360411901727, guid: b95bfcc4b80f0dc409dbc1ddfe424f94,
+        type: 3}
+      propertyPath: m_TagString
+      value: HuesoRestringido
+      objectReference: {fileID: 0}
+    - target: {fileID: -8943461380802292291, guid: b95bfcc4b80f0dc409dbc1ddfe424f94,
+        type: 3}
+      propertyPath: m_TagString
+      value: HuesoRestringido
+      objectReference: {fileID: 0}
+    - target: {fileID: 44545877989600603, guid: b95bfcc4b80f0dc409dbc1ddfe424f94,
+        type: 3}
+      propertyPath: m_TagString
+      value: HuesoRestringido
+      objectReference: {fileID: 0}
+    - target: {fileID: 4487726218535754493, guid: b95bfcc4b80f0dc409dbc1ddfe424f94,
+        type: 3}
+      propertyPath: m_TagString
+      value: HuesoRestringido
+      objectReference: {fileID: 0}
+    - target: {fileID: 5730894614535139513, guid: b95bfcc4b80f0dc409dbc1ddfe424f94,
+        type: 3}
+      propertyPath: m_TagString
+      value: HuesoRestringido
+      objectReference: {fileID: 0}
+    - target: {fileID: 5584350633606191239, guid: b95bfcc4b80f0dc409dbc1ddfe424f94,
+        type: 3}
+      propertyPath: m_TagString
+      value: HuesoRestringido
+      objectReference: {fileID: 0}
+    - target: {fileID: 4123351522274092091, guid: b95bfcc4b80f0dc409dbc1ddfe424f94,
+        type: 3}
+      propertyPath: m_TagString
+      value: HuesoRestringido
+      objectReference: {fileID: 0}
+    - target: {fileID: 4795563414729486230, guid: b95bfcc4b80f0dc409dbc1ddfe424f94,
+        type: 3}
+      propertyPath: m_TagString
+      value: HuesoRestringido
+      objectReference: {fileID: 0}
+    - target: {fileID: -7717094811982895194, guid: b95bfcc4b80f0dc409dbc1ddfe424f94,
+        type: 3}
+      propertyPath: m_TagString
+      value: HuesoRestringido
+      objectReference: {fileID: 0}
+    - target: {fileID: 3645724007898375657, guid: b95bfcc4b80f0dc409dbc1ddfe424f94,
+        type: 3}
+      propertyPath: m_TagString
+      value: HuesoRestringido
+      objectReference: {fileID: 0}
+    - target: {fileID: 1724171479367139006, guid: b95bfcc4b80f0dc409dbc1ddfe424f94,
+        type: 3}
+      propertyPath: m_TagString
+      value: HuesoRestringido
+      objectReference: {fileID: 0}
+    - target: {fileID: 7378279056255924314, guid: b95bfcc4b80f0dc409dbc1ddfe424f94,
+        type: 3}
+      propertyPath: m_TagString
+      value: HuesoRestringido
+      objectReference: {fileID: 0}
+    - target: {fileID: -7285574408523923109, guid: b95bfcc4b80f0dc409dbc1ddfe424f94,
+        type: 3}
+      propertyPath: m_TagString
+      value: HuesoRestringido
+      objectReference: {fileID: 0}
+    - target: {fileID: -1236568468249368232, guid: b95bfcc4b80f0dc409dbc1ddfe424f94,
+        type: 3}
+      propertyPath: m_TagString
+      value: HuesoRestringido
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b95bfcc4b80f0dc409dbc1ddfe424f94, type: 3}
 --- !u!4 &1622452286831830628 stripped

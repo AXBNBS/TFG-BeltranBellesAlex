@@ -25,6 +25,8 @@ TagManager:
   - Controlador
   - Interfaz
   - Transicion
+  - Pared
+  - HuesoRestringido
   layers:
   - Default
   - TransparentFX

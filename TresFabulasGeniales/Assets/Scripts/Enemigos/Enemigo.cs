@@ -288,7 +288,7 @@ public class Enemigo : MonoBehaviour
             posicionIni = this.transform.position;
             perseguir = false;
             personajeCtr.enabled = false;
-            //print (this.transform.position.y);
+            this.GetComponent<Parpadeo>().enabled = false;
             this.transform.position = new Vector3 (this.transform.position.x, posicionIni.y, this.transform.position.z);
 
             animador.SetBool ("aturdido", false);
