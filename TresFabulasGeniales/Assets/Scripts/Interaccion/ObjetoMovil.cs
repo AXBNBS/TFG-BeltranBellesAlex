@@ -95,22 +95,21 @@ public class ObjetoMovil : MonoBehaviour
     {
         movimiento.y = 0;
 
-        characterCtr.Move (movimiento);
+        characterCtr.Move (Time.deltaTime * movimiento);
+        //Debug.Log ("Velocitat: " + characterCtr.velocity);
 
         if (rueda == true && movimiento != Vector3.zero) 
         {
-            float rotacion = rotacionVel * Time.deltaTime;
-
+            //Debug.Log ("Rotació prèvia: " + this.transform.rotation.eulerAngles);
             if (movimientoX[indiceTrg] == true) 
             {
-                this.transform.rotation = movimiento.x > 0 ? Quaternion.Euler (this.transform.rotation.eulerAngles.x - rotacion, this.transform.rotation.eulerAngles.y, this.transform.rotation.eulerAngles.z) :
-                    Quaternion.Euler (this.transform.rotation.eulerAngles.x + rotacion, this.transform.rotation.eulerAngles.y, this.transform.rotation.eulerAngles.z);
+                this.transform.Rotate (movimiento.x > 0 ? new Vector3 (-rotacionVel, 0, 0) * Time.deltaTime : new Vector3 (+rotacionVel, 0, 0) * Time.deltaTime);
             }
             else 
             {
-                this.transform.rotation = movimiento.z > 0 ? Quaternion.Euler (this.transform.rotation.eulerAngles.x, this.transform.rotation.eulerAngles.y, this.transform.rotation.eulerAngles.z - rotacion) :
-                    Quaternion.Euler (this.transform.rotation.eulerAngles.x, this.transform.rotation.eulerAngles.y, this.transform.rotation.eulerAngles.z + rotacion);
+                this.transform.Rotate (movimiento.z > 0 ? new Vector3 (0, 0, -rotacionVel) * Time.deltaTime : new Vector3 (0, 0, +rotacionVel) * Time.deltaTime);
             }
+            //Debug.Log ("Rotació final: " + this.transform.rotation.eulerAngles);
         }
     }
 }

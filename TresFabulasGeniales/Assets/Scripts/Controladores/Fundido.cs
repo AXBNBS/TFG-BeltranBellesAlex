@@ -34,24 +34,24 @@ public class Fundido : MonoBehaviour
     }
 
 
-    // Al cargar una nueva escena, obtenemos la referencia correspondiente al script de la cámara que haya en la misma.
+    // No entiendo como funciona pero de alguna manera se llama a "AlCargarEscena" cada vez que se carga una escena gracias a esto.
     private void OnEnable () 
     {
-        SceneManager.sceneLoaded += OnSceneLoaded;
+        SceneManager.sceneLoaded += AlCargarEscena;
     }
 
 
-    // .
-    private void OnSceneLoaded (Scene scene, LoadSceneMode mode) 
-    {
-        camara = GameObject.FindObjectOfType<SeguimientoCamara> ();
-    }
-
-
-    // .
+    // Hay que hacer esto también porque lo pone en la documentación de Unity y no sé, así va.
     private void OnDisable ()
     {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
+        SceneManager.sceneLoaded -= AlCargarEscena;
+    }
+
+
+    // Sirve para buscar el script de seguimiento de la cámara a cada nueva escena cargada.
+    private void AlCargarEscena (Scene escena, LoadSceneMode modo)
+    {
+        camara = GameObject.FindObjectOfType<SeguimientoCamara> ();
     }
 
 

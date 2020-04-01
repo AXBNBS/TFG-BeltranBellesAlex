@@ -21,12 +21,12 @@ public class MovimientoHistoria2 : MonoBehaviour
     [SerializeField] private float pararDstSeg, pararDstAtq, ajusteCaiDst, multiplicadorSalBaj;
     [SerializeField] private bool saltador;
     private int gravedad, movimientoVel, empujeVel;
-    private bool saltarInp, yendo, empujando, limitadoX, enemigosCer, saltado, cambiando, siguiendoAcb, evitando;
+    private bool saltarInp, yendo, empujando, limitadoX, enemigosCer, saltado, cambiando, siguiendoAcb;
     private CharacterController characterCtr;
     private float horizontalInp, verticalInp, offsetBas, sueloDst, radioRotAtq;
     private Transform camaraTrf, objetivoSeg, companyeroTrf, enemigoTrf;
     private Animator animator;
-    private Vector3 empuje, puntoAlt;
+    private Vector3 empuje;
     private NavMeshAgent mallaAgtNav;
     private ObjetoMovil empujado;
     private enum Estado { normal, siguiendo, atacando };
@@ -41,6 +41,8 @@ public class MovimientoHistoria2 : MonoBehaviour
     // Inicialización de variables.
     private void Start ()
     {
+        List<Transform> huesosEli = new List<Transform> ();
+
         sueleado = true;
         huesos = this.transform.GetChild(5).GetChild(0).GetComponentsInChildren<Transform>().ToList<Transform> ();
         gravedad = -11;
@@ -70,6 +72,17 @@ public class MovimientoHistoria2 : MonoBehaviour
         bichosPeg = new HashSet<BichoPegajoso> ();
 
         huesos.RemoveAt (0);
+        foreach (Transform h in huesos) 
+        {
+            if (h.CompareTag ("HuesoRestringido") == true) 
+            {
+                huesosEli.Add (h);
+            }
+        }
+        foreach (Transform e in huesosEli) 
+        {
+            huesos.Remove (e);
+        }
     }
 
 
@@ -313,7 +326,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     public void Pegado (BichoPegajoso bicho) 
     {
         bichosPeg.Add (bicho);
-        print (bichosPeg.Count);
+        //print (bichosPeg.Count);
 
         if (bichosPeg.Count > 3) 
         {
@@ -332,7 +345,7 @@ public class MovimientoHistoria2 : MonoBehaviour
             bichosPeg.Remove (b);
         }
         
-        print (bichosPeg.Count);
+        //print (bichosPeg.Count);
         if (bichosPeg.Count < 4)
         {
             movimientoVel = movimientoVelNor;
@@ -515,7 +528,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         characterCtr.Move (Time.deltaTime * movimiento);
         if (empujando == true) 
         {
-            empujado.Mover (Time.deltaTime * movimiento); 
+            empujado.Mover (movimiento); 
         }
     }
 

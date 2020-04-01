@@ -11,6 +11,7 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     public bool input, juntos, violetaAct;
 
     [SerializeField] private LayerMask avataresCap, capasSinAvt;
+    private Hablar[] personajesHbl;
     private MovimientoHistoria2[] personajesMov;
     private Ataque[] personajesAtq;
     private Salud[] personajesSld;
@@ -28,7 +29,10 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
         instancia = this;
         juntos = false;
         violetaAct = true;
-        personajesMov = GameObject.FindObjectsOfType<MovimientoHistoria2> ();
+        personajesHbl = GameObject.FindObjectsOfType<Hablar> ();
+        personajesMov = new MovimientoHistoria2[2];
+        personajesMov[0] = personajesHbl[0].GetComponent<MovimientoHistoria2> ();
+        personajesMov[1] = personajesHbl[1].GetComponent<MovimientoHistoria2> ();
         personajesAtq = new Ataque[2];
         personajesAtq[0] = personajesMov[0].GetComponent<Ataque> ();
         personajesAtq[1] = personajesMov[1].GetComponent<Ataque> ();
@@ -142,6 +146,7 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     {
         input = true;
         camara.input = true;
+        personajesHbl[personajeAct].input = true;
         personajesMov[personajeAct].input = true;
         personajesAtq[personajeAct].input = true;
         if (violetaAct == false)
@@ -158,6 +163,7 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     {
         input = false;
         camara.input = false;
+        personajesHbl[personajeAct].input = false;
         personajesMov[personajeAct].input = false;
         personajesAtq[personajeAct].input = false;
         if (violetaAct == false) 

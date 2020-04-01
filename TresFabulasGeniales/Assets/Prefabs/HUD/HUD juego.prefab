@@ -46,7 +46,7 @@ GameObject:
   - component: {fileID: 4235652004276101773}
   - component: {fileID: 4235652004276101770}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Imagen
   m_TagString: Transicion
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -138,7 +138,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e0e005039be197468794c814f827847, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animador: {fileID: 0}
 --- !u!1 &4235652004333945718
 GameObject:
   m_ObjectHideFlags: 0

@@ -655,6 +655,21 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 8f4b6aba8e55063488e0f34b220e84be, type: 2}
     - target: {fileID: 5377482758187885899, guid: e2e638e044cdbe14b92340e0a4f1881a,
         type: 3}
+      propertyPath: m_Materials.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: daf4991c0b23eeb4189b06b585e8a52e, type: 2}
+    - target: {fileID: 5377482758187885899, guid: e2e638e044cdbe14b92340e0a4f1881a,
+        type: 3}
+      propertyPath: m_Materials.Array.data[2]
+      value: 
+      objectReference: {fileID: 2100000, guid: aad8e7fbaf463924197dd1899c92b094, type: 2}
+    - target: {fileID: 5377482758187885899, guid: e2e638e044cdbe14b92340e0a4f1881a,
+        type: 3}
+      propertyPath: m_Materials.Array.data[3]
+      value: 
+      objectReference: {fileID: 2100000, guid: 4758ed9070c5e1145aeb095a5a3865e7, type: 2}
+    - target: {fileID: 5377482758187885899, guid: e2e638e044cdbe14b92340e0a4f1881a,
+        type: 3}
       propertyPath: m_Materials.Array.data[4]
       value: 
       objectReference: {fileID: 2100000, guid: 977bd2cbc0a1e49479cf14b020f9d6f5, type: 2}
@@ -665,9 +680,9 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 977bd2cbc0a1e49479cf14b020f9d6f5, type: 2}
     - target: {fileID: 5377482758187885899, guid: e2e638e044cdbe14b92340e0a4f1881a,
         type: 3}
-      propertyPath: m_Materials.Array.data[3]
+      propertyPath: m_Materials.Array.data[6]
       value: 
-      objectReference: {fileID: 2100000, guid: 4758ed9070c5e1145aeb095a5a3865e7, type: 2}
+      objectReference: {fileID: 2100000, guid: c17fee34d5dc2254ab3de147926e40c5, type: 2}
     - target: {fileID: 5377482758187885899, guid: e2e638e044cdbe14b92340e0a4f1881a,
         type: 3}
       propertyPath: m_Materials.Array.data[7]
@@ -675,24 +690,89 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 121f37dbc347fc74fbeda9cc38d1e08b, type: 2}
     - target: {fileID: 5377482758187885899, guid: e2e638e044cdbe14b92340e0a4f1881a,
         type: 3}
-      propertyPath: m_Materials.Array.data[6]
-      value: 
-      objectReference: {fileID: 2100000, guid: c17fee34d5dc2254ab3de147926e40c5, type: 2}
-    - target: {fileID: 5377482758187885899, guid: e2e638e044cdbe14b92340e0a4f1881a,
-        type: 3}
-      propertyPath: m_Materials.Array.data[1]
-      value: 
-      objectReference: {fileID: 2100000, guid: daf4991c0b23eeb4189b06b585e8a52e, type: 2}
-    - target: {fileID: 5377482758187885899, guid: e2e638e044cdbe14b92340e0a4f1881a,
-        type: 3}
       propertyPath: m_Materials.Array.data[8]
       value: 
       objectReference: {fileID: 2100000, guid: 8f4b6aba8e55063488e0f34b220e84be, type: 2}
-    - target: {fileID: 5377482758187885899, guid: e2e638e044cdbe14b92340e0a4f1881a,
+    - target: {fileID: -6963719360411901727, guid: e2e638e044cdbe14b92340e0a4f1881a,
         type: 3}
-      propertyPath: m_Materials.Array.data[2]
-      value: 
-      objectReference: {fileID: 2100000, guid: aad8e7fbaf463924197dd1899c92b094, type: 2}
+      propertyPath: m_TagString
+      value: HuesoRestringido
+      objectReference: {fileID: 0}
+    - target: {fileID: -286949642626103353, guid: e2e638e044cdbe14b92340e0a4f1881a,
+        type: 3}
+      propertyPath: m_TagString
+      value: HuesoRestringido
+      objectReference: {fileID: 0}
+    - target: {fileID: 7481559708213040632, guid: e2e638e044cdbe14b92340e0a4f1881a,
+        type: 3}
+      propertyPath: m_TagString
+      value: HuesoRestringido
+      objectReference: {fileID: 0}
+    - target: {fileID: 4487726218535754493, guid: e2e638e044cdbe14b92340e0a4f1881a,
+        type: 3}
+      propertyPath: m_TagString
+      value: HuesoRestringido
+      objectReference: {fileID: 0}
+    - target: {fileID: -8943461380802292291, guid: e2e638e044cdbe14b92340e0a4f1881a,
+        type: 3}
+      propertyPath: m_TagString
+      value: HuesoRestringido
+      objectReference: {fileID: 0}
+    - target: {fileID: 44545877989600603, guid: e2e638e044cdbe14b92340e0a4f1881a,
+        type: 3}
+      propertyPath: m_TagString
+      value: HuesoRestringido
+      objectReference: {fileID: 0}
+    - target: {fileID: 4123351522274092091, guid: e2e638e044cdbe14b92340e0a4f1881a,
+        type: 3}
+      propertyPath: m_TagString
+      value: HuesoRestringido
+      objectReference: {fileID: 0}
+    - target: {fileID: 5730894614535139513, guid: e2e638e044cdbe14b92340e0a4f1881a,
+        type: 3}
+      propertyPath: m_TagString
+      value: HuesoRestringido
+      objectReference: {fileID: 0}
+    - target: {fileID: 5584350633606191239, guid: e2e638e044cdbe14b92340e0a4f1881a,
+        type: 3}
+      propertyPath: m_TagString
+      value: HuesoRestringido
+      objectReference: {fileID: 0}
+    - target: {fileID: 3645724007898375657, guid: e2e638e044cdbe14b92340e0a4f1881a,
+        type: 3}
+      propertyPath: m_TagString
+      value: HuesoRestringido
+      objectReference: {fileID: 0}
+    - target: {fileID: -7717094811982895194, guid: e2e638e044cdbe14b92340e0a4f1881a,
+        type: 3}
+      propertyPath: m_TagString
+      value: HuesoRestringido
+      objectReference: {fileID: 0}
+    - target: {fileID: 4795563414729486230, guid: e2e638e044cdbe14b92340e0a4f1881a,
+        type: 3}
+      propertyPath: m_TagString
+      value: HuesoRestringido
+      objectReference: {fileID: 0}
+    - target: {fileID: 1724171479367139006, guid: e2e638e044cdbe14b92340e0a4f1881a,
+        type: 3}
+      propertyPath: m_TagString
+      value: HuesoRestringido
+      objectReference: {fileID: 0}
+    - target: {fileID: 7378279056255924314, guid: e2e638e044cdbe14b92340e0a4f1881a,
+        type: 3}
+      propertyPath: m_TagString
+      value: HuesoRestringido
+      objectReference: {fileID: 0}
+    - target: {fileID: -7285574408523923109, guid: e2e638e044cdbe14b92340e0a4f1881a,
+        type: 3}
+      propertyPath: m_TagString
+      value: HuesoRestringido
+      objectReference: {fileID: 0}
+    - target: {fileID: -1236568468249368232, guid: e2e638e044cdbe14b92340e0a4f1881a,
+        type: 3}
+      propertyPath: m_TagString
+      value: HuesoRestringido
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e2e638e044cdbe14b92340e0a4f1881a, type: 3}
 --- !u!4 &8792066677482512444 stripped

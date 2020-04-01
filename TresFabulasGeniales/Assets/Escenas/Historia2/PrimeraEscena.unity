@@ -399,6 +399,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Camino
       objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: 049bc4865ff55de49905bc0dd8db3302,
+        type: 3}
+      propertyPath: m_TagString
+      value: Pared
+      objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 049bc4865ff55de49905bc0dd8db3302,
         type: 3}
       propertyPath: m_LocalPosition.x

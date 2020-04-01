@@ -50,7 +50,7 @@ public class BichoPegajoso : MonoBehaviour
     {
         if (other.CompareTag ("CuerpoGato") == true) 
         {
-            print (this.name + ": ME SUSEDIÓ.");
+            //print (this.name + ": ME SUSEDIÓ.");
             MovimientoHistoria2 avatarMov = other.transform.parent.parent.GetComponent<MovimientoHistoria2> ();
 
             cuerpoRig.detectCollisions = false;
@@ -68,9 +68,18 @@ public class BichoPegajoso : MonoBehaviour
     // .
     private void OnControllerColliderHit (ControllerColliderHit hit)
     {
-        if (hit.transform.CompareTag ("CuerpoGato") == false && (personajeCtr.collisionFlags & CollisionFlags.Sides) != 0) 
+        if (hit.transform.CompareTag ("CuerpoGato") == false) 
         {
-            puntoVue = this.transform.position;
+            if ((personajeCtr.collisionFlags & CollisionFlags.Sides) != 0)
+            {
+                puntoVue = this.transform.position;
+                //print (this.name + ": he tocado una pared. Mi posición es " + this.transform.position + " y mi nuevo destino es " + puntoVue);
+            }
+            if ((personajeCtr.collisionFlags & CollisionFlags.Below) != 0) 
+            {
+                sueloToc = true;
+                //print (this.name + ": he tocado el suelo.");
+            }
         }
     }
 
@@ -131,15 +140,15 @@ public class BichoPegajoso : MonoBehaviour
             }
             else 
             {
-                personajeCtr.Move (new Vector3 (puntoVue.x - this.transform.position.x, fuerzaY, puntoVue.z - this.transform.position.z).normalized * Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), 
-                    new Vector2 (puntoVue.x, puntoVue.z)) * empujeVel / puntoVueDst * Time.deltaTime);
+                float velocidadMov = Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (puntoVue.x, puntoVue.z)) * empujeVel / puntoVueDst;
+                Vector3 movimiento = new Vector3(puntoVue.x - this.transform.position.x, 0, puntoVue.z - this.transform.position.z).normalized * velocidadMov;
 
-                if ((personajeCtr.collisionFlags & CollisionFlags.Below) != 0) 
-                {
-                    sueloToc = true;
-                }
+                movimiento = new Vector3 (movimiento.x, fuerzaY, movimiento.z) * Time.deltaTime;
+                print (this.name + ": me he movido " + movimiento);
 
-                if (this.IsInvoking ("SalirDeAturdimiento") == false && Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (puntoVue.x, puntoVue.z)) < distanciaPar) 
+                personajeCtr.Move (movimiento);
+                print (this.name + ": mi velocidad es " + personajeCtr.velocity);
+                if (sueloToc == true && this.IsInvoking ("SalirDeAturdimiento") == false && Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (puntoVue.x, puntoVue.z)) < distanciaPar) 
                 {
                     this.Invoke ("SalirDeAturdimiento", 2);
                 }
