@@ -10,7 +10,8 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     public static CambioDePersonajesYAgrupacion instancia;
     public bool input, juntos, violetaAct;
 
-    [SerializeField] private LayerMask avataresCap, capasSinAvt;
+    [SerializeField] private LayerMask capasSinAvt;
+    private LayerMask violetaCap, abedulCap;
     private Hablar[] personajesHbl;
     private MovimientoHistoria2[] personajesMov;
     private Ataque[] personajesAtq;
@@ -21,6 +22,7 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     private ColisionesCamara camaraHij;
     private float agrupacionRad;
     private int personajeAct;
+    private CharacterController[] personajesCtr;
 
 
     // Inicialización de elementos.
@@ -29,6 +31,8 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
         instancia = this;
         juntos = false;
         violetaAct = true;
+        violetaCap = LayerMask.GetMask ("Violeta");
+        abedulCap = LayerMask.GetMask ("Abedul");
         personajesHbl = GameObject.FindObjectsOfType<Hablar> ();
         personajesMov = new MovimientoHistoria2[2];
         personajesMov[0] = personajesHbl[0].GetComponent<MovimientoHistoria2> ();
@@ -71,6 +75,9 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
             camara.detras = detrases[1];
             personajeAct = 1;
         }
+        personajesCtr = new CharacterController[2];
+        personajesCtr[0] = personajesMov[0].GetComponent<CharacterController> ();
+        personajesCtr[1] = personajesMov[1].GetComponent<CharacterController> ();
         camara.transform.position = camara.objetivo.position;
     }
 
@@ -110,10 +117,16 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
 
 
     // Para ver el radio de agrupación de los gatos.
-    /*private void OnDrawGizmos ()
+    private void OnDrawGizmos ()
     {
-        Gizmos.DrawWireSphere (camara.objetivo.position, agrupacionRad);
-    }*/
+        /*Vector3 centroEsfSup = new Vector3 (personajesCtr[personajeAct].bounds.center.x, personajesTrf[personajeAct].parent.localScale.y * (personajesCtr[personajeAct].height / 2 - personajesCtr[personajeAct].radius) +
+            personajesCtr[personajeAct].bounds.center.y, personajesCtr[personajeAct].bounds.center.z);
+        Vector3 centroEsfInf = new Vector3 (centroEsfSup.x, centroEsfSup.y - personajesCtr[personajeAct].transform.localScale.y * (personajesCtr[personajeAct].height - personajesCtr[personajeAct].radius * 2), centroEsfSup.z);*/
+
+        Gizmos.color = Color.red;
+        
+        Gizmos.DrawWireSphere (personajesCtr[personajeAct].bounds.center, agrupacionRad);
+    }
 
 
     // Los personajes dejan de estar juntos.
@@ -204,9 +217,18 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     // Si en un cierto radio se encuantra el otro avatar, haremos que este comienze a seguir a aquel que esté siendo controlado por el jugador.
     private void Juntar ()
     {
-        Collider[] encontrado = Physics.OverlapSphere (camara.objetivo.position, agrupacionRad, avataresCap, QueryTriggerInteraction.Ignore);
-        
-        if (encontrado.Length > 1)
+        /*Vector3 centroEsfSup = new Vector3 (personajesCtr[personajeAct].bounds.center.x, personajesTrf[personajeAct].parent.localScale.y * (personajesCtr[personajeAct].height / 2 - personajesCtr[personajeAct].radius) + 
+            personajesCtr[personajeAct].bounds.center.y, personajesCtr[personajeAct].bounds.center.z);
+        Vector3 centroEsfInf = new Vector3 (centroEsfSup.x, centroEsfSup.y - personajesCtr[personajeAct].transform.localScale.y * (personajesCtr[personajeAct].height - personajesCtr[personajeAct].radius * 2), centroEsfSup.z);*/
+        Debug.Log (personajesTrf[personajeAct].parent.name + ": llegué a la función.");
+        //Collider[] encontrado = Physics.OverlapSphere (personajesTrf[personajeAct].position, agrupacionRad, violetaAct == true ? abedulCap : violetaCap, QueryTriggerInteraction.Ignore);
+        //Collider[] encontrado = Physics.OverlapCapsule (centroEsfSup, centroEsfInf, agrupacionRad, violetaAct == true ? abedulCap : violetaCap, QueryTriggerInteraction.Ignore);
+        /*foreach (Collider c in encontrado) 
+        {
+            Debug.Log (c.name);
+        }*/
+
+        if (Vector3.Distance (personajesTrf[0].position, personajesTrf[1].position) < agrupacionRad)
         {
             if (personajesMov[0].input == true)
             {
@@ -216,6 +238,11 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
             {
                 personajesMov[0].GestionarSeguimiento (true);
             }
+            Debug.Log ("Encontré a mi compañero.");
+        }
+        else 
+        {
+            Debug.Log ("Otro fracaso más.");
         }
     }
 }

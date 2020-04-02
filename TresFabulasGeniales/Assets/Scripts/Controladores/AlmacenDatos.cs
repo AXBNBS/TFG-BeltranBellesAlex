@@ -25,5 +25,8 @@ public class AlmacenDatos : MonoBehaviour
 
         instancia = this;
         regresarA = 1;
+        // CUIDAO CON ESTO AL FINAL
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = 60;
     }
 }

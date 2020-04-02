@@ -47,7 +47,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         huesos = this.transform.GetChild(5).GetChild(0).GetComponentsInChildren<Transform>().ToList<Transform> ();
         gravedad = -11;
         movimientoVel = movimientoVelNor;
-        empujeVel = movimientoVel / 3;
+        empujeVel = movimientoVelNor / 6;
         yendo = false;
         empujando = false;
         enemigosCer = false;
@@ -260,7 +260,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     {
         mallaAgtNav.enabled = comenzar;
         estado = comenzar == true ? Estado.siguiendo : Estado.normal;
-        if (enemigosCer == false) 
+        if (enemigosCer == false)
         {
             mallaAgtNav.stoppingDistance = pararDstSeg;
             CambioDePersonajesYAgrupacion.instancia.juntos = comenzar;
@@ -271,6 +271,7 @@ public class MovimientoHistoria2 : MonoBehaviour
                 this.Invoke ("FinalizarSeguimiento", 0.1f);
             }
         }
+        Debug.Log ("Tu puta madre gilipollas.");
     }
 
 
@@ -520,15 +521,20 @@ public class MovimientoHistoria2 : MonoBehaviour
                 {
                     movimiento.x = relativoCam.x;
                 }
-                movimiento = movimiento.normalized * empujeVel;
             }
         }
         movimiento += empuje * movimientoVel / 2;
 
-        characterCtr.Move (Time.deltaTime * movimiento);
-        if (empujando == true) 
+        if (empujando == false) 
         {
-            empujado.Mover (movimiento); 
+            characterCtr.Move (Time.deltaTime * movimiento);
+        }
+        else 
+        {
+            Vector3 movimientoEmp = new Vector3(movimiento.x, 0, movimiento.z).normalized * empujeVel;
+
+            characterCtr.Move (Time.deltaTime * movimientoEmp);
+            empujado.Mover (movimientoEmp); 
         }
     }
 

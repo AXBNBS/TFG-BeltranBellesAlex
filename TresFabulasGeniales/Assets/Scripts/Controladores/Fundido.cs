@@ -88,7 +88,8 @@ public class Fundido : MonoBehaviour
         {
             Time.timeScale = 1;
 
-            SceneManager.LoadScene (escenaInd);
+            this.StartCoroutine (CargarEscena ());
+            //SceneManager.LoadScene (escenaInd);
         }
     }
 
@@ -99,6 +100,18 @@ public class Fundido : MonoBehaviour
         if (SceneManager.GetActiveScene().buildIndex == 0) 
         {
             GameObject.FindObjectOfType<Hablar>().IniciarDialogo ();
+        }
+    }
+
+
+    // Espera hasta que la escena sea cargada de manera asíncrona.
+    private IEnumerator CargarEscena () 
+    {
+        AsyncOperation carga = SceneManager.LoadSceneAsync (escenaInd);
+
+        while (carga.isDone == false)
+        {
+            yield return null;
         }
     }
 }

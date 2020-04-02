@@ -38,7 +38,7 @@ public class Hablar : MonoBehaviour
         tiempoPas = 0;
         parrafoAct = 0;
         letrasEsc = 0;
-        escena0 = SceneManager.GetActiveScene().buildIndex == 0;
+        escena0 = SceneManager.GetActiveScene().name == "CasaBeltranuki";
         if (escena0 == false)
         {
             texto = null;

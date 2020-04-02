@@ -12,9 +12,8 @@ public class ObjetoMovil : MonoBehaviour
     [SerializeField] private List<Collider> triggers;
     [SerializeField] private bool[] movimientoX;
     [SerializeField] private bool rueda;
-    [SerializeField] private int rotacionVel;
     private CharacterController characterCtr;
-    private int gravedad, indiceTrg, fuerzaY;
+    private int gravedad, indiceTrg, fuerzaY, rotacionVel;
     private Empujar empujarScr;
 
 
@@ -25,6 +24,7 @@ public class ObjetoMovil : MonoBehaviour
         characterCtr = this.GetComponent<CharacterController> ();
         gravedad = -11;
         fuerzaY = 0;
+        rotacionVel = 50;
         empujarScr = GameObject.FindObjectOfType<Empujar> ();
     }
 
@@ -93,14 +93,9 @@ public class ObjetoMovil : MonoBehaviour
     // Movemos el objeto de acuerdo con el empuje aplicado con el personaje, si este objeto ha de rotar al moverlo tenemos esto en cuenta y lo rotamos en el eje y sentido correcto.
     public void Mover (Vector3 movimiento) 
     {
-        movimiento.y = 0;
-
         characterCtr.Move (Time.deltaTime * movimiento);
-        //Debug.Log ("Velocitat: " + characterCtr.velocity);
-
         if (rueda == true && movimiento != Vector3.zero) 
         {
-            //Debug.Log ("Rotació prèvia: " + this.transform.rotation.eulerAngles);
             if (movimientoX[indiceTrg] == true) 
             {
                 this.transform.Rotate (movimiento.x > 0 ? new Vector3 (-rotacionVel, 0, 0) * Time.deltaTime : new Vector3 (+rotacionVel, 0, 0) * Time.deltaTime);
@@ -109,7 +104,6 @@ public class ObjetoMovil : MonoBehaviour
             {
                 this.transform.Rotate (movimiento.z > 0 ? new Vector3 (0, 0, -rotacionVel) * Time.deltaTime : new Vector3 (0, 0, +rotacionVel) * Time.deltaTime);
             }
-            //Debug.Log ("Rotació final: " + this.transform.rotation.eulerAngles);
         }
     }
 }
