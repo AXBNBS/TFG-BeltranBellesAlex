@@ -14,11 +14,11 @@ public class Ataque : MonoBehaviour
     [SerializeField] private float saltoFrz, aranyazoFrz, rangoAtq, cooldownIAMax;
     private MovimientoHistoria2 movimientoScr, companyeroMovScr;
     private CharacterController characterCtr;
-    private float reboteVel, longitudRay, cooldownIAAct;
+    private float reboteVel, cooldownIAAct;
     private NavMeshAgent agente;
     private bool saltado, aranyado;
     private Animator animador;
-    private LayerMask golpeablesCap, bichosCap;
+    private LayerMask golpeablesCap;
     private Transform ataqueCenTrf;
 
     
@@ -31,17 +31,12 @@ public class Ataque : MonoBehaviour
         companyeroMovScr = movimientoScr.gameObject == avataresObj[0] ? avataresObj[1].GetComponent<MovimientoHistoria2> () : avataresObj[0].GetComponent<MovimientoHistoria2> ();
         characterCtr = this.GetComponent<CharacterController> ();
         reboteVel = +movimientoScr.saltoVel;
-        longitudRay = this.transform.localScale.x * characterCtr.radius * 2;
         agente = this.GetComponent<NavMeshAgent> ();
         saltado = false;
         aranyado = false;
         animador = this.GetComponentInChildren<Animator> ();
         golpeablesCap = LayerMask.GetMask (new string[] { "Enemigos", "Bichos" });
-        bichosCap = LayerMask.GetMask ("Bichos");
-        if (this.transform.childCount >= 7)
-        {
-            ataqueCenTrf = this.transform.GetChild (6);
-        }
+        ataqueCenTrf = this.transform.GetChild (this.transform.childCount - 1);
     }
 
 
@@ -143,14 +138,19 @@ public class Ataque : MonoBehaviour
             QueryTriggerInteraction.Collide).ToList<Collider> ();
         List<Collider> eliminados = new List<Collider> ();
         bool enemigoGol = false;
-        List<BichoPegajoso> despegarVio = new List<BichoPegajoso> (); 
+        List<BichoPegajoso> despegarVio = new List<BichoPegajoso> ();
+
+        colliders = LimpiarLista (colliders);
 
         if (input == false && colliders.Count > 0) 
         {
-            Collider collider = colliders[0];
+            Collider collider = PrimerEnemigo (colliders);
 
             colliders.Clear ();
-            colliders.Add (collider);
+            if (collider != null) 
+            {
+                colliders.Add (collider);
+            }
         }
 
         foreach (Collider e in colliders) 
@@ -176,6 +176,7 @@ public class Ataque : MonoBehaviour
         {
             BichoPegajoso bicho = b.GetComponent<BichoPegajoso> ();
 
+            print (b.name);
             if (bicho != null) 
             {
                 if (bicho.pegado == false)
@@ -205,6 +206,44 @@ public class Ataque : MonoBehaviour
         {
             this.StartCoroutine ("EsperarYBuscar");
         }
+    }
+
+
+    // Devuelve el primer enemigo que encuentre en una lista llena de colliders, si hay alguno.
+    private Collider PrimerEnemigo (List<Collider> colliders) 
+    {
+        foreach (Collider c in colliders) 
+        {
+            if (c.GetComponent<Enemigo> () != null) 
+            {
+                return c;
+            }
+        }
+        return null;
+    }
+
+
+    // Elimina de la lista todo aquel trigger o collider que no esté asociado a un objeto que contenga un script de enemigo o bicho pegajoso.
+    private List<Collider> LimpiarLista (List<Collider> colliders) 
+    {
+        List<Collider> resultado = new List<Collider> ();
+
+        foreach (Collider c in colliders) 
+        {
+            if (c.isTrigger == true && c.GetComponent<BichoPegajoso> () != null) 
+            {
+                resultado.Add (c);
+
+                continue;
+            }
+
+            if (c.GetComponent<Enemigo> () != null) 
+            {
+                resultado.Add (c);
+            }
+        }
+
+        return resultado;
     }
 
 

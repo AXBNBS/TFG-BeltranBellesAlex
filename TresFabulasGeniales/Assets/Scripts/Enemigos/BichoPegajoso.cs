@@ -144,12 +144,13 @@ public class BichoPegajoso : MonoBehaviour
                 Vector3 movimiento = new Vector3(puntoVue.x - this.transform.position.x, 0, puntoVue.z - this.transform.position.z).normalized * velocidadMov;
 
                 movimiento = new Vector3 (movimiento.x, fuerzaY, movimiento.z) * Time.deltaTime;
-                print (this.name + ": me he movido " + movimiento);
+                //print (this.name + ": me he movido " + movimiento);
 
                 personajeCtr.Move (movimiento);
-                print (this.name + ": mi velocidad es " + personajeCtr.velocity);
+                //print (this.name + ": mi velocidad es " + personajeCtr.velocity);
                 if (sueloToc == true && this.IsInvoking ("SalirDeAturdimiento") == false && Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (puntoVue.x, puntoVue.z)) < distanciaPar) 
                 {
+                    cuerpoRig.detectCollisions = true;
                     this.Invoke ("SalirDeAturdimiento", 2);
                 }
             }
@@ -197,7 +198,6 @@ public class BichoPegajoso : MonoBehaviour
         volando = false;
         personajeCtr.enabled = false;
         agente.enabled = true;
-        cuerpoRig.detectCollisions = true;
         sueloToc = false;
         objetivoOff = new Vector3 (Random.Range (-objetivoRnd, +objetivoRnd), 0, Random.Range (-objetivoRnd, +objetivoRnd));
     }

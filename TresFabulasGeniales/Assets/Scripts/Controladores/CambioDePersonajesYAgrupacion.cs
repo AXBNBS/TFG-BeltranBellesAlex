@@ -11,7 +11,6 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     public bool input, juntos, violetaAct;
 
     [SerializeField] private LayerMask capasSinAvt;
-    private LayerMask violetaCap, abedulCap;
     private Hablar[] personajesHbl;
     private MovimientoHistoria2[] personajesMov;
     private Ataque[] personajesAtq;
@@ -20,7 +19,6 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     private Transform[] personajesTrf, detrases, puntosSeg;
     private SeguimientoCamara camara;
     private ColisionesCamara camaraHij;
-    private float agrupacionRad;
     private int personajeAct;
     private CharacterController[] personajesCtr;
 
@@ -31,8 +29,6 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
         instancia = this;
         juntos = false;
         violetaAct = true;
-        violetaCap = LayerMask.GetMask ("Violeta");
-        abedulCap = LayerMask.GetMask ("Abedul");
         personajesHbl = GameObject.FindObjectsOfType<Hablar> ();
         personajesMov = new MovimientoHistoria2[2];
         personajesMov[0] = personajesHbl[0].GetComponent<MovimientoHistoria2> ();
@@ -56,7 +52,6 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
         puntosSeg = new Transform[2];
         camara = GameObject.FindObjectOfType<SeguimientoCamara> ();
         camaraHij = camara.GetComponentInChildren<ColisionesCamara> ();
-        agrupacionRad = personajesMov[0].offsetXZ * 3;
         personajesTrf[0] = personajesMov[0].transform.GetChild (2);
         personajesTrf[1] = personajesMov[1].transform.GetChild (2);
         detrases[0] = personajesTrf[0].parent.GetChild (0);
@@ -117,16 +112,12 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
 
 
     // Para ver el radio de agrupación de los gatos.
-    private void OnDrawGizmos ()
+    /*private void OnDrawGizmos ()
     {
-        /*Vector3 centroEsfSup = new Vector3 (personajesCtr[personajeAct].bounds.center.x, personajesTrf[personajeAct].parent.localScale.y * (personajesCtr[personajeAct].height / 2 - personajesCtr[personajeAct].radius) +
-            personajesCtr[personajeAct].bounds.center.y, personajesCtr[personajeAct].bounds.center.z);
-        Vector3 centroEsfInf = new Vector3 (centroEsfSup.x, centroEsfSup.y - personajesCtr[personajeAct].transform.localScale.y * (personajesCtr[personajeAct].height - personajesCtr[personajeAct].radius * 2), centroEsfSup.z);*/
-
         Gizmos.color = Color.red;
         
         Gizmos.DrawWireSphere (personajesCtr[personajeAct].bounds.center, agrupacionRad);
-    }
+    }*/
 
 
     // Los personajes dejan de estar juntos.
@@ -217,32 +208,9 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     // Si en un cierto radio se encuantra el otro avatar, haremos que este comienze a seguir a aquel que esté siendo controlado por el jugador.
     private void Juntar ()
     {
-        /*Vector3 centroEsfSup = new Vector3 (personajesCtr[personajeAct].bounds.center.x, personajesTrf[personajeAct].parent.localScale.y * (personajesCtr[personajeAct].height / 2 - personajesCtr[personajeAct].radius) + 
-            personajesCtr[personajeAct].bounds.center.y, personajesCtr[personajeAct].bounds.center.z);
-        Vector3 centroEsfInf = new Vector3 (centroEsfSup.x, centroEsfSup.y - personajesCtr[personajeAct].transform.localScale.y * (personajesCtr[personajeAct].height - personajesCtr[personajeAct].radius * 2), centroEsfSup.z);*/
-        Debug.Log (personajesTrf[personajeAct].parent.name + ": llegué a la función.");
-        //Collider[] encontrado = Physics.OverlapSphere (personajesTrf[personajeAct].position, agrupacionRad, violetaAct == true ? abedulCap : violetaCap, QueryTriggerInteraction.Ignore);
-        //Collider[] encontrado = Physics.OverlapCapsule (centroEsfSup, centroEsfInf, agrupacionRad, violetaAct == true ? abedulCap : violetaCap, QueryTriggerInteraction.Ignore);
-        /*foreach (Collider c in encontrado) 
+        if (personajesMov[personajeAct].companyeroCer == true)
         {
-            Debug.Log (c.name);
-        }*/
-
-        if (Vector3.Distance (personajesTrf[0].position, personajesTrf[1].position) < agrupacionRad)
-        {
-            if (personajesMov[0].input == true)
-            {
-                personajesMov[1].GestionarSeguimiento (true);
-            }
-            else
-            {
-                personajesMov[0].GestionarSeguimiento (true);
-            }
-            Debug.Log ("Encontré a mi compañero.");
-        }
-        else 
-        {
-            Debug.Log ("Otro fracaso más.");
+            personajesMov[personajeAct == 0 ? 1 : 0].GestionarSeguimiento (true);
         }
     }
 }

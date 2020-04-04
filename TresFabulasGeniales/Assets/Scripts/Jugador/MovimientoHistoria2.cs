@@ -9,7 +9,7 @@ using System.Linq;
 
 public class MovimientoHistoria2 : MonoBehaviour
 {
-    public bool input, sueleado, perseguir, descansar;
+    public bool input, sueleado, perseguir, descansar, companyeroCer;
     public Vector3 movimiento;
     public int saltoVel;
     public List<Transform> huesos;
@@ -44,7 +44,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         List<Transform> huesosEli = new List<Transform> ();
 
         sueleado = true;
-        huesos = this.transform.GetChild(5).GetChild(0).GetComponentsInChildren<Transform>().ToList<Transform> ();
+        huesos = this.transform.GetChild(6).GetChild(0).GetComponentsInChildren<Transform>().ToList<Transform> ();
         gravedad = -11;
         movimientoVel = movimientoVelNor;
         empujeVel = movimientoVelNor / 6;
@@ -271,7 +271,6 @@ public class MovimientoHistoria2 : MonoBehaviour
                 this.Invoke ("FinalizarSeguimiento", 0.1f);
             }
         }
-        Debug.Log ("Tu puta madre gilipollas.");
     }
 
 
@@ -658,10 +657,6 @@ public class MovimientoHistoria2 : MonoBehaviour
     {
         if (perseguir == true && (mallaAgtNav.baseOffset == offsetBas || mallaAgtNav.baseOffset - offsetBas > ajusteCaiDst)) 
         {
-            /*if (mallaAgtNav.baseOffset - offsetBas > ajusteCaiDst) 
-            {
-                print ("Ajustando a la altura de " + mallaAgtNav.baseOffset);
-            }*/
             if (saludScr.aturdido == false)
             {
                 if (saltador == true)

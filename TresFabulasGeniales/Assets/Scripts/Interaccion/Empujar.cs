@@ -99,7 +99,10 @@ public class Empujar : MonoBehaviour
             agarrado = true;
             ejeX = empujado.EjeDeTrigger (rayoDat.collider);
 
-            CambioDePersonajesYAgrupacion.instancia.Separar ();
+            if (CambioDePersonajesYAgrupacion.instancia.juntos == true) 
+            {
+                CambioDePersonajesYAgrupacion.instancia.Separar ();
+            }
             movimientoScr.ComenzarEmpuje (ejeX, empujado);
         }
     }

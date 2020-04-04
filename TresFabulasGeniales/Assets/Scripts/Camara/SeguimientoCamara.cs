@@ -74,22 +74,26 @@ public class SeguimientoCamara : MonoBehaviour
                 rotacionObj = Quaternion.Euler (0, rotacionX, rotacionY);
                 this.transform.rotation = rotacionObj;
             }
+            print ("Rotando alrededor del personaje.");
         }
         else 
         {
-            if (CambioDePersonajesYAgrupacion.instancia != null && this.transform.position == objetivo.position) 
+            if (dialogando == false) 
             {
-                cambioCmp = true;
-                desplazandose = false;
+                if (CambioDePersonajesYAgrupacion.instancia != null && this.transform.position == objetivo.position)
+                {
+                    cambioCmp = true;
+                    desplazandose = false;
 
-                CambioDePersonajesYAgrupacion.instancia.PermitirInput ();
-                CambioDePersonajesYAgrupacion.instancia.ActivarIACombate ();
-                objetivo.parent.GetComponent<Salud>().InvulnerabilidadTemporal ();
+                    CambioDePersonajesYAgrupacion.instancia.PermitirInput ();
+                    CambioDePersonajesYAgrupacion.instancia.ActivarIACombate ();
+                    objetivo.parent.GetComponent<Salud>().InvulnerabilidadTemporal ();
+                }
             }
-
-            if (dialogando == true) 
+            else
             {
                 this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacionDlg, Time.deltaTime * centradoVel);
+                print ("Adaptándose a la conversación.");
             }
         }
     }
@@ -105,15 +109,18 @@ public class SeguimientoCamara : MonoBehaviour
                 if (desplazandose == false) 
                 {
                     this.transform.position = objetivo.position;
+                    print ("Siguiendo a mi objetivo.");
                 }
                 else 
                 {
                     this.transform.position = Vector3.MoveTowards (this.transform.position, objetivo.position, Time.deltaTime * movimientoVel);
+                    print ("Yendo a por el otro personaje.");
                 }
             }
             else 
             {
                 this.transform.position = Vector3.MoveTowards (this.transform.position, puntoMed, Time.deltaTime * cambioPosVel);
+                print ("Yendo a por el punto medio: " + puntoMed);
             }
         } 
     }
