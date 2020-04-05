@@ -9,7 +9,7 @@ using System.Linq;
 
 public class MovimientoHistoria2 : MonoBehaviour
 {
-    public bool input, sueleado, perseguir, descansar;
+    public bool input, sueleado, perseguir, descansar, companyeroCer;
     public Vector3 movimiento;
     public int saltoVel;
     public List<Transform> huesos;
@@ -44,10 +44,10 @@ public class MovimientoHistoria2 : MonoBehaviour
         List<Transform> huesosEli = new List<Transform> ();
 
         sueleado = true;
-        huesos = this.transform.GetChild(5).GetChild(0).GetComponentsInChildren<Transform>().ToList<Transform> ();
+        huesos = this.transform.GetChild(6).GetChild(0).GetComponentsInChildren<Transform>().ToList<Transform> ();
         gravedad = -11;
         movimientoVel = movimientoVelNor;
-        empujeVel = movimientoVel / 3;
+        empujeVel = movimientoVelNor / 6;
         yendo = false;
         empujando = false;
         enemigosCer = false;
@@ -260,7 +260,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     {
         mallaAgtNav.enabled = comenzar;
         estado = comenzar == true ? Estado.siguiendo : Estado.normal;
-        if (enemigosCer == false) 
+        if (enemigosCer == false)
         {
             mallaAgtNav.stoppingDistance = pararDstSeg;
             CambioDePersonajesYAgrupacion.instancia.juntos = comenzar;
@@ -520,15 +520,20 @@ public class MovimientoHistoria2 : MonoBehaviour
                 {
                     movimiento.x = relativoCam.x;
                 }
-                movimiento = movimiento.normalized * empujeVel;
             }
         }
         movimiento += empuje * movimientoVel / 2;
 
-        characterCtr.Move (Time.deltaTime * movimiento);
-        if (empujando == true) 
+        if (empujando == false) 
         {
-            empujado.Mover (movimiento); 
+            characterCtr.Move (Time.deltaTime * movimiento);
+        }
+        else 
+        {
+            Vector3 movimientoEmp = new Vector3(movimiento.x, 0, movimiento.z).normalized * empujeVel;
+
+            characterCtr.Move (Time.deltaTime * movimientoEmp);
+            empujado.Mover (movimientoEmp); 
         }
     }
 
@@ -652,10 +657,6 @@ public class MovimientoHistoria2 : MonoBehaviour
     {
         if (perseguir == true && (mallaAgtNav.baseOffset == offsetBas || mallaAgtNav.baseOffset - offsetBas > ajusteCaiDst)) 
         {
-            /*if (mallaAgtNav.baseOffset - offsetBas > ajusteCaiDst) 
-            {
-                print ("Ajustando a la altura de " + mallaAgtNav.baseOffset);
-            }*/
             if (saludScr.aturdido == false)
             {
                 if (saltador == true)

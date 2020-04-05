@@ -10,7 +10,7 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     public static CambioDePersonajesYAgrupacion instancia;
     public bool input, juntos, violetaAct;
 
-    [SerializeField] private LayerMask avataresCap, capasSinAvt;
+    [SerializeField] private LayerMask capasSinAvt;
     private Hablar[] personajesHbl;
     private MovimientoHistoria2[] personajesMov;
     private Ataque[] personajesAtq;
@@ -19,8 +19,8 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     private Transform[] personajesTrf, detrases, puntosSeg;
     private SeguimientoCamara camara;
     private ColisionesCamara camaraHij;
-    private float agrupacionRad;
     private int personajeAct;
+    private CharacterController[] personajesCtr;
 
 
     // Inicialización de elementos.
@@ -52,7 +52,6 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
         puntosSeg = new Transform[2];
         camara = GameObject.FindObjectOfType<SeguimientoCamara> ();
         camaraHij = camara.GetComponentInChildren<ColisionesCamara> ();
-        agrupacionRad = personajesMov[0].offsetXZ * 3;
         personajesTrf[0] = personajesMov[0].transform.GetChild (2);
         personajesTrf[1] = personajesMov[1].transform.GetChild (2);
         detrases[0] = personajesTrf[0].parent.GetChild (0);
@@ -71,6 +70,9 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
             camara.detras = detrases[1];
             personajeAct = 1;
         }
+        personajesCtr = new CharacterController[2];
+        personajesCtr[0] = personajesMov[0].GetComponent<CharacterController> ();
+        personajesCtr[1] = personajesMov[1].GetComponent<CharacterController> ();
         camara.transform.position = camara.objetivo.position;
     }
 
@@ -112,7 +114,9 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     // Para ver el radio de agrupación de los gatos.
     /*private void OnDrawGizmos ()
     {
-        Gizmos.DrawWireSphere (camara.objetivo.position, agrupacionRad);
+        Gizmos.color = Color.red;
+        
+        Gizmos.DrawWireSphere (personajesCtr[personajeAct].bounds.center, agrupacionRad);
     }*/
 
 
@@ -204,18 +208,9 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     // Si en un cierto radio se encuantra el otro avatar, haremos que este comienze a seguir a aquel que esté siendo controlado por el jugador.
     private void Juntar ()
     {
-        Collider[] encontrado = Physics.OverlapSphere (camara.objetivo.position, agrupacionRad, avataresCap, QueryTriggerInteraction.Ignore);
-        
-        if (encontrado.Length > 1)
+        if (personajesMov[personajeAct].companyeroCer == true)
         {
-            if (personajesMov[0].input == true)
-            {
-                personajesMov[1].GestionarSeguimiento (true);
-            }
-            else
-            {
-                personajesMov[0].GestionarSeguimiento (true);
-            }
+            personajesMov[personajeAct == 0 ? 1 : 0].GestionarSeguimiento (true);
         }
     }
 }

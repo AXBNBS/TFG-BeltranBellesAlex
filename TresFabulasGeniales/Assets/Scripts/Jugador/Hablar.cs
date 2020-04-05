@@ -38,7 +38,7 @@ public class Hablar : MonoBehaviour
         tiempoPas = 0;
         parrafoAct = 0;
         letrasEsc = 0;
-        escena0 = SceneManager.GetActiveScene().buildIndex == 0;
+        escena0 = SceneManager.GetActiveScene().name == "CasaBeltranuki";
         if (escena0 == false)
         {
             texto = null;
@@ -77,7 +77,7 @@ public class Hablar : MonoBehaviour
                 ControlarInput (false);
                 camaraScr.PuntoMedioDialogo (true, this.transform.position, npc.GetComponent<CapsuleCollider>().bounds.center);
 
-                rotacionObj = Quaternion.Euler (0, Quaternion.LookRotation(npc.position - this.transform.position).eulerAngles.y, 0);
+                rotacionObj = Quaternion.Euler (0, Quaternion.LookRotation(npc.position - this.transform.position).eulerAngles.y + 90, 0);
             }
             else 
             {
@@ -91,7 +91,7 @@ public class Hablar : MonoBehaviour
                 }
             }
         }
-        if (panelTxt.activeSelf == true) 
+        if (input == true && panelTxt.activeSelf == true) 
         {
             if (tiempoPas > 0.03f && letrasEsc < frase.Length) 
             {
@@ -149,6 +149,7 @@ public class Hablar : MonoBehaviour
             parrafoAct = 0;
 
             panelTxt.SetActive (false);
+            npc.GetComponent<Texto>().hablando = false;
             if (escena0 == false)
             {
                 ControlarInput (true);
