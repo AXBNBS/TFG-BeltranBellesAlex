@@ -547,7 +547,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   input: 0
   texto: []
-  rotacionVel: 0
+  rotacionVel: 10
 --- !u!114 &8454711757566032795
 MonoBehaviour:
   m_ObjectHideFlags: 0

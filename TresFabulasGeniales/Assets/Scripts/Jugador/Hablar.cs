@@ -19,7 +19,7 @@ public class Hablar : MonoBehaviour
     private int parrafoAct, letrasEsc;
     private string personaje, frase;
     private bool escena0;
-    private Transform npc;
+    private CapsuleCollider npc;
     private MovimientoHistoria1 personajeMov1Scr;
     private MovimientoHistoria2 personajeMov2Scr;
     private Ataque ataqueScr;
@@ -29,9 +29,9 @@ public class Hablar : MonoBehaviour
     private SeguimientoCamara camaraScr;
     private Quaternion rotacionObj;
 
-    
-    // .
-    private void Start ()
+
+    // Inicialización de variables y desactivación del panel. Además, obtendremos unos componentes u otros dependiendo de la historia en la que nos encontremos.
+    private void Start()
     {
         panelTxt = GameObject.FindGameObjectWithTag("Interfaz").transform.GetChild(0).GetChild(0).gameObject;
         mostradoTxt = panelTxt.GetComponentsInChildren<Text> ();
@@ -64,61 +64,60 @@ public class Hablar : MonoBehaviour
     }
 
 
-    // .
+    // Si pulsamos el botón de interacción con el input permitido y el texto disponible, activaremos la conversación con el NPC correspondiente (si aún no estábamos hablando), mostraremos el texto completo de la frase actual (si ya estamos 
+    //hablando y todavía no se muestra entera) o pasaremos a la frase siguiente (si estamos hablando y el texto ya se muestra entero). Además, en el caso de que el panel esté activo y la frase aún no se muestre entera, el texto se mostrará 
+    //progresivamente poco a poco y se rotará al personaje para que mire a su interlocutor.
     private void Update ()
     {
         tiempoPas += Time.deltaTime;
 
-        if (input == true && texto != null && Input.GetButtonDown ("Interacción") == true) 
+        if (input == true && texto != null && Input.GetButtonDown ("Interacción") == true)
         {
             if (panelTxt.activeSelf == false)
             {
-                IniciarDialogo ();
-                ControlarInput (false);
-                camaraScr.PuntoMedioDialogo (true, this.transform.position, npc.GetComponent<CapsuleCollider>().bounds.center);
-
-                rotacionObj = Quaternion.Euler (0, Quaternion.LookRotation(npc.position - this.transform.position).eulerAngles.y + 90, 0);
+                this.Invoke ("ConversacionNpc", 0.1f);
             }
-            else 
+            else
             {
                 if (letrasEsc < frase.Length)
                 {
                     ParrafoCompleto ();
                 }
-                else 
+                else
                 {
                     ParrafoSiguiente ();
                 }
             }
         }
-        if (input == true && panelTxt.activeSelf == true) 
+        if (input == true && panelTxt.activeSelf == true)
         {
-            if (tiempoPas > 0.03f && letrasEsc < frase.Length) 
+            if (tiempoPas > 0.03f && letrasEsc < frase.Length)
             {
                 EscribirTexto ();
 
                 tiempoPas = 0;
             }
-            this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacionObj, Time.deltaTime * rotacionVel);
-            if (camaraScr != null && Quaternion.Angle (this.transform.rotation, rotacionObj) < 1) 
+            if (camaraScr != null && Quaternion.Angle (this.transform.rotation, rotacionObj) > 1) 
             {
-                camaraScr.CalcularGiro ();
+                camaraScr.CalcularGiro (npc.bounds.center);
+
+                this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacionObj, Time.deltaTime * rotacionVel);
             }
         }
     }
 
 
-    // .
+    // El personaje recibe el transform del NPC correspondiente al acercarse al mismo.
     private void OnTriggerEnter (Collider other)
     {
-        if (other.CompareTag ("Hablable") == true) 
+        if (other.CompareTag ("Hablable") == true)
         {
-            npc = other.transform;
+            npc = other.GetComponent<CapsuleCollider> ();
         }
     }
 
 
-    // .
+    // Función que activa el panel y separa el texto dado de manera correcta.
     public void IniciarDialogo ()
     {
         panelTxt.SetActive (true);
@@ -126,16 +125,17 @@ public class Hablar : MonoBehaviour
     }
 
 
-    // .
-    private void ParrafoCompleto () 
+    // Se actualiza el texto mostrado para que se vea completamente el párrafo actual.
+    private void ParrafoCompleto ()
     {
         mostradoTxt[1].text = frase;
         letrasEsc = frase.Length;
     }
 
 
-    // .
-    private void ParrafoSiguiente () 
+    // Si no se ha llegado aún al final de la conversación, se separa el texto del párrafo siguiente. En caso contrario, desactivamos el panel y el booleano que indica que el NPC está hablando. En el caso de que nos encontremos en la escena de los
+    //narradores cuando esto pase, cargaremos la escena correspondiente; de lo contrario devolveremos el input al jugador y la cámapra pasara a seguir al mismo de nuevo.
+    private void ParrafoSiguiente ()
     {
         parrafoAct += 1;
         letrasEsc = 0;
@@ -144,18 +144,19 @@ public class Hablar : MonoBehaviour
         {
             SepararTexto ();
         }
-        else 
+        else
         {
             parrafoAct = 0;
 
             panelTxt.SetActive (false);
-            npc.GetComponent<Texto>().hablando = false;
             if (escena0 == false)
             {
                 ControlarInput (true);
                 camaraScr.PuntoMedioDialogo (false, Vector3.zero, Vector3.zero);
+
+                npc.GetComponent<Texto>().Esperar ();
             }
-            else 
+            else
             {
                 Fundido.instancia.FundidoAEscena (AlmacenDatos.instancia.regresarA);
             }
@@ -163,7 +164,7 @@ public class Hablar : MonoBehaviour
     }
 
 
-    // .
+    // Añadimos una nueva letra al texto mostrado.
     private void EscribirTexto ()
     {
         mostradoTxt[1].text += frase[letrasEsc];
@@ -171,8 +172,8 @@ public class Hablar : MonoBehaviour
     }
 
 
-    // .
-    private void SepararTexto () 
+    // El texto se separa de manera que se asigna la primera parte del mismo al nombre del interlocutor mostrado en el panel y el resto a la frase que este diga.
+    private void SepararTexto ()
     {
         bool comenzando = true;
 
@@ -199,7 +200,7 @@ public class Hablar : MonoBehaviour
                 {
                     personaje += c;
                 }
-                else 
+                else
                 {
                     comenzando = false;
                 }
@@ -209,14 +210,14 @@ public class Hablar : MonoBehaviour
     }
 
 
-    // .
-    private void ControlarInput (bool activar) 
+    // Activamos o desactivamos el input en distintos scripts de acuerdo a la escena actual.
+    private void ControlarInput (bool activar)
     {
         if (personajeMov2Scr != null)
         {
             personajeMov2Scr.input = activar;
             ataqueScr.input = activar;
-            if (empujarScr != null) 
+            if (empujarScr != null)
             {
                 empujarScr.input = activar;
             }
@@ -234,5 +235,16 @@ public class Hablar : MonoBehaviour
             }
         }
         camaraScr.input = activar;
+    }
+
+
+    // El jugador inicia una conversación con un NPC.
+    private void ConversacionNpc ()
+    {
+        IniciarDialogo ();
+        ControlarInput (false);
+        camaraScr.PuntoMedioDialogo (true, this.transform.position, npc.bounds.center);
+
+        rotacionObj = Quaternion.Euler (0, Quaternion.LookRotation(npc.bounds.center - this.transform.position).eulerAngles.y + 90, 0);
     }
 }

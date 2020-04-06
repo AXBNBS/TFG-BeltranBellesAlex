@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 2900223900628438257}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1.5, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 0.74151, z: 0.76381}
   m_Children:
   - {fileID: 2900223902310915859}
   m_Father: {fileID: 0}
@@ -46,13 +46,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   input: 1
   centrar: 0
+  transicionando: 0
+  desplazandose: 0
+  cambioCmp: 0
   objetivo: {fileID: 0}
   detras: {fileID: 0}
   movimientoVel: 500
+  cambioPosVel: 50
   abajoLim: -10
   arribaLim: 60
   sensibilidad: 370
   centradoVel: 10
+  dialogoCap:
+    serializedVersion: 2
+    m_Bits: 52535
 --- !u!1 &2900223902310915862
 GameObject:
   m_ObjectHideFlags: 0
@@ -110,7 +117,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.1
-  far clip plane: 10000
+  far clip plane: 400385.16
   field of view: 60
   orthographic: 0
   orthographic size: 5
@@ -144,15 +151,15 @@ MonoBehaviour:
   minimoDst: 10
   maximoDst: 90
   suavizado: 20
-  capas:
+  capasVio:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 36151
+  capasAbd:
+    serializedVersion: 2
+    m_Bits: 19767
   capasSinAvt:
     serializedVersion: 2
     m_Bits: 7479
-  capaAvt:
-    serializedVersion: 2
-    m_Bits: 512
 --- !u!114 &897433237
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -15,18 +15,18 @@ public class MovimientoHistoria2 : MonoBehaviour
     public List<Transform> huesos;
     [HideInInspector] public float offsetY, offsetXZ;
 
-    [SerializeField] private int movimientoVelNor, movimientoVelRed, rotacionVel, saltoDst, aleatoriedad;
+    [SerializeField] private int movimientoVelNor, movimientoVelRed, rotacionVel, saltoDst, aleatoriedad, pendienteLim, deslizVel;
     [SerializeField] private LayerMask capas, capasSinAvt;
     [SerializeField] private MovimientoHistoria2 companyeroMov;
-    [SerializeField] private float pararDstSeg, pararDstAtq, ajusteCaiDst, multiplicadorSalBaj;
+    [SerializeField] private float pararDstSeg, pararDstAtq, ajusteCaiDst, multiplicadorSalBaj, deslizFrc;
     [SerializeField] private bool saltador;
     private int gravedad, movimientoVel, empujeVel;
-    private bool saltarInp, yendo, empujando, limitadoX, enemigosCer, saltado, cambiando, siguiendoAcb;
+    private bool saltarInp, yendo, empujando, limitadoX, enemigosCer, saltado, cambiando, siguiendoAcb, deslizar;
     private CharacterController characterCtr;
     private float horizontalInp, verticalInp, offsetBas, sueloDst, radioRotAtq;
     private Transform camaraTrf, objetivoSeg, companyeroTrf, enemigoTrf;
     private Animator animator;
-    private Vector3 empuje;
+    private Vector3 empuje, normal;
     private NavMeshAgent mallaAgtNav;
     private ObjetoMovil empujado;
     private enum Estado { normal, siguiendo, atacando };
@@ -155,9 +155,14 @@ public class MovimientoHistoria2 : MonoBehaviour
     // Si el avatar jugable ha caído sobre otro, empujarlo hacia el primer lado de este que se encuentre libre.
     private void OnControllerColliderHit (ControllerColliderHit hit)
     {
-        Transform tocado = hit.transform;
-
-        switch (tocado.tag) 
+        //Transform tocado = hit.transform;
+        if (deslizar == false) 
+        {
+            normal = hit.normal;
+            deslizar = Vector3.Angle (Vector3.up, hit.normal) > characterCtr.slopeLimit;
+        }
+        //print (Time.deltaTime);
+        /*switch (tocado.tag) 
         {
             case "Jugador":
                 if (sueleado == false) 
@@ -193,7 +198,7 @@ public class MovimientoHistoria2 : MonoBehaviour
                 empuje = Vector3.zero;
 
                 break;
-        }
+        }*/
     }
 
 
@@ -526,7 +531,16 @@ public class MovimientoHistoria2 : MonoBehaviour
 
         if (empujando == false) 
         {
+            if (deslizar == true) 
+            {
+                movimiento.x += (1 - normal.y) * normal.x * (1 - deslizFrc) * deslizVel;
+                movimiento.z += (1 - normal.y) * normal.z * (1 - deslizFrc) * deslizVel;
+                print ("entré");
+            }
+
             characterCtr.Move (Time.deltaTime * movimiento);
+
+            deslizar = false;
         }
         else 
         {

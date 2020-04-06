@@ -29,7 +29,7 @@ public class ColisionesCamara : MonoBehaviour
     {
         if (CambioDePersonajesYAgrupacion.instancia.juntos == false)
         {
-            capasSlc = CambioDePersonajesYAgrupacion.instancia.violetaAct ? capasVio : capasAbd;
+            capasSlc = CambioDePersonajesYAgrupacion.instancia.violetaAct == true ? capasVio : capasAbd;
         }
         else 
         {
