@@ -15,6 +15,9 @@ public class ObjetoMovil : MonoBehaviour
     private CharacterController characterCtr;
     private int gravedad, indiceTrg, fuerzaY, rotacionVel;
     private Empujar empujarScr;
+    private Transform[] sueleadoresTrf;
+    private Vector3[] sueleadoresOff;
+    private Quaternion[] sueleadoresRot;
 
 
     // Inicialización de variables.
@@ -26,6 +29,23 @@ public class ObjetoMovil : MonoBehaviour
         fuerzaY = 0;
         rotacionVel = 50;
         empujarScr = GameObject.FindObjectOfType<Empujar> ();
+        sueleadoresTrf = this.transform.GetChild(0).GetComponentsInChildren<Transform> ();
+        sueleadoresOff = new Vector3[sueleadoresTrf.Length];
+        sueleadoresOff[0] = sueleadoresTrf[0].position - this.transform.position;
+        sueleadoresOff[1] = sueleadoresTrf[1].position - this.transform.position;
+        sueleadoresRot = new Quaternion[sueleadoresTrf.Length];
+        sueleadoresRot[0] = sueleadoresTrf[0].rotation;
+        sueleadoresRot[1] = sueleadoresTrf[1].rotation;
+    }
+
+
+    // A cada frame, nos aseguramos de que los sueleadores sigan en la posición correcta respecto al tronco.
+    private void Update ()
+    {
+        sueleadoresTrf[0].position = this.transform.position + sueleadoresOff[0];
+        sueleadoresTrf[1].position = this.transform.position + sueleadoresOff[1];
+        sueleadoresTrf[0].rotation = sueleadoresRot[0];
+        sueleadoresTrf[1].rotation = sueleadoresRot[1];
     }
 
 

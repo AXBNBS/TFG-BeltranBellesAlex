@@ -15,18 +15,18 @@ public class MovimientoHistoria2 : MonoBehaviour
     public List<Transform> huesos;
     [HideInInspector] public float offsetY, offsetXZ;
 
-    [SerializeField] private int movimientoVelNor, movimientoVelRed, rotacionVel, saltoDst, aleatoriedad, pendienteLim, deslizVel;
+    [SerializeField] private int movimientoVelNor, movimientoVelRed, rotacionVel, saltoDst, aleatoriedad, deslizVel;
     [SerializeField] private LayerMask capas, capasSinAvt;
     [SerializeField] private MovimientoHistoria2 companyeroMov;
     [SerializeField] private float pararDstSeg, pararDstAtq, ajusteCaiDst, multiplicadorSalBaj, deslizFrc;
     [SerializeField] private bool saltador;
     private int gravedad, movimientoVel, empujeVel;
-    private bool saltarInp, yendo, empujando, limitadoX, enemigosCer, saltado, cambiando, siguiendoAcb, deslizar;
+    private bool saltarInp, yendo, empujando, limitadoX, enemigosCer, saltado, cambiando, siguiendoAcb, deslizar, sueleadorToc;
     private CharacterController characterCtr;
-    private float horizontalInp, verticalInp, offsetBas, sueloDst, radioRotAtq;
+    private float horizontalInp, verticalInp, offsetBas, radioRotAtq, radioEsfSue;
     private Transform camaraTrf, objetivoSeg, companyeroTrf, enemigoTrf;
     private Animator animator;
-    private Vector3 empuje, normal;
+    private Vector3 empuje, normal, offsetEsfSue;
     private NavMeshAgent mallaAgtNav;
     private ObjetoMovil empujado;
     private enum Estado { normal, siguiendo, atacando };
@@ -36,6 +36,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     private Salud saludScr;
     private Enemigo enemigoScr;
     private HashSet<BichoPegajoso> bichosPeg;
+    private List<Vector3> normales;
 
 
     // Inicialización de variables.
@@ -55,14 +56,15 @@ public class MovimientoHistoria2 : MonoBehaviour
         cambiando = false;
         siguiendoAcb = false;
         characterCtr = this.GetComponent<CharacterController> ();
-        sueloDst = 1.5f;
         radioRotAtq = characterCtr.bounds.size.x * this.transform.localScale.x * 2;
+        radioEsfSue = this.transform.localScale.x * characterCtr.radius / 2;
         offsetY = this.transform.localScale.y * characterCtr.height;
         offsetXZ = this.transform.localScale.x * characterCtr.radius * 3;
         camaraTrf = GameObject.FindGameObjectWithTag("CamaraPrincipal").transform;
         objetivoSeg = companyeroMov.transform.GetChild (1);
         companyeroTrf = companyeroMov.transform;
         animator = this.GetComponentInChildren<Animator> ();
+        offsetEsfSue = Vector3.up * 1.25f;
         mallaAgtNav = this.GetComponent<NavMeshAgent> ();
         mallaAgtNav.speed = movimientoVelNor;
         offsetBas = mallaAgtNav.baseOffset;
@@ -70,6 +72,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         ataqueScr = this.GetComponent<Ataque> ();
         saludScr = this.GetComponent<Salud> ();
         bichosPeg = new HashSet<BichoPegajoso> ();
+        normales = new List<Vector3> ();
 
         huesos.RemoveAt (0);
         foreach (Transform h in huesos) 
@@ -86,11 +89,11 @@ public class MovimientoHistoria2 : MonoBehaviour
     }
 
 
-    // En el caso de que el input esté permitido, obtendremos el relativo al movimiento de las teclas/botones correspondiente y moveremos y animaremos al personaje en consecuencia. Se gestiona también el seguimiento del personaje no controlado en caso
-    //necesario.
+    // En el caso de que el input esté permitido, obtendremos el relativo al movimiento de las teclas/botones correspondiente y moveremos y animaremos al personaje en consecuencia. Se gestiona también el seguimiento del personaje no controlado en 
+    //caso necesario.
     private void Update ()
     {
-        if (input == false)
+        if (input == false || deslizar == true)
         {
             horizontalInp = 0;
             verticalInp = 0;
@@ -155,12 +158,14 @@ public class MovimientoHistoria2 : MonoBehaviour
     // Si el avatar jugable ha caído sobre otro, empujarlo hacia el primer lado de este que se encuentre libre.
     private void OnControllerColliderHit (ControllerColliderHit hit)
     {
+        //print ("Se realizaron las físicas");
+        normales.Add (hit.normal);
         //Transform tocado = hit.transform;
-        if (deslizar == false) 
+        /*if (deslizar == false) 
         {
             normal = hit.normal;
             deslizar = Vector3.Angle (Vector3.up, hit.normal) > characterCtr.slopeLimit;
-        }
+        }*/
         //print (Time.deltaTime);
         /*switch (tocado.tag) 
         {
@@ -203,12 +208,12 @@ public class MovimientoHistoria2 : MonoBehaviour
 
 
     // Pal debug y tal.
-    private void OnDrawGizmosSelected ()
+    /*private void OnDrawGizmosSelected ()
     {
         Gizmos.color = Color.red;
 
-        Gizmos.DrawRay (this.transform.position, -Vector3.up * sueloDst);
-    }
+        Gizmos.DrawWireSphere (new Vector3 (this.transform.position.x, this.transform.position.y + 1.25f, this.transform.position.z), radioEsfSue);
+    }*/
 
 
     // Independiente de si el jugador o el compañero ha entrado en la zona peligrosa, el compañero empieza a atacar si estaba siguiendo al jugador.
@@ -225,22 +230,29 @@ public class MovimientoHistoria2 : MonoBehaviour
 
 
     // Pone "sueleado" a "true" para evitar que se reproduzca la animación de estar en el aire cuando realmente no lo está.
-    /*private void OnTriggerStay (Collider other)
+    private void OnTriggerStay (Collider other)
     {
         if (other.CompareTag ("Sueleador") == true)
         {
-            sueleado = true;
+            sueleadorToc = true;
         }
-    }*/
+    }
 
 
-    // Si el avatar ha salido de una zona con enemigos, desactivamos el booleano que indica si hay enemigos cerca.
+    // Si el avatar ha salido de una zona con enemigos, desactivamos el booleano que indica si hay enemigos cerca. También miramos si ha salido de un sueleador para desactivar el booleano que lo indica.
     private void OnTriggerExit (Collider other)
     {
-        if (other.CompareTag ("AreaEnemiga") == true) 
+        switch (other.tag) 
         {
-            enemigosCer = false;
-        }
+            case "Sueleador":
+                sueleadorToc = false;
+
+                break;
+            case "AreaEnemiga":
+                enemigosCer = false;
+
+                break;
+        } 
     }
 
 
@@ -467,7 +479,8 @@ public class MovimientoHistoria2 : MonoBehaviour
     // Lanzamos un raycast hacia abajo de no mucha mayor longitud que la altura del personaje para comprobar si este está tocando el suelo o no.
     private bool Sueleado ()
     {
-        return Physics.Raycast (this.transform.position, -Vector3.up, sueloDst, capasSinAvt, QueryTriggerInteraction.Ignore);
+        return sueleadorToc == false ? Physics.CheckSphere (this.transform.position + offsetEsfSue, radioEsfSue, capasSinAvt, QueryTriggerInteraction.Ignore) : true;
+        //return Physics.Raycast (this.transform.position, -Vector3.up, sueloDst, capasSinAvt, QueryTriggerInteraction.Ignore);
     }
 
 
@@ -531,16 +544,17 @@ public class MovimientoHistoria2 : MonoBehaviour
 
         if (empujando == false) 
         {
-            if (deslizar == true) 
+            if (deslizar == true)
             {
+                //print ("TEREMENDO");
                 movimiento.x += (1 - normal.y) * normal.x * (1 - deslizFrc) * deslizVel;
                 movimiento.z += (1 - normal.y) * normal.z * (1 - deslizFrc) * deslizVel;
-                print ("entré");
             }
 
-            characterCtr.Move (Time.deltaTime * movimiento);
+            CollisionFlags banderitas = characterCtr.Move (Time.deltaTime * movimiento);
 
-            deslizar = false;
+            deslizar = ObtenerMenorPendiente () > characterCtr.slopeLimit || sueleado == false && banderitas != CollisionFlags.None;
+            print (deslizar);
         }
         else 
         {
@@ -549,6 +563,8 @@ public class MovimientoHistoria2 : MonoBehaviour
             characterCtr.Move (Time.deltaTime * movimientoEmp);
             empujado.Mover (movimientoEmp); 
         }
+
+        normales.Clear ();
     }
 
 
@@ -740,4 +756,47 @@ public class MovimientoHistoria2 : MonoBehaviour
     {
         siguiendoAcb = false;
     }
+
+
+    // Encuentra el ángulo de la menor pendiente que el personaje está pisando en ese momento a través de las normales.
+    private float ObtenerMenorPendiente ()
+    {
+        List<Vector3> ignorar = new List<Vector3> ();
+
+        foreach (Vector3 v in normales) 
+        {
+            if (Mathf.Abs (Vector3.Angle (Vector3.up, v) - 90) < 1) 
+            {
+                ignorar.Add (v);
+            }
+        }
+        foreach (Vector3 v in ignorar) 
+        {
+            normales.Remove (v);
+        }
+
+        if (normales.Count != 0)
+        {
+            float angulo;
+
+            float inclinacion = 90;
+
+            foreach (Vector3 n in normales)
+            {
+                angulo = Vector3.Angle (Vector3.up, n);
+                print("Normal: " + n + ". Ángulo: " + angulo);
+                if (angulo < inclinacion)
+                {
+                    inclinacion = angulo;
+                    normal = n;
+                }
+            }
+
+            return inclinacion;
+        }
+        else 
+        {
+            return 0;
+        }
+    }   
 }
