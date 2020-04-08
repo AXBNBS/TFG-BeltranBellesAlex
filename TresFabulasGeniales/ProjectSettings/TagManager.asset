@@ -27,6 +27,7 @@ TagManager:
   - Transicion
   - Pared
   - HuesoRestringido
+  - Resbaladizo
   layers:
   - Default
   - TransparentFX
@@ -49,7 +50,7 @@ TagManager:
   - Bichos
   - SuperficieAdherible
   - GenteHabladora
-  - 
+  - SuperficiesResbaladizas
   - 
   - 
   - 

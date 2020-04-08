@@ -17,6 +17,7 @@ public class Empujar : MonoBehaviour
     private ObjetoMovil empujado;
     private RaycastHit rayoDat;
     private Animator animador;
+    private Collider objetoMovTrg;
 
 
     // Inicialización de variables.
@@ -43,7 +44,7 @@ public class Empujar : MonoBehaviour
         }
         else
         {
-            if (empujado.caer == true || Input.GetButtonUp ("Interacción") == true)
+            if (empujado.caer == true || empujado.bloqueado == true || Input.GetButtonUp ("Interacción") == true)
             {
                 agarrado = false;
 
@@ -60,6 +61,8 @@ public class Empujar : MonoBehaviour
         if (other.CompareTag ("Empujable") == true)
         {
             cercano = true;
+            objetoMovTrg = other;
+            empujado = other.GetComponent<ObjetoMovil> ();
         }
     }
 
@@ -70,6 +73,7 @@ public class Empujar : MonoBehaviour
         if (other.CompareTag ("Empujable") == true)
         {
             cercano = false;
+            empujado = null;
         }
     }
 
@@ -87,17 +91,24 @@ public class Empujar : MonoBehaviour
     {
         Vector3 puntoIni = new Vector3 (this.transform.position.x, this.transform.position.y + offsetY, this.transform.position.z);
 
-        if (input == true && cercano == true && movimientoScr.sueleado == true && Input.GetButton ("Interacción") == true &&
-            Physics.Raycast (puntoIni, -this.transform.right, out rayoDat, longitudRay, movilCap, QueryTriggerInteraction.Ignore) == true)
+        if (input == true && cercano == true && movimientoScr.sueleado == true && empujado.bloqueado == false && Input.GetButton ("Interacción") == true && Physics.Raycast (puntoIni, -this.transform.right, out rayoDat, longitudRay, movilCap, 
+            QueryTriggerInteraction.Ignore) == true)
         {
             Vector3 diferencia;
 
-            empujado = rayoDat.transform.gameObject.GetComponent<ObjetoMovil> ();
+            ejeX = empujado.EjeDeTrigger (objetoMovTrg);
             diferencia = rayoDat.point - puntoIni;
             diferencia.y = 0;
-            this.transform.rotation = Quaternion.Euler (0, Vector3.Angle (this.transform.forward, diferencia), 0);
+            print ("Jugador: " + puntoIni + ". Punto del rayo: " + rayoDat.point + ". Diferencia: " + diferencia + ".");
+            if (ejeX == true)
+            {
+                this.transform.rotation = Quaternion.Euler (0, Vector3.Angle (diferencia.x > 0 ? this.transform.right : -this.transform.right, diferencia), 0);
+            }
+            else 
+            {
+                this.transform.rotation = Quaternion.Euler (0, diferencia.z > 0 ? Vector3.Angle (-this.transform.right, diferencia) + 90 : Vector3.Angle (-this.transform.right, diferencia) - 90, 0);
+            }
             agarrado = true;
-            ejeX = empujado.EjeDeTrigger (rayoDat.collider);
 
             if (CambioDePersonajesYAgrupacion.instancia.juntos == true) 
             {

@@ -257,11 +257,10 @@ GameObject:
   - component: {fileID: 5998366576337067661}
   - component: {fileID: 3343214782821606587}
   - component: {fileID: 9032520228212398146}
-  - component: {fileID: 1050413636417835191}
-  - component: {fileID: 9089082388218239252}
+  - component: {fileID: 5063135183741704408}
   - component: {fileID: 1604634210979674104}
+  - component: {fileID: 1050413636417835191}
   - component: {fileID: 1604634210979674111}
-  - component: {fileID: 1791087733}
   m_Layer: 11
   m_Name: Tronco
   m_TagString: Empujable
@@ -334,25 +333,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!143 &1050413636417835191
-CharacterController:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7306284754984463518}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Height: 0.5
-  m_Radius: 0.5
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 4.575}
---- !u!64 &9089082388218239252
+--- !u!64 &5063135183741704408
 MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -380,6 +361,24 @@ CapsuleCollider:
   m_Height: 10
   m_Direction: 2
   m_Center: {x: 0, y: 0, z: 4.5754437}
+--- !u!143 &1050413636417835191
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7306284754984463518}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Height: 0.5
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0, z: 4.575}
 --- !u!114 &1604634210979674111
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -397,20 +396,6 @@ MonoBehaviour:
   - {fileID: 1604634210979674104}
   movimientoX: 00
   rueda: 1
---- !u!64 &1791087733
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7306284754984463518}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Convex: 0
-  m_CookingOptions: 14
-  m_Mesh: {fileID: 2534964839176971238, guid: 5642705aa77f22d48b531ba291b0e14f, type: 3}
 --- !u!1001 &1604634210890514709
 PrefabInstance:
   m_ObjectHideFlags: 0

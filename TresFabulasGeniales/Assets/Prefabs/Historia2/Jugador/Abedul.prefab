@@ -566,7 +566,7 @@ MonoBehaviour:
   descansar: 0
   companyeroCer: 0
   movimiento: {x: 0, y: 0, z: 0}
-  saltoVel: 150
+  saltoVel: 200
   huesos: []
   offsetY: 0
   offsetXZ: 0
@@ -576,6 +576,7 @@ MonoBehaviour:
   saltoDst: 7
   aleatoriedad: 50
   deslizVel: 600
+  pendienteFrz: 100
   capas:
     serializedVersion: 2
     m_Bits: 7223
@@ -588,6 +589,7 @@ MonoBehaviour:
   ajusteCaiDst: 5
   multiplicadorSalBaj: 0
   deslizFrc: 0.3
+  pendienteRayLon: 2
   saltador: 0
 --- !u!114 &9139600075987871173
 MonoBehaviour:

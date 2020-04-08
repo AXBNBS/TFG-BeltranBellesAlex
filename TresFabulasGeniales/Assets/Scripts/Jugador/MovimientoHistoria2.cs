@@ -15,10 +15,10 @@ public class MovimientoHistoria2 : MonoBehaviour
     public List<Transform> huesos;
     [HideInInspector] public float offsetY, offsetXZ;
 
-    [SerializeField] private int movimientoVelNor, movimientoVelRed, rotacionVel, saltoDst, aleatoriedad, deslizVel;
+    [SerializeField] private int movimientoVelNor, movimientoVelRed, rotacionVel, saltoDst, aleatoriedad, deslizVel, pendienteFrz;
     [SerializeField] private LayerMask capas, capasSinAvt;
     [SerializeField] private MovimientoHistoria2 companyeroMov;
-    [SerializeField] private float pararDstSeg, pararDstAtq, ajusteCaiDst, multiplicadorSalBaj, deslizFrc;
+    [SerializeField] private float pararDstSeg, pararDstAtq, ajusteCaiDst, multiplicadorSalBaj, deslizFrc, pendienteRayLon;
     [SerializeField] private bool saltador;
     private int gravedad, movimientoVel, empujeVel;
     private bool saltarInp, yendo, empujando, limitadoX, enemigosCer, saltado, cambiando, siguiendoAcb, deslizar, sueleadorToc;
@@ -93,7 +93,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     //caso necesario.
     private void Update ()
     {
-        if (input == false || deslizar == true)
+        if (input == false)
         {
             horizontalInp = 0;
             verticalInp = 0;
@@ -103,7 +103,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         {
             horizontalInp = Mathf.RoundToInt (Input.GetAxisRaw ("Movimiento horizontal"));
             verticalInp = Mathf.RoundToInt (Input.GetAxisRaw ("Movimiento vertical"));
-            saltarInp = empujando == false ? Input.GetButtonDown ("Salto") : false;
+            saltarInp = empujando == false && deslizar == false ? Input.GetButtonDown ("Salto") : false;
         }
         movimiento.x = 0;
         movimiento.z = 0;
@@ -158,21 +158,15 @@ public class MovimientoHistoria2 : MonoBehaviour
     // Si el avatar jugable ha caído sobre otro, empujarlo hacia el primer lado de este que se encuentre libre.
     private void OnControllerColliderHit (ControllerColliderHit hit)
     {
-        //print ("Se realizaron las físicas");
-        normales.Add (hit.normal);
-        //Transform tocado = hit.transform;
-        /*if (deslizar == false) 
-        {
-            normal = hit.normal;
-            deslizar = Vector3.Angle (Vector3.up, hit.normal) > characterCtr.slopeLimit;
-        }*/
-        //print (Time.deltaTime);
-        /*switch (tocado.tag) 
+        switch (hit.transform.tag) 
         {
             case "Jugador":
+            case "Resbaladizo":
                 if (sueleado == false) 
                 {
-                    Vector3 centroSup = new Vector3 (tocado.position.x, tocado.position.y + offsetY, tocado.position.z);
+                    Transform tocado = hit.transform;
+                    Vector3 centroSup = hit.point;
+                    print ("Wenas jeje");
 
                     if (Physics.Raycast (centroSup, tocado.right, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
                     {
@@ -202,18 +196,21 @@ public class MovimientoHistoria2 : MonoBehaviour
             default:
                 empuje = Vector3.zero;
 
+                normales.Add (hit.normal);
+
                 break;
-        }*/
+        }
     }
 
 
     // Pal debug y tal.
-    /*private void OnDrawGizmosSelected ()
+    private void OnDrawGizmosSelected ()
     {
         Gizmos.color = Color.red;
 
-        Gizmos.DrawWireSphere (new Vector3 (this.transform.position.x, this.transform.position.y + 1.25f, this.transform.position.z), radioEsfSue);
-    }*/
+        //Gizmos.DrawWireSphere (new Vector3 (this.transform.position.x, this.transform.position.y + 1.25f, this.transform.position.z), radioEsfSue);
+        Gizmos.DrawRay (this.transform.position, Vector3.down * pendienteRayLon);
+    }
 
 
     // Independiente de si el jugador o el compañero ha entrado en la zona peligrosa, el compañero empieza a atacar si estaba siguiendo al jugador.
@@ -318,14 +315,7 @@ public class MovimientoHistoria2 : MonoBehaviour
             mallaAgtNav.stoppingDistance = pararDstAtq;
             CambioDePersonajesYAgrupacion.instancia.juntos = false;
 
-            //if (saltador == true)
-            //{
-                this.Invoke ("PosicionEnemigoCercano", 0.1f);
-            /*}
-            else 
-            {
-                this.Invoke ("PosicionEnemigoLejano", 0.1f);
-            }*/
+            this.Invoke ("PosicionEnemigoCercano", 0.1f);
         }
     }
 
@@ -532,29 +522,41 @@ public class MovimientoHistoria2 : MonoBehaviour
                 relativoCam = (camaraTrf.right * horizontalInp + camaraTrf.forward * verticalInp);
                 if (limitadoX == true)
                 {
-                    movimiento.z = relativoCam.z;
+                    movimiento.x = relativoCam.x;
                 }
                 else
                 {
-                    movimiento.x = relativoCam.x;
+                    movimiento.z = relativoCam.z;
                 }
             }
         }
-        movimiento += empuje * movimientoVel / 2;
+        if (characterCtr.collisionFlags != CollisionFlags.None) 
+        {
+            movimiento += empuje * movimientoVel / 2;
+        }
 
         if (empujando == false) 
         {
+            CollisionFlags banderitas;
+
             if (deslizar == true)
             {
                 //print ("TEREMENDO");
                 movimiento.x += (1 - normal.y) * normal.x * (1 - deslizFrc) * deslizVel;
                 movimiento.z += (1 - normal.y) * normal.z * (1 - deslizFrc) * deslizVel;
             }
-
-            CollisionFlags banderitas = characterCtr.Move (Time.deltaTime * movimiento);
-
-            deslizar = ObtenerMenorPendiente () > characterCtr.slopeLimit || sueleado == false && banderitas != CollisionFlags.None;
-            print (deslizar);
+            if (EnPendiente () == false)
+            {
+                banderitas = characterCtr.Move (Time.deltaTime * movimiento);
+                //print ("En terreno normal. Velocidad del controlador: " + characterCtr.velocity);
+            }
+            else 
+            {
+                banderitas = characterCtr.Move ((Vector3.down * pendienteFrz + movimiento) * Time.deltaTime);
+                //print ("En una pendiente. Velocidad del controlador: " + characterCtr.velocity);
+            }
+            deslizar = ObtenerMenorPendiente () > characterCtr.slopeLimit || sueleado == false && banderitas != CollisionFlags.None && banderitas != CollisionFlags.Sides;
+            //print (deslizar);
         }
         else 
         {
@@ -581,6 +583,10 @@ public class MovimientoHistoria2 : MonoBehaviour
                 }
                 else 
                 {
+                    if ((characterCtr.collisionFlags & CollisionFlags.Above) != 0) 
+                    {
+                        movimiento.y = 0;
+                    }
                     if (input == true && saltador == true && movimiento.y > 0 && Input.GetButton ("Salto") == false) 
                     {
                         movimiento.y += gravedad * multiplicadorSalBaj;
@@ -762,6 +768,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     private float ObtenerMenorPendiente ()
     {
         List<Vector3> ignorar = new List<Vector3> ();
+        bool angulo0 = false;
 
         foreach (Vector3 v in normales) 
         {
@@ -784,13 +791,17 @@ public class MovimientoHistoria2 : MonoBehaviour
             foreach (Vector3 n in normales)
             {
                 angulo = Vector3.Angle (Vector3.up, n);
-                print("Normal: " + n + ". Ángulo: " + angulo);
+                if (Mathf.Abs (angulo) < 1) 
+                {
+                    angulo0 = true;
+                }
                 if (angulo < inclinacion)
                 {
                     inclinacion = angulo;
                     normal = n;
                 }
             }
+            //print (angulo0);
 
             return inclinacion;
         }
@@ -798,5 +809,24 @@ public class MovimientoHistoria2 : MonoBehaviour
         {
             return 0;
         }
-    }   
+    }
+
+
+    // Determina si el personaje se encuentra en una pendiente o no.
+    private bool EnPendiente () 
+    {
+        if (sueleado == false)
+        {
+            return false;
+        }
+
+        if (Physics.Raycast (this.transform.position, Vector3.down, out RaycastHit datosRay, pendienteRayLon, capasSinAvt, QueryTriggerInteraction.Ignore) == true)
+        {
+            return datosRay.normal != Vector3.up;
+        }
+        else 
+        {
+            return false;
+        }
+    }
 }

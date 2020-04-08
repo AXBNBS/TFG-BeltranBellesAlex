@@ -398,6 +398,7 @@ MonoBehaviour:
   saltoDst: 20
   aleatoriedad: 0
   deslizVel: 600
+  pendienteFrz: 100
   capas:
     serializedVersion: 2
     m_Bits: 7223
@@ -410,6 +411,7 @@ MonoBehaviour:
   ajusteCaiDst: 95
   multiplicadorSalBaj: 2
   deslizFrc: 0.3
+  pendienteRayLon: 2
   saltador: 1
 --- !u!114 &1105000601539949260
 MonoBehaviour:

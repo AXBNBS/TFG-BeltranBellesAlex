@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class ObjetoMovil : MonoBehaviour
 {
-    public bool caer;
+    public bool caer, bloqueado;
 
     [SerializeField] private List<Collider> triggers;
     [SerializeField] private bool[] movimientoX;
@@ -68,14 +68,24 @@ public class ObjetoMovil : MonoBehaviour
     // Si el objeto entra en un trigger de caída, ponemos la variable que permite que caiga a "true".
     private void OnTriggerEnter (Collider other)
     {
-        if (other.CompareTag ("CaidaObjeto") == true) 
+        switch (other.tag) 
         {
-            foreach (Collider t in triggers)
-            {
-                t.enabled = false;
-            }
-            caer = true;
-            empujarScr.cercano = false;
+            case "CaidaObjeto":
+                foreach (Collider t in triggers)
+                {
+                    t.enabled = false;
+                }
+                caer = true;
+                empujarScr.cercano = false;
+
+                break;
+            case "Jugador":
+                if (other.GetComponent<Empujar> () == null) 
+                {
+                    bloqueado = true;
+                }
+
+                break;
         }
     }
 
@@ -83,9 +93,19 @@ public class ObjetoMovil : MonoBehaviour
     // Si el objeto sale de un trigger de caída, ponemos la variable que permite que caiga a "false".
     private void OnTriggerExit (Collider other)
     {
-        if (other.CompareTag ("CaidaObjeto") == true)
+        switch (other.tag)
         {
-            caer = false;
+            case "CaidaObjeto":
+                caer = false;
+
+                break;
+            case "Jugador":
+                if (other.GetComponent<Empujar> () == null)
+                {
+                    bloqueado = false;
+                }
+
+                break;
         }
     }
 
