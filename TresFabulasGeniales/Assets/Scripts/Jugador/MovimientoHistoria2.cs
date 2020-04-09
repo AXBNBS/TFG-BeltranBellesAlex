@@ -13,7 +13,6 @@ public class MovimientoHistoria2 : MonoBehaviour
     public Vector3 movimiento;
     public int saltoVel;
     public List<Transform> huesos;
-    [HideInInspector] public float offsetY, offsetXZ;
 
     [SerializeField] private int movimientoVelNor, movimientoVelRed, rotacionVel, saltoDst, aleatoriedad, deslizVel, pendienteFrz;
     [SerializeField] private LayerMask capas, capasSinAvt;
@@ -21,9 +20,9 @@ public class MovimientoHistoria2 : MonoBehaviour
     [SerializeField] private float pararDstSeg, pararDstAtq, ajusteCaiDst, multiplicadorSalBaj, deslizFrc, pendienteRayLon;
     [SerializeField] private bool saltador;
     private int gravedad, movimientoVel, empujeVel;
-    private bool saltarInp, yendo, empujando, limitadoX, enemigosCer, saltado, cambiando, siguiendoAcb, deslizar, sueleadorToc;
+    private bool saltarInp, yendo, empujando, limitadoX, enemigosCer, saltado, cambiando, siguiendoAcb, deslizar, sueleadorToc, pendiente, empujadoFrm;
     private CharacterController characterCtr;
-    private float horizontalInp, verticalInp, offsetBas, radioRotAtq, radioEsfSue;
+    private float offsetXZ, horizontalInp, verticalInp, offsetBas, radioRotAtq, radioEsfSue;
     private Transform camaraTrf, objetivoSeg, companyeroTrf, enemigoTrf;
     private Animator animator;
     private Vector3 empuje, normal, offsetEsfSue;
@@ -58,15 +57,14 @@ public class MovimientoHistoria2 : MonoBehaviour
         characterCtr = this.GetComponent<CharacterController> ();
         radioRotAtq = characterCtr.bounds.size.x * this.transform.localScale.x * 2;
         radioEsfSue = this.transform.localScale.x * characterCtr.radius / 2;
-        offsetY = this.transform.localScale.y * characterCtr.height;
-        offsetXZ = this.transform.localScale.x * characterCtr.radius * 3;
         camaraTrf = GameObject.FindGameObjectWithTag("CamaraPrincipal").transform;
         objetivoSeg = companyeroMov.transform.GetChild (1);
         companyeroTrf = companyeroMov.transform;
         animator = this.GetComponentInChildren<Animator> ();
-        offsetEsfSue = Vector3.up * 1.25f;
+        offsetEsfSue = Vector3.up;
         mallaAgtNav = this.GetComponent<NavMeshAgent> ();
         mallaAgtNav.speed = movimientoVelNor;
+        offsetXZ = this.transform.localScale.x * characterCtr.radius * 6;
         offsetBas = mallaAgtNav.baseOffset;
         estado = Estado.normal;
         ataqueScr = this.GetComponent<Ataque> ();
@@ -108,6 +106,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         movimiento.x = 0;
         movimiento.z = 0;
         sueleado = Sueleado ();
+        pendiente = EnPendiente ();
         if (mallaAgtNav.enabled == false) 
         {
             mallaAgtNav.baseOffset = offsetBas;
@@ -162,34 +161,69 @@ public class MovimientoHistoria2 : MonoBehaviour
         {
             case "Jugador":
             case "Resbaladizo":
-                if (sueleado == false) 
+                if (sueleado == false && empujadoFrm == false) 
                 {
-                    Transform tocado = hit.transform;
-                    Vector3 centroSup = hit.point;
                     print ("Wenas jeje");
-
-                    if (Physics.Raycast (centroSup, tocado.right, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
+                    empujadoFrm = true;
+                    if (Physics.Raycast (hit.point, Vector3.right, out RaycastHit datosRay1, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
                     {
-                        empuje = tocado.right;
+                        empuje = Vector3.right;
 
                         return;
                     }
 
-                    if (Physics.Raycast (centroSup, -tocado.right, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
+                    if (Physics.Raycast (hit.point, Vector3.left, out RaycastHit datosRay2, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
                     {
-                        empuje = -tocado.right;
+                        empuje = Vector3.left;
 
                         return;
                     }
 
-                    if (Physics.Raycast (centroSup, tocado.forward, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
+                    if (Physics.Raycast (hit.point, Vector3.forward, out RaycastHit datosRay3, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
                     {
-                        empuje = tocado.forward;
+                        empuje = Vector3.forward;
 
                         return;
                     }
 
-                    empuje = -tocado.forward;
+                    if (Physics.Raycast (hit.point, Vector3.back, out RaycastHit datosRay4, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false) 
+                    {
+                        empuje = Vector3.back;
+
+                        return;
+                    }
+
+                    RaycastHit[] datosRay = new RaycastHit[] { datosRay1, datosRay2, datosRay3, datosRay4 };
+                    float mayorDst = 0;
+                    int mejor = 0;
+
+                    for (int d = 0; d < datosRay.Length; d += 1) 
+                    {
+                        if (datosRay[d].distance > mayorDst) 
+                        {
+                            mayorDst = datosRay[d].distance;
+                            mejor = d;
+                        }
+                    }
+                    switch (mejor) 
+                    {
+                        case 0:
+                            empuje = Vector3.right;
+
+                            break;
+                        case 1:
+                            empuje = Vector3.left;
+
+                            break;
+                        case 2:
+                            empuje = Vector3.forward;
+
+                            break;
+                        default:
+                            empuje = Vector3.back;
+
+                            break;
+                    }
                 }
 
                 break;
@@ -364,13 +398,6 @@ public class MovimientoHistoria2 : MonoBehaviour
     // Obtiene la posición del enemigo más lejano dentro de la zona en la que se encuentra el jugador actualmente, prefiriendo aquellos enemigos que tengan como objetivo al avatar que llama a esta función.
     public void PosicionEnemigoLejano ()
     {
-        /*puntoAlt = new Vector3 (Random.Range (-aleatoriedad, +aleatoriedad) + enemigoTrf.position.x, this.transform.position.y, Random.Range (-aleatoriedad, +aleatoriedad) + enemigoTrf.position.z);
-        while (Vector2.Distance (new Vector2 (enemigoTrf.position.x, enemigoTrf.position.z), new Vector2 (puntoAlt.x, puntoAlt.z)) < 
-            enemigoTrf.GetComponent<CharacterController>().radius * enemigoTrf.localScale.x + this.transform.localScale.x * characterCtr.radius) 
-        {
-            puntoAlt = new Vector3 (Random.Range (-aleatoriedad, +aleatoriedad) + enemigoTrf.position.x, this.transform.position.y, Random.Range (-aleatoriedad, +aleatoriedad) + enemigoTrf.position.z);
-        }
-        evitando = true;*/
         float evaluada;
 
         Transform resultado = null;
@@ -469,8 +496,14 @@ public class MovimientoHistoria2 : MonoBehaviour
     // Lanzamos un raycast hacia abajo de no mucha mayor longitud que la altura del personaje para comprobar si este está tocando el suelo o no.
     private bool Sueleado ()
     {
-        return sueleadorToc == false ? Physics.CheckSphere (this.transform.position + offsetEsfSue, radioEsfSue, capasSinAvt, QueryTriggerInteraction.Ignore) : true;
-        //return Physics.Raycast (this.transform.position, -Vector3.up, sueloDst, capasSinAvt, QueryTriggerInteraction.Ignore);
+        if (movimiento.y < 0)
+        {
+            return sueleadorToc == false ? Physics.CheckSphere (this.transform.position + offsetEsfSue, radioEsfSue, capasSinAvt, QueryTriggerInteraction.Ignore) : true;
+        }
+        else 
+        {
+            return false;
+        }
     }
 
 
@@ -541,11 +574,15 @@ public class MovimientoHistoria2 : MonoBehaviour
 
             if (deslizar == true)
             {
-                //print ("TEREMENDO");
+                print (this.name + "-> movimiento en X antes del desliz: " + movimiento.x);
+                print (this.name + "-> movimiento en Z antes del desliz: " + movimiento.z);
+                print (this.name + "-> normal usada: " + normal);
                 movimiento.x += (1 - normal.y) * normal.x * (1 - deslizFrc) * deslizVel;
                 movimiento.z += (1 - normal.y) * normal.z * (1 - deslizFrc) * deslizVel;
+                print (this.name + "-> movimiento en X después del desliz: " + movimiento.x);
+                print (this.name + "-> movimiento en Z después del desliz: " + movimiento.z);
             }
-            if (EnPendiente () == false)
+            if (pendiente == false)
             {
                 banderitas = characterCtr.Move (Time.deltaTime * movimiento);
                 //print ("En terreno normal. Velocidad del controlador: " + characterCtr.velocity);
@@ -555,8 +592,11 @@ public class MovimientoHistoria2 : MonoBehaviour
                 banderitas = characterCtr.Move ((Vector3.down * pendienteFrz + movimiento) * Time.deltaTime);
                 //print ("En una pendiente. Velocidad del controlador: " + characterCtr.velocity);
             }
-            deslizar = ObtenerMenorPendiente () > characterCtr.slopeLimit || sueleado == false && banderitas != CollisionFlags.None && banderitas != CollisionFlags.Sides;
-            //print (deslizar);
+            deslizar = ObtenerMenorPendiente () > characterCtr.slopeLimit || (sueleado == false && banderitas != CollisionFlags.None && banderitas != CollisionFlags.Sides);
+            //print (this.name + "-> Menor ángulo obtenido: " + ObtenerMenorPendiente ());
+            //print (this.name + "-> ¿Estoy tocando el suelo? " + sueleado);
+            //print (this.name + "-> ¿Estoy en una pendiente? " + pendiente);
+            //print (this.name + "-> ¿Estoy deslizándome? " + deslizar);
         }
         else 
         {
@@ -565,6 +605,8 @@ public class MovimientoHistoria2 : MonoBehaviour
             characterCtr.Move (Time.deltaTime * movimientoEmp);
             empujado.Mover (movimientoEmp); 
         }
+
+        empujadoFrm = false;
 
         normales.Clear ();
     }
@@ -578,7 +620,7 @@ public class MovimientoHistoria2 : MonoBehaviour
             case Estado.normal:
                 if (sueleado == true && saltado == false && saludScr.aturdido == false)
                 {
-                    movimiento.y = -3;
+                    movimiento.y = -10;
                     empuje = Vector3.zero;
                 }
                 else 
@@ -669,7 +711,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         {
             case Estado.normal:
                 animator.SetBool ("moviendose", movimiento.x != 0 || movimiento.z != 0);
-                animator.SetBool ("tocandoSuelo", saltado == false && (sueleado == true || cambiando == true || siguiendoAcb == true));
+                animator.SetBool ("tocandoSuelo", saltado == false && deslizar == false && (sueleado == true || cambiando == true || siguiendoAcb == true));
                 animator.SetFloat ("velocidadY", movimiento.y);
 
                 break;
@@ -767,47 +809,84 @@ public class MovimientoHistoria2 : MonoBehaviour
     // Encuentra el ángulo de la menor pendiente que el personaje está pisando en ese momento a través de las normales.
     private float ObtenerMenorPendiente ()
     {
-        List<Vector3> ignorar = new List<Vector3> ();
-        bool angulo0 = false;
-
-        foreach (Vector3 v in normales) 
+        //bool angulo0 = false;
+        /*if (characterCtr.collisionFlags == CollisionFlags.None)
         {
-            if (Mathf.Abs (Vector3.Angle (Vector3.up, v) - 90) < 1) 
-            {
-                ignorar.Add (v);
-            }
+            print (this.name + ": en el aire.");
         }
-        foreach (Vector3 v in ignorar) 
+        if ((characterCtr.collisionFlags & CollisionFlags.Sides) != 0)
         {
-            normales.Remove (v);
+            print (this.name + ": tocando los lados.");
         }
-
-        if (normales.Count != 0)
+        if (characterCtr.collisionFlags == CollisionFlags.Sides)
         {
-            float angulo;
-
-            float inclinacion = 90;
-
-            foreach (Vector3 n in normales)
-            {
-                angulo = Vector3.Angle (Vector3.up, n);
-                if (Mathf.Abs (angulo) < 1) 
-                {
-                    angulo0 = true;
-                }
-                if (angulo < inclinacion)
-                {
-                    inclinacion = angulo;
-                    normal = n;
-                }
-            }
-            //print (angulo0);
-
-            return inclinacion;
+            print (this.name + ": tocando solamente los lados.");
+        }
+        if ((characterCtr.collisionFlags & CollisionFlags.Above) != 0)
+        {
+            print (this.name + ": tocando el techo.");
+        }
+        if (characterCtr.collisionFlags == CollisionFlags.Above)
+        {
+            print (this.name + ": tocando solamente el techo.");
+        }
+        if ((characterCtr.collisionFlags & CollisionFlags.Below) != 0)
+        {
+            print (this.name + ": tocando el suelo.");
+        }
+        if (characterCtr.collisionFlags == CollisionFlags.Below)
+        {
+            print (this.name + ": tocando solamente el suelo.");
+        }*/
+        if (pendiente == false && characterCtr.collisionFlags != CollisionFlags.Below)
+        {
+            return 0;
         }
         else 
         {
-            return 0;
+            if (sueleado == true)
+            {
+                List<Vector3> ignorar = new List<Vector3> ();
+                foreach (Vector3 v in normales)
+                {
+                    if (Mathf.Abs (Vector3.Angle (Vector3.up, v) - 90) < 1)
+                    {
+                        ignorar.Add (v);
+                    }
+                }
+                foreach (Vector3 v in ignorar)
+                {
+                    normales.Remove (v);
+                }
+            }
+
+            if (normales.Count != 0)
+            {
+                float angulo;
+
+                float inclinacion = 90;
+
+                foreach (Vector3 n in normales)
+                {
+                    angulo = Vector3.Angle (Vector3.up, n);
+                    /*if (Mathf.Abs(angulo) < 1)
+                    {
+                        angulo0 = true;
+                    }*/
+                    if (angulo < inclinacion)
+                    {
+                        inclinacion = angulo;
+                        normal = n;
+                    }
+                }
+                //print (angulo0);
+
+                return inclinacion;
+            }
+            else
+            {
+                return 0;
+            }
         }
     }
 
@@ -815,7 +894,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     // Determina si el personaje se encuentra en una pendiente o no.
     private bool EnPendiente () 
     {
-        if (sueleado == false)
+        if (sueleado == false || movimiento.y > 0)
         {
             return false;
         }

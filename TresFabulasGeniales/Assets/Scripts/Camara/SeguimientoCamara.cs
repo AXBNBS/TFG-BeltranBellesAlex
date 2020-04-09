@@ -169,12 +169,12 @@ public class SeguimientoCamara : MonoBehaviour
         //Transform clon = GameObject.Instantiate(this.gameObject).transform;
         //Transform clonHij = clon.GetChild (0);
 
-        print (hijoTrf.position);
+        //print (hijoTrf.position);
         this.transform.rotation = Quaternion.Euler (0, rotacionX1, 0);
-        print (hijoTrf.position);
+        //print (hijoTrf.position);
         rayo1 = Physics.Linecast (npcPos, hijoTrf.position, out rayoDat1, dialogoCap, QueryTriggerInteraction.Ignore);
         this.transform.rotation = Quaternion.Euler (0, rotacionX2, 0);
-        print (hijoTrf.position);
+        //print (hijoTrf.position);
         rayo2 = Physics.Linecast (npcPos, hijoTrf.position, out rayoDat2, dialogoCap, QueryTriggerInteraction.Ignore);
         this.transform.rotation = rotacionAct;
         if (rayo1 == false && rayo2 == false)
