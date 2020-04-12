@@ -106,6 +106,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         movimiento.x = 0;
         movimiento.z = 0;
         sueleado = Sueleado ();
+        //print (this.name + "-- sueleado es: " + sueleado + " y mi movimiento en Y es " + movimiento.y);
         pendiente = EnPendiente ();
         if (mallaAgtNav.enabled == false) 
         {
@@ -163,7 +164,7 @@ public class MovimientoHistoria2 : MonoBehaviour
             case "Resbaladizo":
                 if (sueleado == false && empujadoFrm == false) 
                 {
-                    print ("Wenas jeje");
+                    //print ("Wenas jeje");
                     empujadoFrm = true;
                     if (Physics.Raycast (hit.point, Vector3.right, out RaycastHit datosRay1, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
                     {
@@ -242,8 +243,8 @@ public class MovimientoHistoria2 : MonoBehaviour
     {
         Gizmos.color = Color.red;
 
-        //Gizmos.DrawWireSphere (new Vector3 (this.transform.position.x, this.transform.position.y + 1.25f, this.transform.position.z), radioEsfSue);
-        Gizmos.DrawRay (this.transform.position, Vector3.down * pendienteRayLon);
+        Gizmos.DrawWireSphere (this.transform.position + offsetEsfSue, radioEsfSue);
+        //Gizmos.DrawRay (this.transform.position + Vector3.up, Vector3.down * pendienteRayLon);
     }
 
 
@@ -574,13 +575,24 @@ public class MovimientoHistoria2 : MonoBehaviour
 
             if (deslizar == true)
             {
-                print (this.name + "-> movimiento en X antes del desliz: " + movimiento.x);
-                print (this.name + "-> movimiento en Z antes del desliz: " + movimiento.z);
-                print (this.name + "-> normal usada: " + normal);
-                movimiento.x += (1 - normal.y) * normal.x * (1 - deslizFrc) * deslizVel;
-                movimiento.z += (1 - normal.y) * normal.z * (1 - deslizFrc) * deslizVel;
-                print (this.name + "-> movimiento en X después del desliz: " + movimiento.x);
-                print (this.name + "-> movimiento en Z después del desliz: " + movimiento.z);
+                float inputX = movimiento.x;
+                float inputZ = movimiento.z;
+
+                //print (this.name + "-> movimiento en X antes del desliz: " + movimiento.x);
+                //print (this.name + "-> movimiento en Z antes del desliz: " + movimiento.z);
+                //print (this.name + "-> normal usada: " + normal);
+                movimiento.x = (1 - normal.y) * normal.x * (1 - deslizFrc) * deslizVel;
+                movimiento.z = (1 - normal.y) * normal.z * (1 - deslizFrc) * deslizVel;
+                if (Mathf.Sign (movimiento.x) == Mathf.Sign (inputX)) 
+                {
+                    movimiento.x += inputX;
+                }
+                if (Mathf.Sign (movimiento.z) == Mathf.Sign (inputZ))
+                {
+                    movimiento.z += inputZ;
+                }
+                //print (this.name + "-> movimiento en X después del desliz: " + movimiento.x);
+                //print (this.name + "-> movimiento en Z después del desliz: " + movimiento.z);
             }
             if (pendiente == false)
             {
@@ -711,7 +723,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         {
             case Estado.normal:
                 animator.SetBool ("moviendose", movimiento.x != 0 || movimiento.z != 0);
-                animator.SetBool ("tocandoSuelo", saltado == false && deslizar == false && (sueleado == true || cambiando == true || siguiendoAcb == true));
+                animator.SetBool ("tocandoSuelo", sueleado == true && deslizar == false && (saltado == false || cambiando == true || siguiendoAcb == true));
                 animator.SetFloat ("velocidadY", movimiento.y);
 
                 break;
@@ -838,12 +850,13 @@ public class MovimientoHistoria2 : MonoBehaviour
         {
             print (this.name + ": tocando solamente el suelo.");
         }*/
-        if (pendiente == false && characterCtr.collisionFlags != CollisionFlags.Below)
+        /*if (pendiente == false && characterCtr.collisionFlags != CollisionFlags.Below)
         {
+            print (this.name + "-- Devuelvo 0 porque no detecto estar en pendiente y mis banderitas de colisión son distintas a sólo abajo.");
             return 0;
         }
         else 
-        {
+        {*/
             if (sueleado == true)
             {
                 List<Vector3> ignorar = new List<Vector3> ();
@@ -851,6 +864,7 @@ public class MovimientoHistoria2 : MonoBehaviour
                 {
                     if (Mathf.Abs (Vector3.Angle (Vector3.up, v) - 90) < 1)
                     {
+                        //print (this.name + "-- Eliminando " + v + ".");
                         ignorar.Add (v);
                     }
                 }
@@ -869,42 +883,45 @@ public class MovimientoHistoria2 : MonoBehaviour
                 foreach (Vector3 n in normales)
                 {
                     angulo = Vector3.Angle (Vector3.up, n);
-                    /*if (Mathf.Abs(angulo) < 1)
-                    {
-                        angulo0 = true;
-                    }*/
+                    //print (this.name + "-- " + n);
                     if (angulo < inclinacion)
                     {
                         inclinacion = angulo;
                         normal = n;
                     }
                 }
-                //print (angulo0);
+                //print (this.name + "-- Devuelvo " + inclinacion + " ángulo que forma la normal menos inclinada que he encontrado con Vector3.up.");
 
                 return inclinacion;
             }
             else
             {
+                //print (this.name + "-- No hay normales.");
                 return 0;
             }
-        }
+        //}
     }
 
 
     // Determina si el personaje se encuentra en una pendiente o no.
     private bool EnPendiente () 
     {
-        if (sueleado == false || movimiento.y > 0)
+        if (movimiento.y > 0)
         {
+            print (this.name + "-- no estoy en pendiente.");
             return false;
         }
 
-        if (Physics.Raycast (this.transform.position, Vector3.down, out RaycastHit datosRay, pendienteRayLon, capasSinAvt, QueryTriggerInteraction.Ignore) == true)
+        if (Physics.Raycast (this.transform.position + Vector3.up, Vector3.down, out RaycastHit datosRay, pendienteRayLon, capasSinAvt, QueryTriggerInteraction.Ignore) == true)
         {
+            normales.Add (datosRay.normal);
+            print (this.name + "-- inclinación de la pendiente: " + Vector3.Angle (datosRay.normal, Vector3.up));
+
             return datosRay.normal != Vector3.up;
         }
         else 
         {
+            //print (this.name + "-- no estoy en pendiente.");
             return false;
         }
     }

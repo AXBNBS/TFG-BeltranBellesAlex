@@ -390,8 +390,6 @@ MonoBehaviour:
   movimiento: {x: 0, y: 0, z: 0}
   saltoVel: 300
   huesos: []
-  offsetY: 0
-  offsetXZ: 0
   movimientoVelNor: 200
   movimientoVelRed: 70
   rotacionVel: 10
@@ -411,7 +409,7 @@ MonoBehaviour:
   ajusteCaiDst: 95
   multiplicadorSalBaj: 2
   deslizFrc: 0.3
-  pendienteRayLon: 2
+  pendienteRayLon: 6
   saltador: 1
 --- !u!114 &1105000601539949260
 MonoBehaviour:
