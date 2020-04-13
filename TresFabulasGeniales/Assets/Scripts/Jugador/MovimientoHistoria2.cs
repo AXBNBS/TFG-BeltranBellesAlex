@@ -908,14 +908,14 @@ public class MovimientoHistoria2 : MonoBehaviour
     {
         if (movimiento.y > 0)
         {
-            print (this.name + "-- no estoy en pendiente.");
+            //print (this.name + "-- no estoy en pendiente.");
             return false;
         }
 
         if (Physics.Raycast (this.transform.position + Vector3.up, Vector3.down, out RaycastHit datosRay, pendienteRayLon, capasSinAvt, QueryTriggerInteraction.Ignore) == true)
         {
             normales.Add (datosRay.normal);
-            print (this.name + "-- inclinación de la pendiente: " + Vector3.Angle (datosRay.normal, Vector3.up));
+            //print (this.name + "-- inclinación de la pendiente: " + Vector3.Angle (datosRay.normal, Vector3.up));
 
             return datosRay.normal != Vector3.up;
         }
