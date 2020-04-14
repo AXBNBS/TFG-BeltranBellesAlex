@@ -113,6 +113,10 @@ public class Salud : MonoBehaviour
     private void ControlarInput (bool activar) 
     {
         movimientoScr.input = activar;
+        /*if (activar == false) 
+        {
+            print (this.name + ": llegué");
+        }*/
         ataqueScr.input = activar;
         if (empujeScr != null)
         {

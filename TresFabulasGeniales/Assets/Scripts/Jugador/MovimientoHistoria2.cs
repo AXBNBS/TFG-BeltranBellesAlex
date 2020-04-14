@@ -91,6 +91,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     //caso necesario.
     private void Update ()
     {
+        //print (this.name + ": " + input);
         if (input == false)
         {
             horizontalInp = 0;
