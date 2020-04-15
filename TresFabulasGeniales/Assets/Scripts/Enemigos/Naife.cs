@@ -1,6 +1,7 @@
 ﻿
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -13,15 +14,13 @@ public class Naife : MonoBehaviour
 
     [SerializeField] private bool quieto, sentidoHor, embestida;
     private AreaNaifes padreScr;
-    private Vector3[] extremosCir;
     private CapsuleCollider capsula;
-    private float centroY, radio, destinoDst;
+    private float centroY, radio;
     private NavMeshAgent agente;
-    private int indicePnt;
-    private Transform padreRot, objetivoTrf;
+    private Animator animador;
+    private Transform padreRot, objetivoTrf, modelo;
     private Vector3 destino, objetivoDir, deceleracion;
     private Quaternion rotacionObj;
-    private Animator animador;
     //private Rigidbody cuerpoRig;
     private List<Collider> collidersIgn;
 
@@ -32,22 +31,22 @@ public class Naife : MonoBehaviour
         estado = Estado.normal;
         quieto = true;
         padreScr = this.transform.parent.GetComponent<AreaNaifes> ();
-        extremosCir = new Vector3[4];
         capsula = this.GetComponent<CapsuleCollider> ();
         centroY = capsula.bounds.center.y - capsula.bounds.extents.y * 0.8f;
         agente = this.GetComponent<NavMeshAgent> ();
+        agente.updateRotation = false;
+        animador = this.GetComponentInChildren<Animator> ();
         padreRot = GameObject.Instantiate(new GameObject(), new Vector3 (this.transform.position.x, centroY, this.transform.position.z), Quaternion.identity).transform;
         padreRot.name = "Pivote " + this.name.ToLower ();
         padreRot.parent = padreScr.transform;
-        animador = this.GetComponentInChildren<Animator> ();
-        //cuerpoRig = this.GetComponent<Rigidbody> ();
+        modelo = animador.transform;
         collidersIgn = new List<Collider> ();
         //print (this.transform.localScale.x * capsula.radius);
         //print (capsula.bounds.extents.x);
     }
 
 
-    // Según el estado en el que se encuentre el enemigo actualmente, realizamos distintas acciones: si está normal llamamos periódicamente a la función que alterna entre sus 2 estados del idle y nos aseguramos de que gire en caso de que nos esté 
+    // Según el estado en el que se encuentre el enemigo actualmente, realizamos distintas acciones: si está normal llamamos periódicamente a la función que alterna entre sus 2 estados del idle y nos aseguramos de que gire en caso de que no esté 
     //quieto, ACTUALIZAR. En cualquier caso, siempre lo animamos como corresponda.
     private void Update ()
     {
@@ -65,23 +64,28 @@ public class Naife : MonoBehaviour
 
                 break;
             case Estado.atacando:
-                agente.SetDestination (objetivoTrf.position);
+                if (agente.enabled == true) 
+                {
+                    agente.SetDestination (objetivoTrf.position);
 
-                if (embestida == true) 
-                {
-                    if (Vector3.Angle (new Vector3 (objetivoTrf.position.x - this.transform.position.x, 0, objetivoTrf.position.z - this.transform.position.z), objetivoDir) < 90) 
+                    if (embestida == true)
                     {
-                        agente.velocity = objetivoDir.normalized * agente.speed;
+                        if (Vector3.Angle (new Vector3 (objetivoTrf.position.x - this.transform.position.x, 0, objetivoTrf.position.z - this.transform.position.z), objetivoDir) < 90)
+                        {
+                            agente.velocity = objetivoDir.normalized * agente.speed;
+                        }
+                        else
+                        {
+                            embestida = false;
+                            estado = Estado.frenando;
+                        }
                     }
-                    else 
+                    else
                     {
-                        embestida = false;
-                        estado = Estado.frenando;
+                        PuedoEmbestir ();
                     }
-                }
-                else 
-                {
-                    PuedoEmbestir ();
+
+                    RotarSegunVelocidad ();
                 }
 
                 break;
@@ -90,54 +94,71 @@ public class Naife : MonoBehaviour
                 {
                     DejarDeIgnorar ();
                 }
+                RotarSegunVelocidad ();
 
-                print (agente.velocity.magnitude);
                 if (agente.velocity.magnitude < padreScr.pararVel) 
                 {
                     estado = Estado.atacando;
+                    agente.velocity = Vector3.zero;
+                    deceleracion = Vector3.zero;
+                    agente.enabled = false;
+
+                    this.Invoke ("VolverALaCarga", 1.5f);
+
+                    break;
                 }
+
                 deceleracion -= objetivoDir.normalized * Time.deltaTime * padreScr.frenadoVel;
                 agente.velocity = objetivoDir.normalized * agente.speed + deceleracion;
 
                 break;
         }
 
+        RotarModelo ();
         Animar ();
     }
 
 
     // Pos debug como siempre.
-    /*private void OnDrawGizmosSelected ()
+    private void OnDrawGizmosSelected ()
     {
-        if (padreScr != null) 
+        if (capsula != null) 
         {
             Gizmos.color = Color.red;
 
-            //Gizmos.DrawWireSphere (centro, 5);
-            //Gizmos.DrawWireSphere (ruta[0], 5);
-            //Gizmos.DrawWireSphere (ruta[1], 5);
-            //Gizmos.DrawWireSphere (ruta[2], 5);
-            //Gizmos.DrawWireSphere (ruta[3], 5);
-            Gizmos.DrawWireCube (padreRot.position, new Vector3 (radio + capsula.bounds.size.x * 3.5f, 0.5f, radio + capsula.bounds.size.z * 3.5f));
+            /*Gizmos.DrawWireSphere (padreRot.position, 5);
+            Gizmos.DrawWireSphere (Vector3.forward * radio + padreRot.position, 5);
+            Gizmos.DrawWireSphere (Vector3.right * radio + padreRot.position, 5);
+            Gizmos.DrawWireSphere (Vector3.back * radio + padreRot.position, 5);
+            Gizmos.DrawWireSphere (Vector3.left * radio + padreRot.position, 5);
+            Gizmos.DrawWireCube (padreRot.position, new Vector3 (radio + capsula.bounds.size.x * 3.5f, 0.5f, radio + capsula.bounds.size.z * 3.5f));*/
+            Gizmos.DrawWireSphere (capsula.bounds.center, capsula.bounds.extents.x);
         }
-    }*/
+    }
 
 
-    // .
+    // Si un naife colisiona con el jugador mientras realiza una embestida, dejará de embestir y empezará a frenar, además se desactivarán las colisiones con el avatar brevemente y este recibirá daños. Si el choche se produce en el estado de 
+    //frenado, la velocidad del agente pasará a ser nula.
     private void OnCollisionEnter (Collision collision)
     {
-        if (embestida == true && collision.transform.CompareTag ("Jugador") == true) 
+        switch (estado) 
         {
-            embestida = false;
-            estado = Estado.frenando;
+            case Estado.atacando:
+                if (embestida == true && collision.transform.CompareTag ("Jugador") == true) 
+                {
+                    embestida = false;
+                    estado = Estado.frenando;
 
-            Physics.IgnoreCollision (capsula, collision.collider, true);
-            collision.transform.GetComponent<Salud>().RecibirDanyo ();
-            collidersIgn.Add (collision.collider);
-        }
-        if (Estado.frenando == estado) 
-        {
-            agente.velocity = Vector3.zero;
+                    Physics.IgnoreCollision (capsula, collision.collider, true);
+                    collision.transform.GetComponent<Salud>().RecibirDanyo ();
+                    collidersIgn.Add (collision.collider);
+                }
+
+                break;
+            case Estado.frenando:
+                agente.velocity = Vector3.zero;
+
+                break;
         }
     }
 
@@ -148,7 +169,7 @@ public class Naife : MonoBehaviour
         objetivoTrf = jugador;
         this.transform.parent = padreScr.transform;
         estado = Estado.atacando;
-        agente.isStopped = false;
+        agente.enabled = true;
         embestida = false;
 
         this.CancelInvoke ("QuietoOGirando");
@@ -159,12 +180,14 @@ public class Naife : MonoBehaviour
     //movimiento, este rotará respecto al padre hasta que alcance su rotación objetivo mientras el padre rota para simular que el naife corre en círculos.
     private void GirarAlrededor () 
     {
-        if (agente.isStopped == false)
+        if (agente.enabled == true)
         {
+            RotarSegunVelocidad ();
+
             if (Mathf.Abs (Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (padreRot.position.x, padreRot.position.z)) - radio) < padreScr.distanciaMinObj)
             {
                 agente.velocity = Vector3.zero;
-                agente.isStopped = true;
+                agente.enabled = false;
                 this.transform.parent = padreRot;
                 rotacionObj = Quaternion.Euler (this.transform.rotation.eulerAngles.x, Quaternion.LookRotation(this.transform.position - padreRot.position).eulerAngles.y + (sentidoHor == false ? +90 : -90), this.transform.rotation.z);
             }
@@ -173,7 +196,7 @@ public class Naife : MonoBehaviour
         {
             if (Quaternion.Angle (this.transform.localRotation, rotacionObj) > 1)
             {
-                this.transform.localRotation = Quaternion.Slerp (this.transform.localRotation, rotacionObj, Time.deltaTime * padreScr.rotacionVel);
+                this.transform.localRotation = Quaternion.Slerp (this.transform.localRotation, rotacionObj, Time.deltaTime * padreScr.velocidadRotGir);
             }
 
             padreRot.Rotate (new Vector3 (0, sentidoHor == false ? +padreScr.giroVel : -padreScr.giroVel, 0) * Time.deltaTime);
@@ -191,10 +214,12 @@ public class Naife : MonoBehaviour
                 
                 break;
             case Estado.atacando:
-                animador.SetBool ("moviendose", true);
+                animador.SetBool ("moviendose", agente.enabled == true);
+                animador.SetBool ("frenando", false);
 
                 break;
             default:
+                animador.SetBool ("frenando", true);
 
                 break;
         }
@@ -204,11 +229,8 @@ public class Naife : MonoBehaviour
     // Si hay una línea recta sin obstáculos hasta el objetivo, el naife empieza su embestida contra el mismo.
     private void PuedoEmbestir () 
     {
-        Vector3 esferaSupCen = new Vector3 (capsula.bounds.center.x, capsula.bounds.center.y + this.transform.localScale.y * (capsula.height / 2 - capsula.radius), capsula.bounds.center.z);
-
         objetivoDir = new Vector3 (objetivoTrf.position.x - this.transform.position.x, 0, objetivoTrf.position.z - this.transform.position.z);
-        embestida = !Physics.CapsuleCast (esferaSupCen, new Vector3 (esferaSupCen.x, esferaSupCen.y - this.transform.localScale.y * (capsula.height - capsula.radius * 2), esferaSupCen.z), capsula.bounds.extents.x, objetivoDir, objetivoDir.magnitude,
-            padreScr.capasGirAtq, QueryTriggerInteraction.Ignore);
+        embestida = !Physics.SphereCast (new Ray (capsula.bounds.center, objetivoDir), capsula.bounds.extents.x, objetivoDir.magnitude, padreScr.capasGirAtq, QueryTriggerInteraction.Ignore);
     }
 
 
@@ -232,6 +254,21 @@ public class Naife : MonoBehaviour
     }
 
 
+    // Se rota al naife para que la dirección hacia la que mira se corresponda con la velocidad del agente.
+    private void RotarSegunVelocidad () 
+    {
+        this.transform.rotation = Quaternion.Slerp (this.transform.rotation, Quaternion.Euler (this.transform.rotation.eulerAngles.x, Mathf.Atan2 (agente.velocity.x, agente.velocity.z) * Mathf.Rad2Deg, this.transform.rotation.eulerAngles.z), 
+            Time.deltaTime * padreScr.velocidadRotNor);
+    }
+
+
+    // Rotamos el modelo del naife de manera que, si este se encuentra tratando de embestir al jugador, agache un poco la cabeza.
+    private void RotarModelo () 
+    {
+        modelo.localRotation = Quaternion.Lerp (modelo.localRotation, embestida == false ? padreScr.modeloRotLoc[0] : padreScr.modeloRotLoc[1], Time.deltaTime * padreScr.velocidadRotGir);
+    }
+
+
     // Esta función se llama periódicamente en el estado normal para controlar que el naife alterna entre sus 2 idles. Cuando deja de estar quieto, encontramos un punto dentro del área enemiga alrededor del cuál dar vueltas, y alrededor del mismo 
     //el punto idóneo al cuál se dirigirá nuestro agente, decidiendo también el sentido en el cuál girará al llegar; si el enemigo pasa a estar quieto, dejará de ser hijo de este punto y reiniciaremos la rotación del antiguo padre.
     private void QuietoOGirando () 
@@ -239,34 +276,13 @@ public class Naife : MonoBehaviour
         quieto = !quieto;
         if (quieto == false) 
         {
-            float anguloChc, diferenciaChc;
-            Vector3 diferencia;
-
             float aleatoriedad = Random.Range (-padreScr.radioGirVar, +padreScr.radioGirVar);
-            float dimensionesXZ = capsula.bounds.size.z * 3.5f + padreScr.radioGirRan + aleatoriedad;
-            float mejorDif = 90;
-            int mejorInd = 0;
+            float dimensionesXZ = capsula.bounds.size.z * 1.75f + padreScr.radioGirRan + aleatoriedad;
 
-            padreRot.position = padreScr.PuntoAleatorioDentro (new Vector3 (this.transform.position.x, centroY, this.transform.position.z), new Vector3 (dimensionesXZ, 0.5f, dimensionesXZ));
             radio = padreScr.radioGirRan + aleatoriedad;
-            extremosCir[0] = Vector3.forward * radio + padreRot.position;
-            extremosCir[1] = Vector3.back * radio + padreRot.position;
-            extremosCir[2] = Vector3.right * radio + padreRot.position;
-            extremosCir[3] = Vector3.left * radio + padreRot.position;
-            diferencia = this.transform.position - padreRot.position;
-            for (int p = 0; p < extremosCir.Length; p += 1)
-            {
-                anguloChc = Vector3.Angle (diferencia, extremosCir[p]);
-                diferenciaChc = Mathf.Abs (anguloChc - 90);
-                if (diferenciaChc < mejorDif) 
-                {
-                    mejorDif = diferenciaChc;
-                    mejorInd = p;
-                }
-            }
+            destino = padreScr.PosicionPivoteYDestino (padreRot, this.transform, new Vector3 (dimensionesXZ, 0.5f, dimensionesXZ), radio);
             sentidoHor = Random.Range (0f, 1f) > 0.5f;
-            agente.isStopped = false;
-            destino = extremosCir[mejorInd];
+            agente.enabled = true;
 
             agente.SetDestination (destino);
         }
@@ -275,5 +291,13 @@ public class Naife : MonoBehaviour
             this.transform.parent = padreScr.transform;
             padreRot.rotation = Quaternion.identity;
         }
+    }
+
+
+    // Tras haber frenado completamente después de una embestida, reactivamos el agente para que se prepare para volver a embestir al jugador. 
+    private void VolverALaCarga () 
+    {
+        agente.enabled = true;
+        embestida = false;
     }
 }

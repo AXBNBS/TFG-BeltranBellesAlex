@@ -549,8 +549,7 @@ public class MovimientoHistoria2 : MonoBehaviour
                 relativoCam = (camaraTrf.right * horizontalInp + camaraTrf.forward * verticalInp).normalized * movimientoVel;
                 movimiento.x = relativoCam.x;
                 movimiento.z = relativoCam.z;
-                this.transform.rotation = Quaternion.Lerp (this.transform.rotation, Quaternion.Euler (this.transform.rotation.x, Mathf.Atan2 (movimiento.x, movimiento.z) * Mathf.Rad2Deg + 90, this.transform.rotation.z), 
-                    rotacionVel * Time.deltaTime);
+                this.transform.rotation = Quaternion.Slerp (this.transform.rotation, Quaternion.Euler (0, Mathf.Atan2 (movimiento.x, movimiento.z) * Mathf.Rad2Deg + 90, 0), Time.deltaTime * rotacionVel);
             }
             else 
             {
