@@ -1,5 +1,4 @@
 ﻿
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
@@ -9,7 +8,7 @@ using System.Linq;
 
 public class MovimientoHistoria2 : MonoBehaviour
 {
-    public bool input, sueleado, perseguir, descansar, companyeroCer;
+    public bool input, sueleado, perseguir, descansar, companyeroCer, saltador;
     public Vector3 movimiento;
     public int saltoVel;
     public List<Transform> huesos;
@@ -18,7 +17,6 @@ public class MovimientoHistoria2 : MonoBehaviour
     [SerializeField] private LayerMask capas, capasSinAvt;
     [SerializeField] private MovimientoHistoria2 companyeroMov;
     [SerializeField] private float pararDstSeg, pararDstAtq, ajusteCaiDst, multiplicadorSalBaj, deslizFrc, pendienteRayLon;
-    [SerializeField] private bool saltador;
     private int gravedad, movimientoVel, empujeVel;
     private bool saltarInp, yendo, empujando, limitadoX, enemigosCer, saltado, cambiando, siguiendoAcb, deslizar, sueleadorToc, pendiente, empujadoFrm;
     private CharacterController characterCtr;
@@ -30,10 +28,12 @@ public class MovimientoHistoria2 : MonoBehaviour
     private ObjetoMovil empujado;
     private enum Estado { normal, siguiendo, atacando };
     private Estado estado;
-    private AreaEnemiga areaEng;
+    private AreaEnemiga areaRan;
+    private AreaNaifes areaNai;
     private Ataque ataqueScr;
     private Salud saludScr;
-    private Enemigo enemigoScr;
+    private Enemigo ranaScr;
+    private Naife naifeScr;
     private HashSet<BichoPegajoso> bichosPeg;
     private List<Vector3> normales;
 
@@ -159,6 +159,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     // Si el avatar jugable ha caído sobre otro, empujarlo hacia el primer lado de este que se encuentre libre.
     private void OnControllerColliderHit (ControllerColliderHit hit)
     {
+        print (hit.transform.name);
         switch (hit.transform.tag) 
         {
             case "Jugador":
@@ -255,7 +256,10 @@ public class MovimientoHistoria2 : MonoBehaviour
         if (other.CompareTag ("AreaEnemiga") == true) 
         {
             enemigosCer = true;
-            areaEng = other.GetComponent<AreaEnemiga> ();
+            if (other.TryGetComponent (out areaNai) == false) 
+            {
+                areaRan = other.GetComponent<AreaEnemiga> ();
+            }
 
             ComenzarAtaque ();
         }
@@ -362,6 +366,8 @@ public class MovimientoHistoria2 : MonoBehaviour
         estado = Estado.normal;
         mallaAgtNav.enabled = false;
         enemigosCer = false;
+        areaRan = null;
+        areaNai = null;
     }
 
 
@@ -405,24 +411,18 @@ public class MovimientoHistoria2 : MonoBehaviour
         Transform resultado = null;
         float distanciaMax = 0;
 
-        foreach (Enemigo e in areaEng.enemigos)
+        if (areaNai != null) 
         {
-            if (e.Vencido () == false && e.avatarTrf == this.transform)
+            if (areaNai.avataresPer.ContainsKey (this.transform) == true) 
             {
-                evaluada = Vector3.Distance (e.transform.position, this.transform.position);
-                if (evaluada > distanciaMax)
-                {
-                    distanciaMax = evaluada;
-                    resultado = e.transform;
-                }
+                resultado = areaNai.avataresPer[this.transform].transform;
             }
         }
-        enemigoTrf = resultado;
-        if (enemigoTrf == null)
+        else 
         {
-            foreach (Enemigo e in areaEng.enemigos)
+            foreach (Enemigo e in areaRan.enemigos)
             {
-                if (e.Vencido () == false)
+                if (e.Vencido () == false && e.avatarTrf == this.transform)
                 {
                     evaluada = Vector3.Distance (e.transform.position, this.transform.position);
                     if (evaluada > distanciaMax)
@@ -434,10 +434,45 @@ public class MovimientoHistoria2 : MonoBehaviour
             }
         }
         enemigoTrf = resultado;
+        if (enemigoTrf == null)
+        {
+            if (areaNai != null)
+            {
+                foreach (Naife n in areaNai.naifes)  
+                {
+                    if (n.Vencido () == false) 
+                    {
+                        evaluada = Vector3.Distance (n.transform.position, this.transform.position);
+                        if (evaluada > distanciaMax)
+                        {
+                            distanciaMax = evaluada;
+                            resultado = n.transform;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                foreach (Enemigo e in areaRan.enemigos)
+                {
+                    if (e.Vencido () == false)
+                    {
+                        evaluada = Vector3.Distance (e.transform.position, this.transform.position);
+                        if (evaluada > distanciaMax)
+                        {
+                            distanciaMax = evaluada;
+                            resultado = e.transform;
+                        }
+                    }
+                }
+            }
+            enemigoTrf = resultado;
+        }
 
         if (enemigoTrf != null)
         {
-            enemigoScr = enemigoTrf.GetComponent<Enemigo> ();
+            ranaScr = enemigoTrf.GetComponent<Enemigo> ();
+            naifeScr = enemigoTrf.GetComponent<Naife> ();
         }
         else
         {
@@ -454,24 +489,18 @@ public class MovimientoHistoria2 : MonoBehaviour
         Transform resultado = null;
         float distanciaMin = Mathf.Infinity;
 
-        foreach (Enemigo e in areaEng.enemigos)
+        if (areaNai != null) 
         {
-            if (e.Vencido () == false && e.avatarTrf == this.transform)
+            if (areaNai.avataresPer.ContainsKey (this.transform) == true)
             {
-                evaluada = Vector3.Distance (this.transform.position, e.transform.position);
-                if (evaluada < distanciaMin)
-                {
-                    distanciaMin = evaluada;
-                    resultado = e.transform;
-                }
+                resultado = areaNai.avataresPer[this.transform].transform;
             }
         }
-        enemigoTrf = resultado;
-        if (enemigoTrf == null)
+        else 
         {
-            foreach (Enemigo e in areaEng.enemigos)
+            foreach (Enemigo e in areaRan.enemigos)
             {
-                if (e.Vencido () == false)
+                if (e.Vencido () == false && e.avatarTrf == this.transform)
                 {
                     evaluada = Vector3.Distance (this.transform.position, e.transform.position);
                     if (evaluada < distanciaMin)
@@ -483,10 +512,45 @@ public class MovimientoHistoria2 : MonoBehaviour
             }
         }
         enemigoTrf = resultado;
+        if (enemigoTrf == null)
+        {
+            if (areaNai != null)
+            {
+                foreach (Naife n in areaNai.naifes)
+                {
+                    if (n.Vencido () == false)
+                    {
+                        evaluada = Vector3.Distance (this.transform.position, n.transform.position);
+                        if (evaluada < distanciaMin)
+                        {
+                            distanciaMin = evaluada;
+                            resultado = n.transform;
+                        }
+                    }
+                }
+            }
+            else 
+            {
+                foreach (Enemigo e in areaRan.enemigos)
+                {
+                    if (e.Vencido () == false)
+                    {
+                        evaluada = Vector3.Distance (this.transform.position, e.transform.position);
+                        if (evaluada < distanciaMin)
+                        {
+                            distanciaMin = evaluada;
+                            resultado = e.transform;
+                        }
+                    }
+                }
+            }
+            enemigoTrf = resultado;
+        }
 
         if (enemigoTrf != null)
         {
-            enemigoScr = enemigoTrf.GetComponent<Enemigo> ();
+            ranaScr = enemigoTrf.GetComponent<Enemigo> ();
+            naifeScr = enemigoTrf.GetComponent<Naife> ();
         }
         else
         {
@@ -790,7 +854,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     // En el caso de que el blanco actual haya sido vencido, buscamos a un nuevo objetivo al que atacar.
     private void MirarSiCambiarBlanco () 
     {
-        if (enemigoScr.Vencido () == true) 
+        if (naifeScr != null ? naifeScr.Vencido () == true : ranaScr.Vencido () == true) 
         {
             PosicionEnemigoCercano ();
         }

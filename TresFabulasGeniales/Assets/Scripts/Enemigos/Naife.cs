@@ -1,7 +1,5 @@
 ﻿
-using System.Collections;
 using System.Collections.Generic;
-using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -12,16 +10,15 @@ public class Naife : MonoBehaviour
     public enum Estado { normal, atacando, frenando };
     public Estado estado;
 
-    [SerializeField] private bool quieto, sentidoHor, embestida;
+    [SerializeField] private bool quieto, sentidoHor, embestida, espera;
     private AreaNaifes padreScr;
     private CapsuleCollider capsula;
-    private float centroY, radio;
+    private float centroY, radio, salud;
     private NavMeshAgent agente;
     private Animator animador;
     private Transform padreRot, objetivoTrf, modelo;
     private Vector3 destino, objetivoDir, deceleracion;
     private Quaternion rotacionObj;
-    //private Rigidbody cuerpoRig;
     private List<Collider> collidersIgn;
 
 
@@ -33,6 +30,7 @@ public class Naife : MonoBehaviour
         padreScr = this.transform.parent.GetComponent<AreaNaifes> ();
         capsula = this.GetComponent<CapsuleCollider> ();
         centroY = capsula.bounds.center.y - capsula.bounds.extents.y * 0.8f;
+        salud = padreScr.salud;
         agente = this.GetComponent<NavMeshAgent> ();
         agente.updateRotation = false;
         animador = this.GetComponentInChildren<Animator> ();
@@ -103,7 +101,15 @@ public class Naife : MonoBehaviour
                     deceleracion = Vector3.zero;
                     agente.enabled = false;
 
-                    this.Invoke ("VolverALaCarga", 1.5f);
+                    if (espera == false) 
+                    {
+                        this.Invoke ("VolverALaCarga", 1.5f);
+                    }
+                    else 
+                    {
+                        //print ("Volvemos al pasado.");
+                        VolverALaRutina ();
+                    }
 
                     break;
                 }
@@ -168,11 +174,52 @@ public class Naife : MonoBehaviour
     {
         objetivoTrf = jugador;
         this.transform.parent = padreScr.transform;
+        padreRot.rotation = Quaternion.identity;
         estado = Estado.atacando;
         agente.enabled = true;
         embestida = false;
 
         this.CancelInvoke ("QuietoOGirando");
+    }
+
+
+    // El naife vuelve a su estado normal, y lo preparamos para que encuentre un nuevo punto alrededor del cual girar.
+    public void VolverALaRutina () 
+    {
+        if (embestida == false && Estado.frenando != estado) 
+        {
+            estado = Estado.normal;
+            quieto = true;
+            espera = false;
+            agente.enabled = false;
+            //print ("Estado normal.");
+
+            this.CancelInvoke ("VolverALaCarga");
+            this.Invoke ("QuietoOGirando", 1);
+        }
+        else 
+        {
+            espera = true;
+        }
+    }
+
+
+    // El naife pierde la salud que corresponda, si se queda sin salud desactivamos el objeto y miramos si quedan otros naifes para atacar al jugador.
+    public void Danyar (float danyo) 
+    {
+        salud -= danyo;
+        if (salud < 0) 
+        {
+            padreScr.UnoMuerto (objetivoTrf);
+            this.gameObject.SetActive (false);
+        }
+    }
+
+
+    // Devuelve "true" si la salud del naife es menor a 0.
+    public bool Vencido () 
+    {
+        return (salud < 0);
     }
 
 
@@ -211,10 +258,11 @@ public class Naife : MonoBehaviour
         {
             case Estado.normal:
                 animador.SetBool ("moviendose", !quieto);
+                animador.SetBool ("frenando", false);
                 
                 break;
             case Estado.atacando:
-                animador.SetBool ("moviendose", agente.enabled == true);
+                animador.SetBool ("moviendose", agente.enabled);
                 animador.SetBool ("frenando", false);
 
                 break;
@@ -265,7 +313,14 @@ public class Naife : MonoBehaviour
     // Rotamos el modelo del naife de manera que, si este se encuentra tratando de embestir al jugador, agache un poco la cabeza.
     private void RotarModelo () 
     {
-        modelo.localRotation = Quaternion.Lerp (modelo.localRotation, embestida == false ? padreScr.modeloRotLoc[0] : padreScr.modeloRotLoc[1], Time.deltaTime * padreScr.velocidadRotGir);
+        if (Estado.frenando != estado) 
+        {
+            modelo.localRotation = Quaternion.Slerp (modelo.localRotation, embestida == false ? padreScr.modeloRotLoc[0] : padreScr.modeloRotLoc[1], Time.deltaTime * padreScr.velocidadRotMod);
+        }
+        else 
+        {
+            modelo.localRotation = Quaternion.Slerp (modelo.localRotation, padreScr.modeloRotLoc[2], Time.deltaTime * padreScr.velocidadRotMod);
+        }
     }
 
 

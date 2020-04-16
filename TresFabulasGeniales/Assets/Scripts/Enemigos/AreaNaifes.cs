@@ -1,8 +1,6 @@
 ﻿
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 
 
@@ -13,27 +11,22 @@ public class AreaNaifes : MonoBehaviour
     public float[] segundosCmbLim;
     public float radioGirRan, radioGirVar, giroVel;
     public LayerMask capasGirAtq;
-    public int velocidadRotNor, velocidadRotGir, distanciaMinObj, distanciaParIgn, frenadoVel, pararVel;
+    public int velocidadRotNor, velocidadRotGir, velocidadRotMod, distanciaMinObj, distanciaParIgn, frenadoVel, pararVel, salud;
     [HideInInspector] public Quaternion[] modeloRotLoc;
+    [HideInInspector] public Naife[] naifes;
+    [HideInInspector] public IDictionary<Transform, Naife> avataresPer;
 
     private SphereCollider trigger;
-    private Naife[] naifes;
 
 
     // Inicialización de variables.
     private void Awake ()
     {
-        modeloRotLoc = new Quaternion[] { Quaternion.Euler (0, 90, -20), Quaternion.Euler (0, 90, 5) };
+        modeloRotLoc = new Quaternion[] { Quaternion.Euler (0, 90, -20), Quaternion.Euler (0, 90, 5) , Quaternion.Euler (0, 90, -35) };
+        naifes = this.GetComponentsInChildren<Naife> ();
+        avataresPer = new Dictionary<Transform, Naife> ();
         trigger = this.GetComponent<SphereCollider> ();
         trigger.isTrigger = true;
-        naifes = this.GetComponentsInChildren<Naife> ();
-    }
-
-
-    // .
-    private void Update ()
-    {
-        
     }
 
 
@@ -53,12 +46,29 @@ public class AreaNaifes : MonoBehaviour
     }*/
 
 
-    // El entrar el jugador en la zona, encontramos al primer enemigo sin blanco asignado y hacemos que este vaya a atacarle.
+    // El entrar el jugador en la zona, encontramos al primer enemigo sin blanco asignado. Si este ha podido ser encontrado sin problemas, inicia el ataque hacia el jugador y añadimos el par "avatar-naife" al diccionario.
     private void OnTriggerEnter (Collider other)
     {
         if (other.CompareTag ("Jugador") == true)
         {
-            PrimeroSinBlanco().IniciarAtaque (other.transform);
+            Naife perseguidor = PrimeroSinBlanco ();
+
+            if (perseguidor != null) 
+            {
+                perseguidor.IniciarAtaque (other.transform);
+                avataresPer.Add (other.transform, perseguidor);
+            }
+        }
+    }
+
+
+    // Al salir el jugador de la zona, aquel enemigo que estuviese persiguiéndolo vuelve a su rutina habitual, además eliminamos el par correspondiente del diccionario.
+    private void OnTriggerExit (Collider other)
+    {
+        if (other.CompareTag ("Jugador") == true && avataresPer.ContainsKey (other.transform) == true) 
+        {
+            avataresPer[other.transform].VolverALaRutina ();
+            avataresPer.Remove (other.transform);
         }
     }
 
@@ -116,12 +126,26 @@ public class AreaNaifes : MonoBehaviour
     }
 
 
+    // Si uno de los naifes muere, miramos si queda alguno sin atacar a nadie y hacemos que este vaya tras el avatar que ha matado al primer naife (asumiendo que este sigue dentro de la zona). También eliminamos del diccionario el par 
+    //"jugador-naife" antiguo y lo sustituimos por el nuevo, si existe.
+    public void UnoMuerto (Transform avatar) 
+    {
+        Naife perseguidor = PrimeroSinBlanco ();
+
+        if (avataresPer.Remove (avatar) == true && perseguidor != null) 
+        {
+            perseguidor.IniciarAtaque (avatar);
+            avataresPer.Add (avatar, perseguidor);
+        }
+    }
+
+
     // Función que devuelve el primero de los naifes de la zona que no esté atacando a nadie.
     private Naife PrimeroSinBlanco () 
     {
         foreach (Naife n in naifes) 
         {
-            if (Naife.Estado.normal == n.estado) 
+            if (n.Vencido () == false && Naife.Estado.normal == n.estado) 
             {
                 return n;
             }

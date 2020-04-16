@@ -68,22 +68,28 @@ public class Ataque : MonoBehaviour
     // Hacemos que Violeta rebote tras tocar la cabeza del enemigo y además le cause daño.
     private void OnTriggerStay (Collider other)
     {
-        if (saltado == false && movimientoScr.sueleado == false && other.CompareTag ("Rebote") == true && movimientoScr.movimiento.y < 0 && this.name != "Abedul") 
+        if (saltado == false && movimientoScr.sueleado == false && movimientoScr.saltador == true && other.CompareTag ("Rebote") == true && movimientoScr.movimiento.y < 0) 
         {
             saltado = true;
             movimientoScr.movimiento.y = reboteVel;
 
             if (movimientoScr.input == true)
             {
-                other.transform.parent.GetComponent<Enemigo>().Danyar (saltoFrz, true);
                 characterCtr.Move (new Vector3 (0, reboteVel, 0) * Time.deltaTime);
             }
             else
             {
-                other.transform.parent.GetComponent<Enemigo>().Danyar (saltoFrz / 5, true);
-
                 movimientoScr.perseguir = false;
                 agente.baseOffset += reboteVel * Time.deltaTime;
+            }
+
+            if (other.transform.parent.TryGetComponent (out Naife naife) == true)
+            {
+                naife.Danyar (input == true ? saltoFrz : saltoFrz / 5);
+            }
+            else 
+            {
+                other.transform.parent.GetComponent<Enemigo>().Danyar (input == true ? saltoFrz : saltoFrz / 5, true);
             }
         }
     }
@@ -97,13 +103,16 @@ public class Ataque : MonoBehaviour
         {
             saltado = false;
 
-            other.transform.parent.GetComponent<Enemigo>().ChecarDerrotado ();
+            if (other.transform.parent.TryGetComponent (out Enemigo rana) == true)
+            {
+                rana.ChecarDerrotado ();
+            }
         }
     }
 
 
     // Pal debug.
-    private void OnDrawGizmos ()
+    /*private void OnDrawGizmos ()
     {
         if (ataqueCenTrf != null) 
         {
@@ -114,7 +123,7 @@ public class Ataque : MonoBehaviour
             Gizmos.DrawWireSphere (esferaCenSup, rangoAtq);
             Gizmos.DrawWireSphere (new Vector3 (esferaCenSup.x, esferaCenSup.y - this.transform.localScale.y * (characterCtr.height - characterCtr.radius * 2), esferaCenSup.z), rangoAtq);
         }
-    }
+    }*/
 
 
     // Activamos el trigger del animador que permite que se reproduzca la animación de atacar, tenemos en cuenta el cooldown en el caso de que ataque la IA.
@@ -155,15 +164,23 @@ public class Ataque : MonoBehaviour
 
         foreach (Collider e in colliders) 
         {
-            Enemigo enemigo = e.GetComponent<Enemigo> ();
+            Naife naife = e.GetComponent<Naife> ();
+            Enemigo rana = e.GetComponent<Enemigo> ();
 
-            if (enemigo != null) 
+            if (naife != null || rana != null) 
             {
-                enemigo.Danyar (input == false ? aranyazoFrz / 5 : aranyazoFrz, false);
-                enemigo.ChecarDerrotado ();
-                eliminados.Add (e);
-
                 enemigoGol = true;
+
+                if (naife != null) 
+                {
+                    naife.Danyar (input == true ? aranyazoFrz : aranyazoFrz / 5);
+                }
+                else 
+                {
+                    rana.Danyar (input == true ? aranyazoFrz : aranyazoFrz / 5, false);
+                    rana.ChecarDerrotado (); 
+                }
+                eliminados.Add (e);
             }
         }
 
@@ -237,7 +254,7 @@ public class Ataque : MonoBehaviour
                 continue;
             }
 
-            if (c.GetComponent<Enemigo> () != null) 
+            if (c.GetComponent<Naife> () != null || c.GetComponent<Enemigo> () != null) 
             {
                 resultado.Add (c);
             }
