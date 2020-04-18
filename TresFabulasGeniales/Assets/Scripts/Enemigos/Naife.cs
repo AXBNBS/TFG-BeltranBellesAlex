@@ -70,7 +70,7 @@ public class Naife : MonoBehaviour
                     {
                         if (Vector3.Angle (new Vector3 (objetivoTrf.position.x - this.transform.position.x, 0, objetivoTrf.position.z - this.transform.position.z), objetivoDir) < 90)
                         {
-                            agente.velocity = objetivoDir.normalized * agente.speed;
+                            agente.velocity = objetivoDir * agente.speed;
                         }
                         else
                         {
@@ -114,8 +114,8 @@ public class Naife : MonoBehaviour
                     break;
                 }
 
-                deceleracion -= objetivoDir.normalized * Time.deltaTime * padreScr.frenadoVel;
-                agente.velocity = objetivoDir.normalized * agente.speed + deceleracion;
+                deceleracion -= objetivoDir * Time.deltaTime * padreScr.frenadoVel;
+                agente.velocity = objetivoDir * agente.speed + deceleracion;
 
                 break;
         }
@@ -152,6 +152,7 @@ public class Naife : MonoBehaviour
             case Estado.atacando:
                 if (embestida == true && collision.transform.CompareTag ("Jugador") == true) 
                 {
+                    print (collision.transform.name);
                     embestida = false;
                     estado = Estado.frenando;
 
@@ -223,6 +224,20 @@ public class Naife : MonoBehaviour
     }
 
 
+    // Devuelve una distancia de salto adecuada respecto al collider del enemigo para que Violeta la use para decidir cuando saltar si su IA se enfrenta al enemigo.
+    public float ObtenerDistanciaDeSaltoOptima () 
+    {
+        return (capsula.bounds.extents.x * 1.5f);
+    }
+
+
+    // Devuelve una distancia respecto al collider del enemigo que sea adecuada para que Abedul pueda decidir cuando arañar al mismo.
+    public float ObtenerDistanciaDeAranyazoOptima (Bounds limites)
+    {
+        return (capsula.bounds.extents.x + limites.extents.x * 1.2f);
+    }
+
+
     // Si el agente está moviéndose, nos aseguramos de que pare en el momento en que esté suficientemente cerca del radio que usará para rotar, definiendo también su nuevo padre y la rotación respecto al mismo. Si el agente ya no realiza ningún 
     //movimiento, este rotará respecto al padre hasta que alcance su rotación objetivo mientras el padre rota para simular que el naife corre en círculos.
     private void GirarAlrededor () 
@@ -278,7 +293,14 @@ public class Naife : MonoBehaviour
     private void PuedoEmbestir () 
     {
         objetivoDir = new Vector3 (objetivoTrf.position.x - this.transform.position.x, 0, objetivoTrf.position.z - this.transform.position.z);
+        if (objetivoDir.magnitude == 0) 
+        {
+            objetivoDir = Vector3.Distance (this.transform.position + this.transform.forward, padreScr.transform.position) < Vector3.Distance (this.transform.position - this.transform.forward, padreScr.transform.position) ? this.transform.forward : 
+                -this.transform.forward;
+        }
+        print (objetivoDir);
         embestida = !Physics.SphereCast (new Ray (capsula.bounds.center, objetivoDir), capsula.bounds.extents.x, objetivoDir.magnitude, padreScr.capasGirAtq, QueryTriggerInteraction.Ignore);
+        objetivoDir = objetivoDir.normalized;
     }
 
 
@@ -315,11 +337,18 @@ public class Naife : MonoBehaviour
     {
         if (Estado.frenando != estado) 
         {
-            modelo.localRotation = Quaternion.Slerp (modelo.localRotation, embestida == false ? padreScr.modeloRotLoc[0] : padreScr.modeloRotLoc[1], Time.deltaTime * padreScr.velocidadRotMod);
+            if (embestida == false) 
+            {
+                modelo.localRotation = Quaternion.Slerp (modelo.localRotation, padreScr.modeloRotLoc[0], Time.deltaTime * padreScr.velocidadRotModEsp);
+            }
+            else 
+            {
+                modelo.localRotation = Quaternion.Slerp (modelo.localRotation, padreScr.modeloRotLoc[1], Time.deltaTime * padreScr.velocidadRotModEmbFrn);
+            }
         }
         else 
         {
-            modelo.localRotation = Quaternion.Slerp (modelo.localRotation, padreScr.modeloRotLoc[2], Time.deltaTime * padreScr.velocidadRotMod);
+            modelo.localRotation = Quaternion.Slerp (modelo.localRotation, padreScr.modeloRotLoc[2], Time.deltaTime * padreScr.velocidadRotModEmbFrn);
         }
     }
 

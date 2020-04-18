@@ -73,6 +73,7 @@ public class Salud : MonoBehaviour
     {
         if (invulnerable == false && camaraScr.cambioCmp == true && animador.GetCurrentAnimatorStateInfo(0).IsTag ("Aturdimiento") == false)
         {
+            //print (this.name + ": IMPACTO");
             if (movimientoScr.input == true)
             {
                 MoverEnY ();

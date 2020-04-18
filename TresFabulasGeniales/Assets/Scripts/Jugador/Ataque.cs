@@ -68,7 +68,7 @@ public class Ataque : MonoBehaviour
     // Hacemos que Violeta rebote tras tocar la cabeza del enemigo y además le cause daño.
     private void OnTriggerStay (Collider other)
     {
-        if (saltado == false && movimientoScr.sueleado == false && movimientoScr.saltador == true && other.CompareTag ("Rebote") == true && movimientoScr.movimiento.y < 0) 
+        if (saltado == false && movimientoScr.sueleado == false && movimientoScr.saltador == true && other.CompareTag ("Rebote") == true && movimientoScr.movimiento.y < 0 && this.transform.position.y > other.bounds.center.y) 
         {
             saltado = true;
             movimientoScr.movimiento.y = reboteVel;
@@ -174,6 +174,7 @@ public class Ataque : MonoBehaviour
                 if (naife != null) 
                 {
                     naife.Danyar (input == true ? aranyazoFrz : aranyazoFrz / 5);
+                    print (this.name + ": IMPACTO");
                 }
                 else 
                 {
@@ -231,7 +232,7 @@ public class Ataque : MonoBehaviour
     {
         foreach (Collider c in colliders) 
         {
-            if (c.GetComponent<Enemigo> () != null) 
+            if (c.GetComponent<Naife> () != null || c.GetComponent<Enemigo> () != null) 
             {
                 return c;
             }

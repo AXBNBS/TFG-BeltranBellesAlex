@@ -350,6 +350,20 @@ public class Enemigo : MonoBehaviour
     }
 
 
+    // Devuelve una distancia de salto adecuada respecto al collider del enemigo para que Violeta la use para decidir cuando saltar si su IA se enfrenta al enemigo.
+    public float ObtenerDistanciaDeSaltoOptima () 
+    {
+        return (personajeCtr.bounds.extents.x * 1.5f);
+    }
+
+
+    // Devuelve una distancia respecto al collider del enemigo que sea adecuada para que Abedul pueda decidir cuando arañar al mismo.
+    public float ObtenerDistanciaDeAranyazoOptima (Bounds limites)
+    {
+        return (personajeCtr.bounds.extents.x + limites.extents.x * 1.2f);
+    }
+
+
     // Tras cierto tiempo, marcamos como verdadero que el enemigo se ha reposicionado para poder hacerlo de nuevo.
     private void Reposicionado () 
     {

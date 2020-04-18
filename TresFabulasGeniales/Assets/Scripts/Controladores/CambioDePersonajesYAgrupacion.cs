@@ -158,6 +158,8 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
             abedulEmp.input = true;
         }
         camaraHij.enabled = true;
+
+        personajesMov[personajeAct].ComprobacionNaifes ();
     }
 
 

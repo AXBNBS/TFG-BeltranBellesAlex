@@ -11,12 +11,13 @@ public class AreaNaifes : MonoBehaviour
     public float[] segundosCmbLim;
     public float radioGirRan, radioGirVar, giroVel;
     public LayerMask capasGirAtq;
-    public int velocidadRotNor, velocidadRotGir, velocidadRotMod, distanciaMinObj, distanciaParIgn, frenadoVel, pararVel, salud;
+    public int velocidadRotNor, velocidadRotGir, velocidadRotModEmbFrn, velocidadRotModEsp, distanciaMinObj, distanciaParIgn, frenadoVel, pararVel, salud;
     [HideInInspector] public Quaternion[] modeloRotLoc;
     [HideInInspector] public Naife[] naifes;
     [HideInInspector] public IDictionary<Transform, Naife> avataresPer;
 
     private SphereCollider trigger;
+    private List<Transform> avataresDen;
 
 
     // Inicialización de variables.
@@ -27,6 +28,7 @@ public class AreaNaifes : MonoBehaviour
         avataresPer = new Dictionary<Transform, Naife> ();
         trigger = this.GetComponent<SphereCollider> ();
         trigger.isTrigger = true;
+        avataresDen = new List<Transform> ();
     }
 
 
@@ -49,26 +51,44 @@ public class AreaNaifes : MonoBehaviour
     // El entrar el jugador en la zona, encontramos al primer enemigo sin blanco asignado. Si este ha podido ser encontrado sin problemas, inicia el ataque hacia el jugador y añadimos el par "avatar-naife" al diccionario.
     private void OnTriggerEnter (Collider other)
     {
-        if (other.CompareTag ("Jugador") == true)
+        if (other.isTrigger == false && other.CompareTag ("Jugador") == true)
         {
-            Naife perseguidor = PrimeroSinBlanco ();
-
-            if (perseguidor != null) 
+            if (avataresPer.ContainsKey (other.transform) == false) 
             {
-                perseguidor.IniciarAtaque (other.transform);
-                avataresPer.Add (other.transform, perseguidor);
+                Naife perseguidor = PrimeroSinBlanco ();
+
+                if (perseguidor != null)
+                {
+                    perseguidor.IniciarAtaque (other.transform);
+                    avataresPer.Add (other.transform, perseguidor);
+                }
             }
+
+            avataresDen.Add (other.transform);
         }
     }
 
 
-    // Al salir el jugador de la zona, aquel enemigo que estuviese persiguiéndolo vuelve a su rutina habitual, además eliminamos el par correspondiente del diccionario.
+    // Al salir el jugador de la zona, aquel enemigo que estuviese persiguiéndolo vuelve a su rutina habitual en caso de que no haya más avatares o, si los hay, estos ya tengan algún perseguidor asignado. En el caso de que esto no sea así, el naife
+    //que ha perdido a su blanco se convertirá en el nuevo perseguidor del otro.
     private void OnTriggerExit (Collider other)
     {
-        if (other.CompareTag ("Jugador") == true && avataresPer.ContainsKey (other.transform) == true) 
+        if (other.isTrigger == false && other.CompareTag ("Jugador") == true)
         {
-            avataresPer[other.transform].VolverALaRutina ();
-            avataresPer.Remove (other.transform);
+            avataresDen.Remove (other.transform);
+            if (other.GetComponent<MovimientoHistoria2>().input == true && avataresPer.ContainsKey (other.transform) == true) 
+            {
+                if (avataresDen.Count == 0 || avataresPer.ContainsKey (avataresDen[0]) == true) 
+                {
+                    avataresPer[other.transform].VolverALaRutina ();
+                }
+                else 
+                {
+                    avataresPer[other.transform].IniciarAtaque (avataresDen[0]);
+                    avataresPer.Add (avataresDen[0], avataresPer[other.transform]);
+                }
+                avataresPer.Remove (other.transform);
+            }
         }
     }
 
@@ -88,22 +108,22 @@ public class AreaNaifes : MonoBehaviour
 
         obstaculos.Remove (naifeCol);
 
-        print ("Antes del while.");
+        //print ("Antes del while.");
         while (obstaculos.Count != 0 || (Vector2.Distance (new Vector2 (trigger.bounds.center.x, trigger.bounds.center.z), new Vector2 (centro.x, centro.z)) + radio) > trigger.radius) 
         {
-            foreach (Collider c in obstaculos) 
+            /*foreach (Collider c in obstaculos) 
             {
                 print (c.name);
             }
-            print ("Antes del random.");
+            print ("Antes del random.");*/
             centro = Random.insideUnitSphere * trigger.radius + trigger.bounds.center;
             centro.y = pivote.position.y;
-            print ("Después del random.");
+            //print ("Después del random.");
             obstaculos = Physics.OverlapBox(centro, cajaDim, Quaternion.identity, capasGirAtq, QueryTriggerInteraction.Ignore).ToList<Collider> ();
 
             obstaculos.Remove (naifeCol);
         }
-        print ("Después del while.");
+        //print ("Después del while.");
 
         pivote.position = centro;
         extremos[0] = Vector3.forward * radio + centro;
@@ -126,8 +146,8 @@ public class AreaNaifes : MonoBehaviour
     }
 
 
-    // Si uno de los naifes muere, miramos si queda alguno sin atacar a nadie y hacemos que este vaya tras el avatar que ha matado al primer naife (asumiendo que este sigue dentro de la zona). También eliminamos del diccionario el par 
-    //"jugador-naife" antiguo y lo sustituimos por el nuevo, si existe.
+    // Si uno de los naifes muere, miramos si queda alguno sin atacar a nadie y hacemos que este vaya tras el avatar que ha matado al primer naife (asumiendo que este sigue dentro de la zona). También eliminamos del diccionario el par "avatar-naife"
+    //antiguo y lo sustituimos por el nuevo, si existe.
     public void UnoMuerto (Transform avatar) 
     {
         Naife perseguidor = PrimeroSinBlanco ();
@@ -136,6 +156,16 @@ public class AreaNaifes : MonoBehaviour
         {
             perseguidor.IniciarAtaque (avatar);
             avataresPer.Add (avatar, perseguidor);
+        }
+    }
+
+
+    // Si el avatar al que pertenece el character controller no está dentro del área, llamamos a "OnTriggerExit" para asegurarnos de que los naifes lo dejan en paz.
+    public void MirarSiQuitoAvatar (Collider personajeCtr) 
+    {
+        if (avataresDen.Contains (personajeCtr.transform) == false) 
+        {
+            this.OnTriggerExit (personajeCtr);
         }
     }
 
