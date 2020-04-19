@@ -11,10 +11,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Escenas/Historia2/PrimeraEscena.unity
     guid: 00651f3e325334643856dc4b6ee9ac50
-  - enabled: 0
+  - enabled: 1
     path: Assets/Escenas/Historia2/SegundaEscena.unity
     guid: cfafea3c7f9ae7543a0ef01425d2ea2a
-  - enabled: 0
+  - enabled: 1
     path: Assets/Escenas/Historia2/TerceraEscena.unity
     guid: 13c21423c7e5d2546acad97a9b1c5f88
   m_configObjects: {}

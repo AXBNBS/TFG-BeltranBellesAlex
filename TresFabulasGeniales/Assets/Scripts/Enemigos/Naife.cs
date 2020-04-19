@@ -1,5 +1,6 @@
 ﻿
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -7,17 +8,17 @@ using UnityEngine.AI;
 
 public class Naife : MonoBehaviour
 {
-    public enum Estado { normal, atacando, frenando };
+    public enum Estado { normal, atacando, frenando, saltando, muriendo };
     public Estado estado;
 
-    [SerializeField] private bool quieto, sentidoHor, embestida, espera;
+    [SerializeField] private bool quieto, sentidoHor, embestida, espera, animarFin, gatosCer;
     private AreaNaifes padreScr;
     private CapsuleCollider capsula;
-    private float centroY, radio, salud;
+    private float centroY, radio, salud, tiempoEmb, saltoDstMax, saltoDst;
     private NavMeshAgent agente;
     private Animator animador;
     private Transform padreRot, objetivoTrf, modelo;
-    private Vector3 destino, objetivoDir, deceleracion;
+    private Vector3 destino, destinoSal, objetivoDir, deceleracion, saltoDir;
     private Quaternion rotacionObj;
     private List<Collider> collidersIgn;
 
@@ -31,6 +32,7 @@ public class Naife : MonoBehaviour
         capsula = this.GetComponent<CapsuleCollider> ();
         centroY = capsula.bounds.center.y - capsula.bounds.extents.y * 0.8f;
         salud = padreScr.salud;
+        saltoDstMax = padreScr.longitudRaySal - capsula.bounds.extents.x;
         agente = this.GetComponent<NavMeshAgent> ();
         agente.updateRotation = false;
         animador = this.GetComponentInChildren<Animator> ();
@@ -48,10 +50,14 @@ public class Naife : MonoBehaviour
     //quieto, ACTUALIZAR. En cualquier caso, siempre lo animamos como corresponda.
     private void Update ()
     {
+        if (collidersIgn.Count != 0)
+        {
+            DejarDeIgnorar ();
+        }
         switch (estado) 
         {
             case Estado.normal:
-                if (this.IsInvoking ("QuietoOGirando") == false) 
+                if (gatosCer == false && this.IsInvoking ("QuietoOGirando") == false) 
                 {
                     this.Invoke ("QuietoOGirando", Random.Range (padreScr.segundosCmbLim[0], padreScr.segundosCmbLim[1]));
                 }
@@ -68,12 +74,14 @@ public class Naife : MonoBehaviour
 
                     if (embestida == true)
                     {
-                        if (Vector3.Angle (new Vector3 (objetivoTrf.position.x - this.transform.position.x, 0, objetivoTrf.position.z - this.transform.position.z), objetivoDir) < 90)
+                        if (padreScr.tiempoMinEmb > tiempoEmb || Vector3.Angle (new Vector3 (objetivoTrf.position.x - this.transform.position.x, 0, objetivoTrf.position.z - this.transform.position.z), objetivoDir) < 100)
                         {
                             agente.velocity = objetivoDir * agente.speed;
+                            tiempoEmb += Time.deltaTime;
                         }
                         else
                         {
+                            tiempoEmb = 0;
                             embestida = false;
                             estado = Estado.frenando;
                         }
@@ -87,23 +95,19 @@ public class Naife : MonoBehaviour
                 }
 
                 break;
-            default:
-                if (collidersIgn.Count != 0) 
-                {
-                    DejarDeIgnorar ();
-                }
+            case Estado.frenando:
                 RotarSegunVelocidad ();
 
                 if (agente.velocity.magnitude < padreScr.pararVel) 
                 {
                     estado = Estado.atacando;
-                    agente.velocity = Vector3.zero;
+                    //agente.velocity = Vector3.zero;
                     deceleracion = Vector3.zero;
                     agente.enabled = false;
 
                     if (espera == false) 
                     {
-                        this.Invoke ("VolverALaCarga", 1.5f);
+                        this.Invoke ("VolverALaCarga", 2);
                     }
                     else 
                     {
@@ -118,28 +122,45 @@ public class Naife : MonoBehaviour
                 agente.velocity = objetivoDir * agente.speed + deceleracion;
 
                 break;
+            case Estado.saltando:
+                float distancia = Vector3.Distance (this.transform.position, destinoSal);
+
+                agente.velocity = saltoDir * padreScr.saltoVelMax / saltoDst;
+                if (padreScr.distanciaMinObj > distancia) 
+                {
+                    estado = Estado.atacando;
+                }
+
+                break;
         }
 
         RotarModelo ();
-        Animar ();
+        if (animarFin == false) 
+        {
+            Animar ();
+        }
     }
 
 
     // Pos debug como siempre.
     private void OnDrawGizmosSelected ()
     {
-        if (capsula != null) 
-        {
-            Gizmos.color = Color.red;
+        Gizmos.color = Color.red;
 
-            /*Gizmos.DrawWireSphere (padreRot.position, 5);
+        Gizmos.DrawRay (this.transform.position, this.transform.forward * saltoDstMax);
+        Gizmos.DrawRay (this.transform.position, -this.transform.forward * saltoDstMax);
+        Gizmos.DrawWireSphere (destinoSal, 5);
+        /*if (capsula != null) 
+        {
+
+            Gizmos.DrawWireSphere (padreRot.position, 5);
             Gizmos.DrawWireSphere (Vector3.forward * radio + padreRot.position, 5);
             Gizmos.DrawWireSphere (Vector3.right * radio + padreRot.position, 5);
             Gizmos.DrawWireSphere (Vector3.back * radio + padreRot.position, 5);
             Gizmos.DrawWireSphere (Vector3.left * radio + padreRot.position, 5);
-            Gizmos.DrawWireCube (padreRot.position, new Vector3 (radio + capsula.bounds.size.x * 3.5f, 0.5f, radio + capsula.bounds.size.z * 3.5f));*/
+            Gizmos.DrawWireCube (padreRot.position, new Vector3 (radio + capsula.bounds.size.x * 3.5f, 0.5f, radio + capsula.bounds.size.z * 3.5f));
             Gizmos.DrawWireSphere (capsula.bounds.center, capsula.bounds.extents.x);
-        }
+        }*/
     }
 
 
@@ -149,12 +170,20 @@ public class Naife : MonoBehaviour
     {
         switch (estado) 
         {
+            case Estado.normal:
+                if (quieto == false && collision.transform.CompareTag ("Jugador") == true) 
+                {
+                    Physics.IgnoreCollision (capsula, collision.collider, true);
+                    collidersIgn.Add (collision.collider);
+                }
+
+                break;
             case Estado.atacando:
                 if (embestida == true && collision.transform.CompareTag ("Jugador") == true) 
                 {
                     print (collision.transform.name);
-                    embestida = false;
-                    estado = Estado.frenando;
+                    //embestida = false;
+                    //estado = Estado.frenando;
 
                     Physics.IgnoreCollision (capsula, collision.collider, true);
                     collision.transform.GetComponent<Salud>().RecibirDanyo ();
@@ -209,10 +238,14 @@ public class Naife : MonoBehaviour
     public void Danyar (float danyo) 
     {
         salud -= danyo;
-        if (salud < 0) 
+
+        if (salud > 0) 
         {
-            padreScr.UnoMuerto (objetivoTrf);
-            this.gameObject.SetActive (false);
+            Saltar ();
+        }
+        else
+        {
+            GestionarMuerte ();
         }
     }
 
@@ -235,6 +268,20 @@ public class Naife : MonoBehaviour
     public float ObtenerDistanciaDeAranyazoOptima (Bounds limites)
     {
         return (capsula.bounds.extents.x + limites.extents.x * 1.2f);
+    }
+
+
+    // Se llama cuando el área ha pasado de estar totalmente vacía a con un gato dentro o viceversa, y sólo para los naifes que en ese momento no estén atacando. Permite hacer que todos los naifes sin blanco estén constantemente dando vueltas o 
+    //revertir su estado al habitual.
+    public void CorrerSiempre (bool siempre) 
+    {
+        gatosCer = siempre;
+
+        this.CancelInvoke ("QuietoOGirando");
+        if (gatosCer == true && quieto == true) 
+        {
+            QuietoOGirando ();
+        }
     }
 
 
@@ -281,8 +328,18 @@ public class Naife : MonoBehaviour
                 animador.SetBool ("frenando", false);
 
                 break;
-            default:
+            case Estado.frenando:
                 animador.SetBool ("frenando", true);
+
+                break;
+            case Estado.saltando:
+
+
+                break;
+            default:
+                animarFin = true;
+
+                animador.SetTrigger ("derrotado");
 
                 break;
         }
@@ -298,7 +355,7 @@ public class Naife : MonoBehaviour
             objetivoDir = Vector3.Distance (this.transform.position + this.transform.forward, padreScr.transform.position) < Vector3.Distance (this.transform.position - this.transform.forward, padreScr.transform.position) ? this.transform.forward : 
                 -this.transform.forward;
         }
-        print (objetivoDir);
+        //print (objetivoDir);
         embestida = !Physics.SphereCast (new Ray (capsula.bounds.center, objetivoDir), capsula.bounds.extents.x, objetivoDir.magnitude, padreScr.capasGirAtq, QueryTriggerInteraction.Ignore);
         objetivoDir = objetivoDir.normalized;
     }
@@ -337,18 +394,70 @@ public class Naife : MonoBehaviour
     {
         if (Estado.frenando != estado) 
         {
-            if (embestida == false) 
+            if (Estado.muriendo != estado) 
             {
-                modelo.localRotation = Quaternion.Slerp (modelo.localRotation, padreScr.modeloRotLoc[0], Time.deltaTime * padreScr.velocidadRotModEsp);
+                if (embestida == false)
+                {
+                    modelo.localRotation = Quaternion.Slerp (modelo.localRotation, padreScr.modeloRotLoc[0], Time.deltaTime * padreScr.velocidadRotModEsp);
+                }
+                else
+                {
+                    modelo.localRotation = Quaternion.Slerp (modelo.localRotation, padreScr.modeloRotLoc[1], Time.deltaTime * padreScr.velocidadRotModEmbFrn);
+                }
             }
             else 
             {
-                modelo.localRotation = Quaternion.Slerp (modelo.localRotation, padreScr.modeloRotLoc[1], Time.deltaTime * padreScr.velocidadRotModEmbFrn);
+                modelo.localRotation = Quaternion.Slerp (modelo.localRotation, padreScr.modeloRotLoc[3], Time.deltaTime * padreScr.velocidadRotModMue);
             }
         }
         else 
         {
             modelo.localRotation = Quaternion.Slerp (modelo.localRotation, padreScr.modeloRotLoc[2], Time.deltaTime * padreScr.velocidadRotModEmbFrn);
+        }
+    }
+
+
+    // Si el naife se ha quedado sin salud, cambiamos al estado de muerte, desactivamos todos los colliders, el agente, el script de parpadeo, cancelamos todos los "invokes" y iniciamos otro para desactivar el objeto tras un tiempo.
+    private void GestionarMuerte () 
+    {
+        estado = Estado.muriendo;
+        agente.enabled = false;
+        capsula.enabled = false;
+        this.GetComponent<Parpadeo>().enabled = false;
+        this.transform.parent = padreScr.transform;
+        this.transform.localPosition = new Vector3 (this.transform.localPosition.x, padreScr.muertePosYLoc, this.transform.localPosition.z);
+
+        this.transform.GetChild(0).gameObject.SetActive (false);
+        this.CancelInvoke ("QuietoOGirando");
+        this.CancelInvoke ("VolverALaCarga");
+        this.Invoke ("Desaparecer", 1.5f);
+    }
+
+
+    // .
+    private void Saltar ()
+    {
+        if (agente.enabled == false && Estado.atacando == estado) 
+        {
+            saltoDir = Vector3.Distance (this.transform.position + this.transform.forward, objetivoTrf.position) > Vector3.Distance (this.transform.position - this.transform.forward, objetivoTrf.position) ? this.transform.forward : 
+                -this.transform.forward;
+            if (Physics.SphereCast (new Ray (capsula.bounds.center, saltoDir), capsula.bounds.extents.x, out RaycastHit datosRay, padreScr.longitudRaySal, padreScr.capasSal, QueryTriggerInteraction.Ignore) == true) 
+            {
+                if (datosRay.distance > capsula.bounds.extents.x * 3) 
+                {
+                    destinoSal = this.transform.position + (datosRay.distance - capsula.bounds.extents.x) * saltoDir;
+                    estado = Estado.saltando;
+                    saltoDst = datosRay.distance;
+                    agente.enabled = true;
+                }
+            }
+            else 
+            {
+                destinoSal = this.transform.position + saltoDstMax * saltoDir;
+                estado = Estado.saltando;
+                saltoDst = saltoDstMax;
+                agente.enabled = true;
+            }
         }
     }
 
@@ -383,5 +492,13 @@ public class Naife : MonoBehaviour
     {
         agente.enabled = true;
         embestida = false;
+    }
+
+
+    // Tras la animación de muerte, se llama a esta función para desactivar el objeto del naife y que el script del padre realice las gestiones que correspondan.
+    private void Desaparecer () 
+    {
+        padreScr.UnoMuerto (objetivoTrf);
+        this.gameObject.SetActive (false);
     }
 }
