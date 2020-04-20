@@ -95,12 +95,14 @@ public class AreaNaifes : MonoBehaviour
             {
                 if (avataresDen.Count == 0 || avataresPer.ContainsKey (avataresDen[0]) == true) 
                 {
+                    print ("Vuelta al pasado desde OnTriggerExit.");
                     avataresPer[other.transform].VolverALaRutina ();
                 }
                 else 
                 {
                     avataresPer[other.transform].IniciarAtaque (avataresDen[0]);
                     avataresPer.Add (avataresDen[0], avataresPer[other.transform]);
+                    //print ("Nos rayamos.");
                 }
                 avataresPer.Remove (other.transform);
             }

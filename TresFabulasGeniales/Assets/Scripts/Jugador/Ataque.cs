@@ -270,7 +270,7 @@ public class Ataque : MonoBehaviour
     {
         movimientoScr.descansar = true;
 
-        yield return new WaitForSeconds (1.5f);
+        yield return new WaitForSeconds (1.3f);
 
         movimientoScr.PosicionEnemigoLejano ();
 

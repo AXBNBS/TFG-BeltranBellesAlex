@@ -40,16 +40,17 @@ public class Salud : MonoBehaviour
     {
         if (devolverInp == true) 
         {
-            if (animador.GetCurrentAnimatorStateInfo(0).IsTag ("Aturdimiento") == false && animador.GetAnimatorTransitionInfo(0).IsName ("AnyState -> RecibirDaño") == false)
-            {
+            //if (animador.GetCurrentAnimatorStateInfo(0).IsTag ("Aturdimiento") == false && animador.GetAnimatorTransitionInfo(0).IsName ("AnyState -> RecibirDaño") == false)
+            //{
                 aturdido = false;
+            devolverInp = false;
 
                 if (CambioDePersonajesYAgrupacion.instancia.ActivarInputAutorizado (this) == true)
                 {
                     ControlarInput (true);
                 }
                 InvulnerabilidadTemporal ();
-            }
+            //}
         }
     }
 
@@ -69,7 +70,7 @@ public class Salud : MonoBehaviour
 
 
     // Si el jugador no está aturdido, pierde salud si está siendo controlado y no puede moverse durante unos pocos segundos debido al aturdimiento, también activamos una animación que indica que ha recibido daño.
-    public void RecibirDanyo () 
+    public void RecibirDanyo (Vector3 impulso) 
     {
         if (invulnerable == false && camaraScr.cambioCmp == true && animador.GetCurrentAnimatorStateInfo(0).IsTag ("Aturdimiento") == false)
         {
@@ -86,6 +87,7 @@ public class Salud : MonoBehaviour
                 }
             }
             aturdido = true;
+            movimientoScr.aturdimientoImp = new Vector3(impulso.x, 0, impulso.z).normalized;
 
             ControlarInput (false);
             Animar (true);
@@ -104,9 +106,9 @@ public class Salud : MonoBehaviour
 
 
     // Se activa la animación de haber sido dañado.
-    private void Animar (bool aturdido) 
+    private void Animar (bool controlador) 
     {
-        animador.SetBool ("aturdido", aturdido);
+        animador.SetBool ("aturdido", controlador);
     }
 
 
@@ -123,7 +125,7 @@ public class Salud : MonoBehaviour
         {
             empujeScr.input = activar;
         }
-        devolverInp = !activar;
+        //devolverInp = !activar;
     }
 
 
@@ -138,6 +140,8 @@ public class Salud : MonoBehaviour
     private void PararAnimacion () 
     {
         Animar (false);
+
+        devolverInp = true;
     }
 
 

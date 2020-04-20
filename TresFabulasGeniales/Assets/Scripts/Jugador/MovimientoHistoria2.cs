@@ -12,6 +12,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     public Vector3 movimiento;
     public int saltoVel;
     public List<Transform> huesos;
+    public Vector3 aturdimientoImp;
 
     [SerializeField] private int movimientoVelNor, movimientoVelRed, rotacionVel, aleatoriedad, deslizVel, pendienteFrz;
     [SerializeField] private LayerMask capas, capasSinAvt;
@@ -665,7 +666,7 @@ public class MovimientoHistoria2 : MonoBehaviour
                 //print (this.name + "-> normal usada: " + normal);
                 movimiento.x = (1 - normal.y) * normal.x * (1 - deslizFrc) * deslizVel;
                 movimiento.z = (1 - normal.y) * normal.z * (1 - deslizFrc) * deslizVel;
-                if (Mathf.Sign (movimiento.x) == Mathf.Sign (inputX)) 
+                if (Mathf.Sign (movimiento.x) == Mathf.Sign (inputX))
                 {
                     movimiento.x += inputX;
                 }
@@ -675,6 +676,11 @@ public class MovimientoHistoria2 : MonoBehaviour
                 }
                 //print (this.name + "-> movimiento en X después del desliz: " + movimiento.x);
                 //print (this.name + "-> movimiento en Z después del desliz: " + movimiento.z);
+            }
+            if (saludScr.aturdido == true) 
+            {
+                movimiento.x = aturdimientoImp.x * movimientoVel;
+                movimiento.z = aturdimientoImp.z * movimientoVel;
             }
             if (pendiente == false)
             {
@@ -863,7 +869,8 @@ public class MovimientoHistoria2 : MonoBehaviour
             }
             else 
             {
-                mallaAgtNav.SetDestination (this.transform.position);
+                //mallaAgtNav.SetDestination (this.transform.position);
+                mallaAgtNav.velocity = aturdimientoImp * movimientoVel;
             }
         }
     }

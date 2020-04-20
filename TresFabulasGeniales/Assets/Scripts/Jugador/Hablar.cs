@@ -11,6 +11,7 @@ public class Hablar : MonoBehaviour
 {
     public bool input;
     public string[] texto;
+    public List<Texto> hablables;
 
     [SerializeField] private int rotacionVel;
     private GameObject panelTxt;
@@ -19,7 +20,7 @@ public class Hablar : MonoBehaviour
     private int parrafoAct, letrasEsc;
     private string personaje, frase;
     private bool escena0;
-    private CapsuleCollider npc;
+    private CapsuleCollider capsulaNPC;
     private MovimientoHistoria1 personajeMov1Scr;
     private MovimientoHistoria2 personajeMov2Scr;
     private Ataque ataqueScr;
@@ -31,8 +32,9 @@ public class Hablar : MonoBehaviour
 
 
     // Inicialización de variables y desactivación del panel. Además, obtendremos unos componentes u otros dependiendo de la historia en la que nos encontremos.
-    private void Start()
+    private void Start ()
     {
+        hablables = new List<Texto> ();
         panelTxt = GameObject.FindGameObjectWithTag("Interfaz").transform.GetChild(0).GetChild(0).gameObject;
         mostradoTxt = panelTxt.GetComponentsInChildren<Text> ();
         tiempoPas = 0;
@@ -71,11 +73,11 @@ public class Hablar : MonoBehaviour
     {
         tiempoPas += Time.deltaTime;
 
-        if (input == true && texto != null && Input.GetButtonDown ("Interacción") == true)
+        if (input == true && hablables.Count > 0 && Input.GetButtonDown ("Interacción") == true)
         {
             if (panelTxt.activeSelf == false)
             {
-                this.Invoke ("ConversacionNpc", 0.1f);
+                this.Invoke ("ConversacionNPC", 0.1f);
             }
             else
             {
@@ -99,7 +101,7 @@ public class Hablar : MonoBehaviour
             }
             if (camaraScr != null && Quaternion.Angle (this.transform.rotation, rotacionObj) > 1) 
             {
-                camaraScr.CalcularGiro (npc.bounds.center);
+                camaraScr.CalcularGiro (capsulaNPC.bounds.center);
 
                 this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacionObj, Time.deltaTime * rotacionVel);
             }
@@ -107,12 +109,24 @@ public class Hablar : MonoBehaviour
     }
 
 
-    // El personaje recibe el transform del NPC correspondiente al acercarse al mismo.
+    // El personaje añade a su lista el script de texto del NPC que tenga cerca.
     private void OnTriggerEnter (Collider other)
     {
         if (other.CompareTag ("Hablable") == true)
         {
-            npc = other.GetComponent<CapsuleCollider> ();
+            hablables.Add (other.GetComponent<Texto> ());
+            //npc = other.GetComponent<CapsuleCollider> ();
+        }
+    }
+
+
+    // El personaje elimina de su lista el script de texto del NPC del que se haya alejado.
+    private void OnTriggerExit (Collider other)
+    {
+        if (other.CompareTag ("Hablable") == true)
+        {
+            hablables.Remove (other.GetComponent<Texto> ());
+            //npc = other.GetComponent<CapsuleCollider> ();
         }
     }
 
@@ -154,7 +168,7 @@ public class Hablar : MonoBehaviour
                 ControlarInput (true);
                 camaraScr.PuntoMedioDialogo (false, Vector3.zero, Vector3.zero);
 
-                npc.GetComponent<Texto>().Esperar ();
+                capsulaNPC.GetComponent<Texto>().hablando = false;
             }
             else
             {
@@ -239,12 +253,41 @@ public class Hablar : MonoBehaviour
 
 
     // El jugador inicia una conversación con un NPC.
-    private void ConversacionNpc ()
+    private void ConversacionNPC ()
     {
+        if (escena0 == false) 
+        {
+            texto = EncontrarConversacion ();
+        }
+
         IniciarDialogo ();
         ControlarInput (false);
-        camaraScr.PuntoMedioDialogo (true, this.transform.position, npc.bounds.center);
+        camaraScr.PuntoMedioDialogo (true, this.transform.position, capsulaNPC.bounds.center);
 
-        rotacionObj = Quaternion.Euler (0, Quaternion.LookRotation(npc.bounds.center - this.transform.position).eulerAngles.y + 90, 0);
+        rotacionObj = Quaternion.Euler (0, Quaternion.LookRotation(capsulaNPC.bounds.center - this.transform.position).eulerAngles.y + 90, 0);
+    }
+
+
+    // De entre todos los NPCs cercanos, encuentra aquel cuyo vector diferencia con el avatar forme un menor ángulo con el vector hacia adelante del mismo. Este será con el que hablemos. 
+    private string[] EncontrarConversacion () 
+    {
+        float anguloChc;
+
+        int mejorInd = 0;
+        float mejorAng = Vector3.Angle (new Vector3 (hablables[0].transform.position.x - this.transform.position.x, 0 , hablables[0].transform.position.z - this.transform.position.z), -this.transform.right);
+
+        for (int t = 1 ; t < hablables.Count; t += 1) 
+        {
+            anguloChc = Vector3.Angle (new Vector3 (hablables[t].transform.position.x - this.transform.position.x, 0, hablables[t].transform.position.z - this.transform.position.z), -this.transform.right);
+            if (anguloChc < mejorAng) 
+            {
+                mejorInd = t;
+                mejorAng = anguloChc;
+            }
+        }
+        capsulaNPC = hablables[mejorInd].GetComponent<CapsuleCollider> ();
+        hablables[mejorInd].hablando = true;
+
+        return hablables[mejorInd].DevolverTexto ();
     }
 }

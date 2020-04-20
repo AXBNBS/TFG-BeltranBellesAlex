@@ -11,7 +11,7 @@ public class Naife : MonoBehaviour
     public enum Estado { normal, atacando, frenando, saltando, muriendo };
     public Estado estado;
 
-    [SerializeField] private bool quieto, sentidoHor, embestida, espera, animarFin, gatosCer;
+    [SerializeField] private bool quieto, sentidoHor, embestida, espera, animarFin, gatosCer, agresivo, saltado, chocado;
     private AreaNaifes padreScr;
     private CapsuleCollider capsula;
     private float centroY, radio, salud, tiempoEmb, saltoDstMax, saltoDst;
@@ -21,6 +21,7 @@ public class Naife : MonoBehaviour
     private Vector3 destino, destinoSal, objetivoDir, deceleracion, saltoDir;
     private Quaternion rotacionObj;
     private List<Collider> collidersIgn;
+    private EspaldaEnemigo[] espalda;
 
 
     // Inicialización de variables.
@@ -36,11 +37,12 @@ public class Naife : MonoBehaviour
         agente = this.GetComponent<NavMeshAgent> ();
         agente.updateRotation = false;
         animador = this.GetComponentInChildren<Animator> ();
-        padreRot = GameObject.Instantiate(new GameObject(), new Vector3 (this.transform.position.x, centroY, this.transform.position.z), Quaternion.identity).transform;
+        padreRot = GameObject.Instantiate(new GameObject (), new Vector3 (this.transform.position.x, centroY, this.transform.position.z), Quaternion.identity).transform;
         padreRot.name = "Pivote " + this.name.ToLower ();
         padreRot.parent = padreScr.transform;
         modelo = animador.transform;
         collidersIgn = new List<Collider> ();
+        espalda = new EspaldaEnemigo[] { this.transform.GetChild(1).GetComponent<EspaldaEnemigo> (), this.transform.GetChild(2).GetComponent<EspaldaEnemigo> () };
         //print (this.transform.localScale.x * capsula.radius);
         //print (capsula.bounds.extents.x);
     }
@@ -104,14 +106,16 @@ public class Naife : MonoBehaviour
                     //agente.velocity = Vector3.zero;
                     deceleracion = Vector3.zero;
                     agente.enabled = false;
+                    //print ("Frenado completado.");
 
                     if (espera == false) 
                     {
+                        //print ("Vuelvo a la carga en 2 secs.");
                         this.Invoke ("VolverALaCarga", 2);
                     }
                     else 
                     {
-                        //print ("Volvemos al pasado.");
+                        //print ("Vuelta al pasado desde el estado de frenado.");
                         VolverALaRutina ();
                     }
 
@@ -125,10 +129,25 @@ public class Naife : MonoBehaviour
             case Estado.saltando:
                 float distancia = Vector3.Distance (this.transform.position, destinoSal);
 
-                agente.velocity = saltoDir * padreScr.saltoVelMax / saltoDst;
-                if (padreScr.distanciaMinObj > distancia) 
+                agente.velocity = saltoDir * padreScr.saltoVelMax * distancia / saltoDst;
+                if (chocado == true || padreScr.distanciaMinObj > distancia) 
                 {
                     estado = Estado.atacando;
+                    agente.enabled = false;
+                    saltado = false;
+                    chocado = false;
+                    //print ("Salto completado.");
+
+                    if (agresivo == true) 
+                    {
+                        //print ("Vuelvo a la carga en 1 sec.");
+                        this.Invoke ("VolverALaCarga", 1);
+                    }
+                    else 
+                    {
+                        //print ("Vuelta al pasado desde el estado de salto.");
+                        VolverALaRutina ();
+                    }
                 }
 
                 break;
@@ -181,18 +200,25 @@ public class Naife : MonoBehaviour
             case Estado.atacando:
                 if (embestida == true && collision.transform.CompareTag ("Jugador") == true) 
                 {
-                    print (collision.transform.name);
+                    //print (collision.transform.name);
                     //embestida = false;
                     //estado = Estado.frenando;
-
+               
                     Physics.IgnoreCollision (capsula, collision.collider, true);
-                    collision.transform.GetComponent<Salud>().RecibirDanyo ();
+                    collision.transform.GetComponent<Salud>().RecibirDanyo (agente.velocity.normalized);
                     collidersIgn.Add (collision.collider);
                 }
 
                 break;
             case Estado.frenando:
                 agente.velocity = Vector3.zero;
+
+                break;
+            case Estado.saltando:
+                if (espalda[this.transform.forward == saltoDir ? 1 : 0].obstaculos.Contains (collision.collider) == true) 
+                {
+                    chocado = true;
+                }
 
                 break;
         }
@@ -216,19 +242,20 @@ public class Naife : MonoBehaviour
     // El naife vuelve a su estado normal, y lo preparamos para que encuentre un nuevo punto alrededor del cual girar.
     public void VolverALaRutina () 
     {
-        if (embestida == false && Estado.frenando != estado) 
+        if (embestida == false && Estado.frenando != estado && Estado.saltando != estado) 
         {
             estado = Estado.normal;
             quieto = true;
             espera = false;
             agente.enabled = false;
-            //print ("Estado normal.");
+            //print ("Se me llamó para volver al estado normal.");
 
             this.CancelInvoke ("VolverALaCarga");
             this.Invoke ("QuietoOGirando", 1);
         }
         else 
         {
+            //print ("Se me llamó para esperar.");
             espera = true;
         }
     }
@@ -333,7 +360,12 @@ public class Naife : MonoBehaviour
 
                 break;
             case Estado.saltando:
+                if (saltado == false) 
+                {
+                    saltado = true;
 
+                    animador.SetTrigger ("saltando");
+                }
 
                 break;
             default:
@@ -434,10 +466,11 @@ public class Naife : MonoBehaviour
     }
 
 
-    // .
+    // Si el naife se encuentra quieto en su estado de ataque o de patrulla, lanzamos un rayo hacia adelante o atrás (según el lado por el cuál esté siendo atacado) y si hay suficiente distancia libre o directamente no hay ningún obstáculo, hacemos 
+    //que salte la distancia que corresponda.
     private void Saltar ()
     {
-        if (agente.enabled == false && Estado.atacando == estado) 
+        if ((agente.enabled == false && Estado.atacando == estado) || (quieto == true && Estado.normal == estado)) 
         {
             saltoDir = Vector3.Distance (this.transform.position + this.transform.forward, objetivoTrf.position) > Vector3.Distance (this.transform.position - this.transform.forward, objetivoTrf.position) ? this.transform.forward : 
                 -this.transform.forward;
@@ -446,19 +479,32 @@ public class Naife : MonoBehaviour
                 if (datosRay.distance > capsula.bounds.extents.x * 3) 
                 {
                     destinoSal = this.transform.position + (datosRay.distance - capsula.bounds.extents.x) * saltoDir;
-                    estado = Estado.saltando;
                     saltoDst = datosRay.distance;
-                    agente.enabled = true;
+
+                    PasarASalto ();
                 }
             }
             else 
             {
                 destinoSal = this.transform.position + saltoDstMax * saltoDir;
-                estado = Estado.saltando;
                 saltoDst = saltoDstMax;
-                agente.enabled = true;
+
+                PasarASalto ();
             }
         }
+    }
+
+
+    // Ejecuta todos los cambios necesarios para pasar al estado de salto.
+    private void PasarASalto ()
+    {
+        agresivo = Estado.atacando == estado;
+        estado = Estado.saltando;
+        agente.enabled = true;
+
+        //print ("Todos los invokes anulados.");
+        this.CancelInvoke ("QuietoOGirando");
+        this.CancelInvoke ("VolverALaCarga");
     }
 
 
