@@ -9,13 +9,15 @@ using UnityEngine;
 [RequireComponent (typeof (CapsuleCollider))]
 public class Texto : MonoBehaviour
 {
+    public bool hablando;
+    
     [SerializeField] private string[] texto;
     private float rotacionVel;
     private Hablar[] jugadores;
     private Hablar jugador;
     private Quaternion rotacionIni, rotacionObj;
     private GameObject panelTxt;
-    private bool cercano, hablando, esperar;
+    private bool cercano;
 
 
     // Obtenemos las referencias al jugador o jugadores.
@@ -41,11 +43,10 @@ public class Texto : MonoBehaviour
     //función de si este es verdadero o falso el NPC rotará hacia la rotación que le permita mirar al avatar del jugador o hacia su rotación inicial.
     private void Update ()
     {
-        if (cercano == true && esperar == false && panelTxt.activeSelf == false && Input.GetButtonDown ("Interacción") == true && ((jugadores[0].input == true && jugadores[0].texto != null) || (jugadores.Length > 1 && jugadores[1].input == true && 
-            jugadores[1].texto != null))) 
+        jugador = jugadores[ObtenerIndiceJugador ()];
+        if (cercano == true && panelTxt.activeSelf == false && Input.GetButtonDown ("Interacción") == true && (jugador.input == true && jugador.hablables.Contains (this) == true)) 
         {
             rotacionObj = Quaternion.Euler (this.transform.rotation.eulerAngles.x, Quaternion.LookRotation(jugador.transform.position - this.transform.position).eulerAngles.y + 90, this.transform.rotation.eulerAngles.z);
-            hablando = true;
         }
         if (hablando == false)
         {
@@ -65,7 +66,7 @@ public class Texto : MonoBehaviour
     {
         if (other.CompareTag ("Jugador") == true) 
         {
-            if (jugadores.Length == 1)
+            /*if (jugadores.Length == 1)
             {
                 jugadores[0].texto = texto;
             }
@@ -81,7 +82,7 @@ public class Texto : MonoBehaviour
                     jugadores[1].texto = texto;
                     jugador = jugadores[1];
                 }
-            }
+            }*/
             cercano = true;
         }
     }
@@ -92,7 +93,7 @@ public class Texto : MonoBehaviour
     {
         if (other.CompareTag ("Jugador") == true) 
         {
-            if (jugadores.Length == 1)
+            /*if (jugadores.Length == 1)
             {
                 jugadores[0].texto = null;
             }
@@ -106,25 +107,46 @@ public class Texto : MonoBehaviour
                 {
                     jugadores[1].texto = null;
                 }
-            }
+            }*/
             cercano = false;
         }
     }
 
 
     // Desactivamos el booleano que dice que estamos hablando y para evitar problemas impedimos que este se reactive durante un pequeño periodo de tiempo.
-    public void Esperar () 
+    /*public void Esperar () 
     {
         hablando = false;
         esperar = true;
 
-        this.Invoke ("PararEspera", 0.1f);
+        this.Invoke ("PararEspera", 1);
+    }*/
+
+
+    // Devuelve la array de texto asignada a este NPC.
+    public string[] DevolverTexto () 
+    {
+        return texto;
+    }
+
+
+    // Obtiene el índice de avatar controlado. En caso de que estemos en las historias 1 o 3 este será siempre 0.
+    private int ObtenerIndiceJugador () 
+    {
+        if (jugadores.Length > 1) 
+        {
+            return (jugadores[0].input == true ? 0 : 1);
+        }
+        else 
+        {
+            return 0;
+        }
     }
 
 
     // Llamada tras un pequeño periodo de tiempo para impedir que se reactive el booleano que nos permite hablar.
-    private void PararEspera () 
+    /*private void PararEspera () 
     {
         esperar = false;
-    }
+    }*/
 }

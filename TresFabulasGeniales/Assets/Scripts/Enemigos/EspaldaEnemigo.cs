@@ -20,13 +20,19 @@ public class EspaldaEnemigo : MonoBehaviour
     // Metemos al obstáculo en la lista si toca el trigger.
     private void OnTriggerEnter (Collider other)
     {
-        obstaculos.Add (other);
+        if (other.isTrigger == false) 
+        {
+            obstaculos.Add (other);
+        }
     }
 
 
     // Sacamos al obstáculo de la lista si ha salido del trigger.
     private void OnTriggerExit (Collider other)
     {
-        obstaculos.Remove (other);
+        if (other.isTrigger == false) 
+        {
+            obstaculos.Remove (other);
+        }
     }
 }

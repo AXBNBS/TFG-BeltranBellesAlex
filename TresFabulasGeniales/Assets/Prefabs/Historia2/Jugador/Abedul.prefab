@@ -478,7 +478,7 @@ SphereCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 25
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 9, z: 0}
 --- !u!143 &8454711757566032794
 CharacterController:
   m_ObjectHideFlags: 0
@@ -565,13 +565,13 @@ MonoBehaviour:
   perseguir: 0
   descansar: 0
   companyeroCer: 0
+  saltador: 0
   movimiento: {x: 0, y: 0, z: 0}
   saltoVel: 200
   huesos: []
   movimientoVelNor: 200
   movimientoVelRed: 70
   rotacionVel: 10
-  saltoDst: 7
   aleatoriedad: 50
   deslizVel: 600
   pendienteFrz: 100
@@ -583,12 +583,10 @@ MonoBehaviour:
     m_Bits: 3383
   companyeroMov: {fileID: 0}
   pararDstSeg: 2
-  pararDstAtq: 20
   ajusteCaiDst: 5
   multiplicadorSalBaj: 0
   deslizFrc: 0.3
   pendienteRayLon: 6
-  saltador: 0
 --- !u!114 &9139600075987871173
 MonoBehaviour:
   m_ObjectHideFlags: 0

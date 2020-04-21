@@ -12,15 +12,16 @@ public class MovimientoHistoria2 : MonoBehaviour
     public Vector3 movimiento;
     public int saltoVel;
     public List<Transform> huesos;
+    public Vector3 aturdimientoImp;
 
-    [SerializeField] private int movimientoVelNor, movimientoVelRed, rotacionVel, saltoDst, aleatoriedad, deslizVel, pendienteFrz;
+    [SerializeField] private int movimientoVelNor, movimientoVelRed, rotacionVel, aleatoriedad, deslizVel, pendienteFrz;
     [SerializeField] private LayerMask capas, capasSinAvt;
     [SerializeField] private MovimientoHistoria2 companyeroMov;
-    [SerializeField] private float pararDstSeg, pararDstAtq, ajusteCaiDst, multiplicadorSalBaj, deslizFrc, pendienteRayLon;
+    [SerializeField] private float pararDstSeg, ajusteCaiDst, multiplicadorSalBaj, deslizFrc, pendienteRayLon;
     private int gravedad, movimientoVel, empujeVel;
     private bool saltarInp, yendo, empujando, limitadoX, enemigosCer, saltado, cambiando, siguiendoAcb, deslizar, sueleadorToc, pendiente, empujadoFrm;
     private CharacterController characterCtr;
-    private float offsetXZ, horizontalInp, verticalInp, offsetBas, radioRotAtq, radioEsfSue;
+    private float offsetXZ, horizontalInp, verticalInp, offsetBas, radioRotAtq, radioEsfSue, saltoDst, aranyazoDst;
     private Transform camaraTrf, objetivoSeg, companyeroTrf, enemigoTrf;
     private Animator animator;
     private Vector3 empuje, normal, offsetEsfSue;
@@ -159,7 +160,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     // Si el avatar jugable ha caído sobre otro, empujarlo hacia el primer lado de este que se encuentre libre.
     private void OnControllerColliderHit (ControllerColliderHit hit)
     {
-        print (hit.transform.name);
+        //print (hit.transform.name);
         switch (hit.transform.tag) 
         {
             case "Jugador":
@@ -352,7 +353,6 @@ public class MovimientoHistoria2 : MonoBehaviour
             estado = Estado.atacando;
             perseguir = true;
             mallaAgtNav.enabled = true;
-            mallaAgtNav.stoppingDistance = pararDstAtq;
             CambioDePersonajesYAgrupacion.instancia.juntos = false;
 
             this.Invoke ("PosicionEnemigoCercano", 0.1f);
@@ -399,6 +399,16 @@ public class MovimientoHistoria2 : MonoBehaviour
         {
             movimientoVel = movimientoVelNor;
             mallaAgtNav.speed = movimientoVelNor;
+        }
+    }
+
+
+    // Comprobamos si tenemos alguna zona con naifes asignada y, en caso afirmativo, miramos si hay que excluir a este avatar que acabamos de pasar a controlar de la misma.
+    public void ComprobacionNaifes () 
+    {
+        if (areaNai != null) 
+        {
+            areaNai.MirarSiQuitoAvatar (characterCtr);
         }
     }
 
@@ -473,6 +483,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         {
             ranaScr = enemigoTrf.GetComponent<Enemigo> ();
             naifeScr = enemigoTrf.GetComponent<Naife> ();
+            aranyazoDst = naifeScr != null ?  naifeScr.ObtenerDistanciaDeAranyazoOptima (characterCtr.bounds) : ranaScr.ObtenerDistanciaDeAranyazoOptima (characterCtr.bounds);
         }
         else
         {
@@ -551,6 +562,14 @@ public class MovimientoHistoria2 : MonoBehaviour
         {
             ranaScr = enemigoTrf.GetComponent<Enemigo> ();
             naifeScr = enemigoTrf.GetComponent<Naife> ();
+            if (saltador == true) 
+            {
+                saltoDst = naifeScr != null ? naifeScr.ObtenerDistanciaDeSaltoOptima () : ranaScr.ObtenerDistanciaDeSaltoOptima ();
+            }
+            else 
+            {
+                aranyazoDst = naifeScr != null ? naifeScr.ObtenerDistanciaDeAranyazoOptima (characterCtr.bounds) : ranaScr.ObtenerDistanciaDeAranyazoOptima (characterCtr.bounds);
+            }
         }
         else
         {
@@ -647,7 +666,7 @@ public class MovimientoHistoria2 : MonoBehaviour
                 //print (this.name + "-> normal usada: " + normal);
                 movimiento.x = (1 - normal.y) * normal.x * (1 - deslizFrc) * deslizVel;
                 movimiento.z = (1 - normal.y) * normal.z * (1 - deslizFrc) * deslizVel;
-                if (Mathf.Sign (movimiento.x) == Mathf.Sign (inputX)) 
+                if (Mathf.Sign (movimiento.x) == Mathf.Sign (inputX))
                 {
                     movimiento.x += inputX;
                 }
@@ -657,6 +676,11 @@ public class MovimientoHistoria2 : MonoBehaviour
                 }
                 //print (this.name + "-> movimiento en X después del desliz: " + movimiento.x);
                 //print (this.name + "-> movimiento en Z después del desliz: " + movimiento.z);
+            }
+            if (saludScr.aturdido == true) 
+            {
+                movimiento.x = aturdimientoImp.x * movimientoVel;
+                movimiento.z = aturdimientoImp.z * movimientoVel;
             }
             if (pendiente == false)
             {
@@ -821,7 +845,7 @@ public class MovimientoHistoria2 : MonoBehaviour
                 {
                     if (descansar == false)
                     {
-                        if (Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (enemigoTrf.position.x, enemigoTrf.position.z)) > pararDstAtq)
+                        if (Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (enemigoTrf.position.x, enemigoTrf.position.z)) > aranyazoDst)
                         {
                             mallaAgtNav.SetDestination (enemigoTrf.position);
                         }
@@ -845,7 +869,8 @@ public class MovimientoHistoria2 : MonoBehaviour
             }
             else 
             {
-                mallaAgtNav.SetDestination (this.transform.position);
+                //mallaAgtNav.SetDestination (this.transform.position);
+                mallaAgtNav.velocity = aturdimientoImp * movimientoVel;
             }
         }
     }
