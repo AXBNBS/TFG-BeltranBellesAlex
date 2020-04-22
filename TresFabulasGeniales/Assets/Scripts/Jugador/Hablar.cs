@@ -73,11 +73,18 @@ public class Hablar : MonoBehaviour
     {
         tiempoPas += Time.deltaTime;
 
-        if (input == true && hablables.Count > 0 && Input.GetButtonDown ("Interacción") == true)
+        if (input == true && Input.GetButtonDown ("Interacción") == true && (hablables.Count > 0 || texto != null))
         {
             if (panelTxt.activeSelf == false)
             {
-                this.Invoke ("ConversacionNPC", 0.1f);
+                if (this.IsInvoking ("ConversacionNPC") == false) 
+                {
+                    texto = EncontrarConversacion ();
+
+                    ControlarInput (false);
+                    camaraScr.PuntoMedioDialogo (true, this.transform.position, capsulaNPC.bounds.center);
+                    this.Invoke ("ConversacionNPC", 0.1f);
+                }
             }
             else
             {
@@ -168,7 +175,8 @@ public class Hablar : MonoBehaviour
                 ControlarInput (true);
                 camaraScr.PuntoMedioDialogo (false, Vector3.zero, Vector3.zero);
 
-                capsulaNPC.GetComponent<Texto>().hablando = false;
+                capsulaNPC.GetComponent<Texto>().FinalizarConversacion ();
+                texto = null;
             }
             else
             {
@@ -255,14 +263,7 @@ public class Hablar : MonoBehaviour
     // El jugador inicia una conversación con un NPC.
     private void ConversacionNPC ()
     {
-        if (escena0 == false) 
-        {
-            texto = EncontrarConversacion ();
-        }
-
         IniciarDialogo ();
-        ControlarInput (false);
-        camaraScr.PuntoMedioDialogo (true, this.transform.position, capsulaNPC.bounds.center);
 
         rotacionObj = Quaternion.Euler (0, Quaternion.LookRotation(capsulaNPC.bounds.center - this.transform.position).eulerAngles.y + 90, 0);
     }

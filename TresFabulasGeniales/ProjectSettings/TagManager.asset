@@ -28,6 +28,7 @@ TagManager:
   - Pared
   - HuesoRestringido
   - Resbaladizo
+  - Ruta
   layers:
   - Default
   - TransparentFX

@@ -5,16 +5,16 @@ ModelImporter:
   internalIDToNameTable:
   - first:
       74: -960898424075949690
-    second: Armature.001|ArmatureAction
+    second: Idle
   - first:
       74: -8639993316982285888
-    second: Armature.001|ArmatureAction.001
+    second: Hablar
   - first:
       74: 983261835692450840
-    second: Armature.001|CylinderAction
+    second: Invent de Unity 1
   - first:
       74: 1253560705484870678
-    second: Armature.001|CylinderAction.001
+    second: Invent de Unity 2
   externalObjects: {}
   materials:
     importMaterials: 1
@@ -44,7 +44,7 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Armature.001|ArmatureAction
+      name: Idle
       takeName: Armature.001|ArmatureAction
       internalID: 0
       firstFrame: 0
@@ -73,7 +73,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature.001|ArmatureAction.001
+      name: Hablar
       takeName: Armature.001|ArmatureAction.001
       internalID: 0
       firstFrame: 0
@@ -84,7 +84,7 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
@@ -102,7 +102,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature.001|CylinderAction
+      name: Invent de Unity 1
       takeName: Armature.001|CylinderAction
       internalID: 0
       firstFrame: 0
@@ -131,7 +131,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature.001|CylinderAction.001
+      name: Invent de Unity 2
       takeName: Armature.001|CylinderAction.001
       internalID: 0
       firstFrame: 0

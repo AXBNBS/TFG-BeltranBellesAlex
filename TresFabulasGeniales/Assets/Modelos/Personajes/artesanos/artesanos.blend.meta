@@ -23,22 +23,22 @@ ModelImporter:
     second: Armature.005|ArmatureAction.004
   - first:
       74: -7376977406845123523
-    second: Armature.001|Armature.003Action
+    second: Idle1
   - first:
       74: 3926985212719559015
-    second: Armature.001|Armature.003Action.001
+    second: Hablar
   - first:
       74: -960898424075949690
-    second: Armature.001|ArmatureAction
+    second: Idle2
   - first:
       74: -8639993316982285888
-    second: Armature.001|ArmatureAction.001
+    second: Idle3
   - first:
       74: 1570611337149101020
-    second: Armature.001|ArmatureAction.002
+    second: Idle4
   - first:
       74: -9126003838388519604
-    second: Armature.001|ArmatureAction.004
+    second: Idle5
   externalObjects: {}
   materials:
     importMaterials: 1
@@ -68,7 +68,7 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Armature.001|Armature.003Action
+      name: Idle1
       takeName: Armature.001|Armature.003Action
       internalID: 0
       firstFrame: 0
@@ -97,7 +97,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature.001|Armature.003Action.001
+      name: Hablar
       takeName: Armature.001|Armature.003Action.001
       internalID: 0
       firstFrame: 0
@@ -108,7 +108,7 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
@@ -126,7 +126,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature.001|ArmatureAction
+      name: Idle2
       takeName: Armature.001|ArmatureAction
       internalID: 0
       firstFrame: 0
@@ -155,7 +155,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature.001|ArmatureAction.001
+      name: Idle3
       takeName: Armature.001|ArmatureAction.001
       internalID: 0
       firstFrame: 0
@@ -184,7 +184,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature.001|ArmatureAction.002
+      name: Idle4
       takeName: Armature.001|ArmatureAction.002
       internalID: 0
       firstFrame: 0
@@ -213,7 +213,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature.001|ArmatureAction.004
+      name: Idle5
       takeName: Armature.001|ArmatureAction.004
       internalID: 0
       firstFrame: 0
@@ -224,7 +224,7 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0

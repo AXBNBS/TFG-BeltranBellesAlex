@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 
 
@@ -12,12 +13,17 @@ public class Texto : MonoBehaviour
     public bool hablando;
     
     [SerializeField] private string[] texto;
+    [SerializeField] private bool moviendose, hablarCmbRot;
+    [SerializeField] private float hablarRotX, hablarRotZ;
     private float rotacionVel;
     private Hablar[] jugadores;
     private Hablar jugador;
-    private Quaternion rotacionIni, rotacionObj;
     private GameObject panelTxt;
-    private bool cercano;
+    private bool cercano, esperar;
+    private NavMeshAgent agente;
+    private Animator animador;
+    private Transform modeloTrf;
+    private Quaternion rotacionIni, rotacionObj;
 
 
     // Obtenemos las referencias al jugador o jugadores.
@@ -25,11 +31,17 @@ public class Texto : MonoBehaviour
     {
         SphereCollider[] triggers = this.GetComponents<SphereCollider> ();
 
-        rotacionVel = 10;
+        rotacionVel = 5;
         jugadores = GameObject.FindObjectsOfType<Hablar> ();
         jugador = jugadores[0];
-        rotacionIni = this.transform.rotation;
         panelTxt = GameObject.FindGameObjectWithTag("Interfaz").transform.GetChild(0).GetChild(0).gameObject;
+        if (moviendose == true) 
+        {
+            agente = this.GetComponent<NavMeshAgent> ();
+        }
+        animador = this.GetComponentInChildren<Animator> ();
+        modeloTrf = animador.transform;
+        rotacionIni = modeloTrf.rotation;
         foreach (SphereCollider t in triggers) 
         {
             t.isTrigger = true;
@@ -40,87 +52,75 @@ public class Texto : MonoBehaviour
 
 
     // Si el jugador está cerca, el panel de texto no está activado, pulsa el botón para hablar y se le permite el input, se fijará una rotación objetivo para que el NPC pueda mirarle y se activará el booleano que indica que está hablando. En 
-    //función de si este es verdadero o falso el NPC rotará hacia la rotación que le permita mirar al avatar del jugador o hacia su rotación inicial.
+    //función de si este es verdadero o falso el NPC rotará hacia la rotación que le permita mirar al avatar del jugador o hacia su rotación inicial. Animamos también el NPC según si este está hablando o no.
     private void Update ()
     {
         jugador = jugadores[ObtenerIndiceJugador ()];
-        if (cercano == true && panelTxt.activeSelf == false && Input.GetButtonDown ("Interacción") == true && (jugador.input == true && jugador.hablables.Contains (this) == true)) 
+        if (cercano == true && esperar == false && panelTxt.activeSelf == false && Input.GetButtonDown ("Interacción") == true && jugador.hablables.Contains (this) == true) 
         {
-            rotacionObj = Quaternion.Euler (this.transform.rotation.eulerAngles.x, Quaternion.LookRotation(jugador.transform.position - this.transform.position).eulerAngles.y + 90, this.transform.rotation.eulerAngles.z);
+            if (hablarCmbRot == false) 
+            {
+                rotacionObj = Quaternion.Euler (modeloTrf.rotation.eulerAngles.x, Quaternion.LookRotation(jugador.transform.position - this.transform.position).eulerAngles.y + 90, modeloTrf.rotation.eulerAngles.z);
+            }
+            else 
+            {
+                rotacionObj = Quaternion.Euler (hablarRotX, Quaternion.LookRotation(jugador.transform.position - this.transform.position).eulerAngles.y + 90, hablarRotZ);
+            }
+            if (moviendose == true) 
+            {
+                agente.enabled = false;
+            }
         }
-        if (hablando == false)
+        if (moviendose == false || agente.enabled == false) 
         {
-            this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacionIni, Time.deltaTime * rotacionVel);
-            //print (rotacionIni.eulerAngles);
+            if (hablando == false)
+            {
+                modeloTrf.rotation = Quaternion.Lerp (modeloTrf.rotation, rotacionIni, Time.deltaTime * rotacionVel);
+                //print (rotacionIni.eulerAngles);
+            }
+            else
+            {
+                modeloTrf.rotation = Quaternion.Lerp (modeloTrf.rotation, rotacionObj, Time.deltaTime * rotacionVel);
+                //print (rotacionObj.eulerAngles);
+            }
         }
-        else 
-        {
-            this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacionObj, Time.deltaTime * rotacionVel);
-            //print (rotacionObj.eulerAngles);
-        }
+
+        Animar ();
     }
 
 
-    // Al entrar en el trigger de un objeto interactuable, el jugador recibe el texto que se mostrará si finalmente interactúa.
+    // Al acercarse el jugador a un objeto interactuable o un NPC, este objeto tiene en cuenta que el jugador se encuentra cerca.
     private void OnTriggerEnter (Collider other)
     {
         if (other.CompareTag ("Jugador") == true) 
         {
-            /*if (jugadores.Length == 1)
-            {
-                jugadores[0].texto = texto;
-            }
-            else 
-            {
-                if (jugadores[0] == other.GetComponent<Hablar> ())
-                {
-                    jugadores[0].texto = texto;
-                    jugador = jugadores[0];
-                }
-                else 
-                {
-                    jugadores[1].texto = texto;
-                    jugador = jugadores[1];
-                }
-            }*/
             cercano = true;
         }
     }
 
 
-    // Al salir del trigger de un objeto interactuable, el jugador pierde el texto.
+    // Al alejarse el jugador a un objeto interactuable o un NPC, este objeto tiene en cuenta que el jugador acaba de alejarse.
     private void OnTriggerExit (Collider other)
     {
         if (other.CompareTag ("Jugador") == true) 
         {
-            /*if (jugadores.Length == 1)
-            {
-                jugadores[0].texto = null;
-            }
-            else 
-            {
-                if (jugadores[0] == other.GetComponent<Hablar> ())
-                {
-                    jugadores[0].texto = null;
-                }
-                else
-                {
-                    jugadores[1].texto = null;
-                }
-            }*/
             cercano = false;
         }
     }
 
 
     // Desactivamos el booleano que dice que estamos hablando y para evitar problemas impedimos que este se reactive durante un pequeño periodo de tiempo.
-    /*public void Esperar () 
+    public void FinalizarConversacion () 
     {
         hablando = false;
         esperar = true;
+        if (moviendose == true) 
+        {
+            agente.enabled = true;
+        }
 
-        this.Invoke ("PararEspera", 1);
-    }*/
+        this.Invoke ("AcabarEspera", 0.1f);
+    }
 
 
     // Devuelve la array de texto asignada a este NPC.
@@ -145,8 +145,15 @@ public class Texto : MonoBehaviour
 
 
     // Llamada tras un pequeño periodo de tiempo para impedir que se reactive el booleano que nos permite hablar.
-    /*private void PararEspera () 
+    private void AcabarEspera () 
     {
         esperar = false;
-    }*/
+    }
+
+
+    // Se anima al NPC de forma que su animación varíe si está hablando con el avatar o no.
+    private void Animar () 
+    {
+        animador.SetBool ("hablando", hablando);
+    }
 }

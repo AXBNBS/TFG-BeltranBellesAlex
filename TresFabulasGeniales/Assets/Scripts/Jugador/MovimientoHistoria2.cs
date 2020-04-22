@@ -165,6 +165,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         {
             case "Jugador":
             case "Resbaladizo":
+            case "Hablable":
                 if (sueleado == false && empujadoFrm == false) 
                 {
                     //print ("Wenas jeje");

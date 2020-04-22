@@ -49,7 +49,9 @@ public class Naife : MonoBehaviour
 
 
     // Según el estado en el que se encuentre el enemigo actualmente, realizamos distintas acciones: si está normal llamamos periódicamente a la función que alterna entre sus 2 estados del idle y nos aseguramos de que gire en caso de que no esté 
-    //quieto, ACTUALIZAR. En cualquier caso, siempre lo animamos como corresponda.
+    //quieto, si está atacando y con su agente habilitado hacemos que embista al jugador en cuanto pueda, y pare si ha pasado de largo y lleva un mínimo de tiempo embistiendo, si esta frenando hacemos que la velocidad el agente descienda poco a poco
+    //y se prepare para volver al estado normal o de ataque (según convenga) tras un breve periodo de tiempo, si está saltando nos aseguramos de que lo haga en dirección a su destino fijado y con una velocidad adecuada, parando si llega a este o 
+    //o choca para volver de nuevo a su estado de ataque o normal. En cualquier caso, siempre rotamos el modelo y lo animamos como corresponda.
     private void Update ()
     {
         if (collidersIgn.Count != 0)
@@ -162,14 +164,14 @@ public class Naife : MonoBehaviour
 
 
     // Pos debug como siempre.
-    private void OnDrawGizmosSelected ()
+    /*private void OnDrawGizmosSelected ()
     {
         Gizmos.color = Color.red;
 
         Gizmos.DrawRay (this.transform.position, this.transform.forward * saltoDstMax);
         Gizmos.DrawRay (this.transform.position, -this.transform.forward * saltoDstMax);
         Gizmos.DrawWireSphere (destinoSal, 5);
-        /*if (capsula != null) 
+        if (capsula != null) 
         {
 
             Gizmos.DrawWireSphere (padreRot.position, 5);
@@ -179,8 +181,8 @@ public class Naife : MonoBehaviour
             Gizmos.DrawWireSphere (Vector3.left * radio + padreRot.position, 5);
             Gizmos.DrawWireCube (padreRot.position, new Vector3 (radio + capsula.bounds.size.x * 3.5f, 0.5f, radio + capsula.bounds.size.z * 3.5f));
             Gizmos.DrawWireSphere (capsula.bounds.center, capsula.bounds.extents.x);
-        }*/
-    }
+        }
+    }*/
 
 
     // Si un naife colisiona con el jugador mientras realiza una embestida, dejará de embestir y empezará a frenar, además se desactivarán las colisiones con el avatar brevemente y este recibirá daños. Si el choche se produce en el estado de 

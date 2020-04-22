@@ -130,7 +130,7 @@ public class SeguimientoCamara : MonoBehaviour
 
 
     // La típica.
-    private void OnDrawGizmos ()
+    /*private void OnDrawGizmos ()
     {
         if (objetivo != null) 
         {
@@ -139,7 +139,7 @@ public class SeguimientoCamara : MonoBehaviour
             Gizmos.DrawLine (puntoMed, puntoMed + (objetivo.right + objetivo.forward).normalized * 100);
             Gizmos.DrawLine (puntoMed, puntoMed + (objetivo.right - objetivo.forward).normalized * 100);
         }
-    }
+    }*/
 
 
     // .

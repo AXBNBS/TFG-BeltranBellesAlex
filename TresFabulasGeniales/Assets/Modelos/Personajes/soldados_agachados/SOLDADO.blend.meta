@@ -14,13 +14,13 @@ ModelImporter:
     second: Armature.003|ArmatureAction.002
   - first:
       74: 3821543521657387571
-    second: Armature.003|ArmatureAction.003
+    second: Idle1
   - first:
       74: -2795910484511760339
-    second: Armature.003|ArmatureAction.004
+    second: Idle2
   - first:
       74: -2121470402903854509
-    second: Armature.003|ArmatureAction.005
+    second: Hablar
   externalObjects: {}
   materials:
     importMaterials: 1
@@ -137,7 +137,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature.003|ArmatureAction.003
+      name: Idle1
       takeName: Armature.003|ArmatureAction.003
       internalID: 0
       firstFrame: 0
@@ -166,7 +166,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature.003|ArmatureAction.004
+      name: Idle2
       takeName: Armature.003|ArmatureAction.004
       internalID: 0
       firstFrame: 0
@@ -195,7 +195,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature.003|ArmatureAction.005
+      name: Hablar
       takeName: Armature.003|ArmatureAction.005
       internalID: 0
       firstFrame: 0

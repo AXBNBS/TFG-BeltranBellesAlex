@@ -95,7 +95,7 @@ public class AreaNaifes : MonoBehaviour
             {
                 if (avataresDen.Count == 0 || avataresPer.ContainsKey (avataresDen[0]) == true) 
                 {
-                    print ("Vuelta al pasado desde OnTriggerExit.");
+                    //print ("Vuelta al pasado desde OnTriggerExit.");
                     avataresPer[other.transform].VolverALaRutina ();
                 }
                 else 
