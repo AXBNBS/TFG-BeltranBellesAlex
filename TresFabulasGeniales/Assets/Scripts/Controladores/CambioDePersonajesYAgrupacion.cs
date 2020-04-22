@@ -165,7 +165,7 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
 
     // Al cambiar de personaje, dejamos de permitir el input en este script, impedimos el movimiento de la cámara, que el personaje controlado hasta ahora pueda moverse y atacar (también empujar si este era Abedul) y que la cámara se ajuste en base
     //a las colisiones con el entorno.
-    private void PararInput () 
+    public void PararInput () 
     {
         input = false;
         camara.input = false;
