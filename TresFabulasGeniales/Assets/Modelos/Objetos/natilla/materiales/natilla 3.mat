@@ -40,5 +40,5 @@ Material:
     - _Gloss: 0
     - _Specular: 0
     m_Colors:
-    - _ColorBlend: {r: 0.11320752, g: 0.11320752, b: 0.11320752, a: 1}
+    - _ColorBlend: {r: 0.0754717, g: 0.0754717, b: 0.0754717, a: 1}
     - _EmissiveBlend: {r: 1, g: 1, b: 1, a: 1}
