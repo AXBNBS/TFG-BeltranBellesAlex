@@ -77,31 +77,31 @@ ModelImporter:
     second: IdleArriba
   - first:
       74: -6485890846602907707
-    second: Armature.009|ArmatureAction.002
+    second: Correr
   - first:
       74: -3116133976926373356
-    second: Armature.009|ArmatureAction.003
+    second: EscalarParado
   - first:
       74: 5126647118955646180
-    second: Armature.009|ArmatureAction.004
+    second: EscalarVertical
   - first:
       74: 4643891022079602573
-    second: Armature.009|ArmatureAction.005
+    second: EscalarHorizontalIzquierda
   - first:
       74: -2811521879187669694
-    second: Armature.009|ArmatureAction.006
+    second: EscalarHorizontalDerecha
   - first:
       74: -5676916721467946573
-    second: Armature.009|ArmatureAction.007
+    second: Saltar
   - first:
       74: 6462643547064654750
-    second: Armature.009|ArmatureAction.008
+    second: BalancearseMoviendose
   - first:
       74: -1790594371875292989
-    second: Armature.009|ArmatureAction.009
+    second: BalancearseParado
   - first:
       74: -2204375393310864589
-    second: Armature.009|ArmatureAction.010
+    second: BalancearseTrepar
   externalObjects: {}
   materials:
     importMaterials: 1
@@ -189,7 +189,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature.009|ArmatureAction.002
+      name: Correr
       takeName: Armature.009|ArmatureAction.002
       internalID: 0
       firstFrame: 1
@@ -200,7 +200,7 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
@@ -218,7 +218,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature.009|ArmatureAction.003
+      name: EscalarParado
       takeName: Armature.009|ArmatureAction.003
       internalID: 0
       firstFrame: 0
@@ -229,7 +229,7 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
@@ -247,7 +247,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature.009|ArmatureAction.004
+      name: EscalarVertical
       takeName: Armature.009|ArmatureAction.004
       internalID: 0
       firstFrame: 0
@@ -258,7 +258,7 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
@@ -276,7 +276,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature.009|ArmatureAction.005
+      name: EscalarHorizontalIzquierda
       takeName: Armature.009|ArmatureAction.005
       internalID: 0
       firstFrame: 0
@@ -287,7 +287,7 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
@@ -305,7 +305,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature.009|ArmatureAction.006
+      name: EscalarHorizontalDerecha
       takeName: Armature.009|ArmatureAction.006
       internalID: 0
       firstFrame: 0
@@ -316,7 +316,7 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
@@ -334,7 +334,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature.009|ArmatureAction.007
+      name: Saltar
       takeName: Armature.009|ArmatureAction.007
       internalID: 0
       firstFrame: 0
@@ -363,7 +363,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature.009|ArmatureAction.008
+      name: BalancearseMoviendose
       takeName: Armature.009|ArmatureAction.008
       internalID: 0
       firstFrame: 0
@@ -392,7 +392,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature.009|ArmatureAction.009
+      name: BalancearseParado
       takeName: Armature.009|ArmatureAction.009
       internalID: 0
       firstFrame: 0
@@ -403,7 +403,7 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
@@ -421,7 +421,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature.009|ArmatureAction.010
+      name: BalancearseTrepar
       takeName: Armature.009|ArmatureAction.010
       internalID: 0
       firstFrame: 0
@@ -432,7 +432,7 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0

@@ -27,7 +27,7 @@ public class ColisionesCamara : MonoBehaviour
     // Si existe algún obstáculo entre la posición de la cámara y el avatar seguido, hacemos que esta se acerque al mismo.
     private void Update ()
     {
-        if (CambioDePersonajesYAgrupacion.instancia.juntos == false)
+        if (CambioDePersonajesYAgrupacion.instancia != null && CambioDePersonajesYAgrupacion.instancia.juntos == false)
         {
             capasSlc = CambioDePersonajesYAgrupacion.instancia.violetaAct == true ? capasVio : capasAbd;
         }

@@ -35,19 +35,20 @@ public class SuperficieEscalable : MonoBehaviour
     // Si el jugador toca la superficie, le permitimos trepar por ella y le indicamos si el movimiento es posible en X o Z.
     private void OnTriggerEnter (Collider other)
     {
-        if (other.tag == "Jugador") 
+        if (other.CompareTag ("Jugador") == true) 
         {
+            print ("Debería escalar xD");
             jugador.escalarPos = true;
             jugador.movimientoXEsc = movimientoX;
             jugador.limiteEsc1 = limite1;
             jugador.limiteEsc2 = limite2;
             if (movimientoX == true)
             {
-                jugador.rotacionEsc = this.transform.position.z > jugador.transform.position.z ? rotacionesEsc[0] : rotacionesEsc[2];
+                jugador.rotacionEsc = this.transform.position.z > jugador.transform.position.z ? rotacionesEsc[1] : rotacionesEsc[3];
             }
             else 
             {
-                jugador.rotacionEsc = this.transform.position.x > jugador.transform.position.x ? rotacionesEsc[1] : rotacionesEsc[3];
+                jugador.rotacionEsc = this.transform.position.x > jugador.transform.position.x ? rotacionesEsc[0] : rotacionesEsc[2];
             }
         }
     }
@@ -56,8 +57,9 @@ public class SuperficieEscalable : MonoBehaviour
     // No aseguramos de que el jugador no pueda seguir escalando al salir del área cubierta por el trigger.
     private void OnTriggerExit (Collider other)
     {
-        if (other.tag == "Jugador")
+        if (other.CompareTag ("Jugador") == true)
         {
+            print ("Debería no escalar xD");
             jugador.escalarPos = false;
         }
     }
