@@ -85,7 +85,7 @@ public class Ataque : MonoBehaviour
 
             if (other.transform.parent.TryGetComponent (out Naife naife) == true)
             {
-                naife.Danyar (input == true ? saltoFrz : saltoFrz / 5);
+                naife.Danyar (input == true ? saltoFrz : saltoFrz / 5, input);
             }
             else 
             {
@@ -173,7 +173,7 @@ public class Ataque : MonoBehaviour
 
                 if (naife != null) 
                 {
-                    naife.Danyar (input == true ? aranyazoFrz : aranyazoFrz / 5);
+                    naife.Danyar (input == true ? aranyazoFrz : aranyazoFrz / 5, input);
                     print (this.name + ": IMPACTO");
                 }
                 else 

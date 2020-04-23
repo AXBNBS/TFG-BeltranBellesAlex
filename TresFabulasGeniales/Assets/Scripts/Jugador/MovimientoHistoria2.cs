@@ -93,7 +93,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     private void Update ()
     {
         //print (this.name + ": " + input);
-        if (input == false)
+        if (input == false || saludScr.aturdido == true)
         {
             horizontalInp = 0;
             verticalInp = 0;
@@ -582,13 +582,14 @@ public class MovimientoHistoria2 : MonoBehaviour
     // Lanzamos un raycast hacia abajo de no mucha mayor longitud que la altura del personaje para comprobar si este está tocando el suelo o no.
     private bool Sueleado ()
     {
-        if (movimiento.y < 0)
+        switch (estado) 
         {
-            return sueleadorToc == false ? Physics.CheckSphere (this.transform.position + offsetEsfSue, radioEsfSue, capasSinAvt, QueryTriggerInteraction.Ignore) : true;
-        }
-        else 
-        {
-            return false;
+            case Estado.normal:
+                return movimiento.y < 0 ? Physics.CheckSphere (this.transform.position + offsetEsfSue, radioEsfSue, capasSinAvt, QueryTriggerInteraction.Ignore) : false;
+            case Estado.siguiendo:
+                return true;
+            default:
+                return mallaAgtNav.baseOffset == offsetBas;
         }
     }
 
@@ -612,6 +613,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         }
 
         mallaAgtNav.baseOffset += Time.deltaTime * movimiento.y;
+        //print (movimiento.y);
         if (mallaAgtNav.baseOffset <= offsetBas) 
         {
             mallaAgtNav.baseOffset = offsetBas;
@@ -680,8 +682,8 @@ public class MovimientoHistoria2 : MonoBehaviour
             }
             if (saludScr.aturdido == true) 
             {
-                movimiento.x = aturdimientoImp.x * movimientoVel;
-                movimiento.z = aturdimientoImp.z * movimientoVel;
+                movimiento.x = aturdimientoImp.x * movimientoVel * 4;
+                movimiento.z = aturdimientoImp.z * movimientoVel * 4;
             }
             if (pendiente == false)
             {
@@ -832,11 +834,12 @@ public class MovimientoHistoria2 : MonoBehaviour
 
 
     // Hacemos que la posición del enemigo a atacar sea el destino del agente.
-    private void IrHaciaEnemigo () 
+    private void IrHaciaEnemigo ()
     {
-        if (perseguir == true && (mallaAgtNav.baseOffset == offsetBas || mallaAgtNav.baseOffset - offsetBas > ajusteCaiDst)) 
+        //(mallaAgtNav.baseOffset == offsetBas || mallaAgtNav.baseOffset - offsetBas > ajusteCaiDst)
+        if (saludScr.aturdido == false)
         {
-            if (saludScr.aturdido == false)
+            if (perseguir == true && movimiento.y >= 0)
             {
                 if (saltador == true)
                 {
@@ -850,29 +853,28 @@ public class MovimientoHistoria2 : MonoBehaviour
                         {
                             mallaAgtNav.SetDestination (enemigoTrf.position);
                         }
-                        else 
+                        else
                         {
                             mallaAgtNav.SetDestination (this.transform.position);
                             ataqueScr.IniciarAtaque ();
                         }
                     }
-                    else 
+                    else
                     {
                         mallaAgtNav.SetDestination (this.transform.position);
                     }
                 }
 
-                if (saltador == false || Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (enemigoTrf.position.x, enemigoTrf.position.z)) > radioRotAtq)
+                if (saltador == false || Vector2.Distance(new Vector2(this.transform.position.x, this.transform.position.z), new Vector2(enemigoTrf.position.x, enemigoTrf.position.z)) > radioRotAtq)
                 {
                     this.transform.rotation = Quaternion.Lerp (this.transform.rotation, Quaternion.Euler (this.transform.rotation.eulerAngles.x,
                         Quaternion.LookRotation(this.transform.position - enemigoTrf.position).eulerAngles.y - 90, this.transform.rotation.eulerAngles.z), Time.deltaTime * rotacionVel);
                 }
             }
-            else 
-            {
-                //mallaAgtNav.SetDestination (this.transform.position);
-                mallaAgtNav.velocity = aturdimientoImp * movimientoVel;
-            }
+        }
+        else
+        {
+            mallaAgtNav.velocity = sueleado == true ? aturdimientoImp * movimientoVel * 4 : Vector3.zero;
         }
     }
 

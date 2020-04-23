@@ -127,6 +127,7 @@ MonoBehaviour:
   agresivo: 0
   saltado: 0
   chocado: 0
+  collidersIgn: []
 --- !u!1 &4234741656090347710
 GameObject:
   m_ObjectHideFlags: 0

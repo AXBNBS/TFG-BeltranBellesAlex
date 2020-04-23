@@ -40,22 +40,19 @@ public class Salud : MonoBehaviour
     {
         if (devolverInp == true) 
         {
-            //if (animador.GetCurrentAnimatorStateInfo(0).IsTag ("Aturdimiento") == false && animador.GetAnimatorTransitionInfo(0).IsName ("AnyState -> RecibirDaño") == false)
-            //{
-                aturdido = false;
+            aturdido = false;
             devolverInp = false;
 
-                if (CambioDePersonajesYAgrupacion.instancia.ActivarInputAutorizado (this) == true)
-                {
-                    ControlarInput (true);
-                }
-                InvulnerabilidadTemporal ();
-            //}
+            if (CambioDePersonajesYAgrupacion.instancia.ActivarInputAutorizado (this) == true)
+            {
+                ControlarInput (true);
+            }
+            InvulnerabilidadTemporal ();
         }
     }
 
 
-    // .
+    // Más debug.
     /*private void OnControllerColliderHit (ControllerColliderHit hit)
     {
         if (this.name == "Abedul" && hit.transform.CompareTag ("Enemigo") == true) 
@@ -78,6 +75,7 @@ public class Salud : MonoBehaviour
             if (movimientoScr.input == true)
             {
                 MoverEnY ();
+                ControlarInput (false);
 
                 salud -= 1;
 
@@ -87,9 +85,8 @@ public class Salud : MonoBehaviour
                 }
             }
             aturdido = true;
-            movimientoScr.aturdimientoImp = new Vector3(impulso.x, 0, impulso.z).normalized;
+            movimientoScr.aturdimientoImp = movimientoScr.sueleado == true ? new Vector3(impulso.x, 0, impulso.z).normalized : Vector3.zero;
 
-            ControlarInput (false);
             Animar (true);
             this.Invoke ("PararAnimacion", 0.3f);
         }
@@ -115,17 +112,12 @@ public class Salud : MonoBehaviour
     // Activamos o desactivamos todo el input del jugador.
     private void ControlarInput (bool activar) 
     {
-        movimientoScr.input = activar;
-        /*if (activar == false) 
-        {
-            print (this.name + ": llegué");
-        }*/
+        CambioDePersonajesYAgrupacion.instancia.input = activar;
         ataqueScr.input = activar;
         if (empujeScr != null)
         {
             empujeScr.input = activar;
         }
-        //devolverInp = !activar;
     }
 
 

@@ -155,6 +155,80 @@ Transform:
   m_Father: {fileID: 2118156254}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &292803442
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -927199367670048503, guid: 62a061d5a98ea8045bd073506c9b182d,
+        type: 3}
+      propertyPath: m_Name
+      value: twii
+      objectReference: {fileID: 0}
+    - target: {fileID: -6057140222963153312, guid: 62a061d5a98ea8045bd073506c9b182d,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: bc7405e349f183540a94d55a96ab79c8, type: 2}
+    - target: {fileID: -4216859302048453862, guid: 62a061d5a98ea8045bd073506c9b182d,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -8.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 62a061d5a98ea8045bd073506c9b182d,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.12
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 62a061d5a98ea8045bd073506c9b182d,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -115.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 62a061d5a98ea8045bd073506c9b182d,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 62a061d5a98ea8045bd073506c9b182d,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 62a061d5a98ea8045bd073506c9b182d,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 62a061d5a98ea8045bd073506c9b182d,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 62a061d5a98ea8045bd073506c9b182d,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 62a061d5a98ea8045bd073506c9b182d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 62a061d5a98ea8045bd073506c9b182d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 62a061d5a98ea8045bd073506c9b182d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 62a061d5a98ea8045bd073506c9b182d, type: 3}
 --- !u!1 &392228552
 GameObject:
   m_ObjectHideFlags: 0
@@ -262,9 +336,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41f0848cbdf66e84da479670fc06c5d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hablando: 0
   texto:
   - "CILINDRO=Lol, \xBFde verdad est\xE1s hablando con un cilindro?"
   - CILINDRO=Ve a que te operen de la cabeza o algo xdxdxd*Puto pringao.
+  moviendose: 0
+  hablarCmbRot: 0
+  hablarRotX: 0
+  hablarRotZ: 0
 --- !u!135 &392228558
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -460,6 +539,27 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 14
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!21 &769662083
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Hidden/FMColor
+  m_Shader: {fileID: 4800000, guid: ff8efdd52694d4f0091d5d6e468fac4c, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs: []
+    m_Floats: []
+    m_Colors: []
 --- !u!1 &884730775
 GameObject:
   m_ObjectHideFlags: 0
@@ -876,9 +976,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41f0848cbdf66e84da479670fc06c5d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hablando: 0
   texto:
   - "CIKKAN HEMBRA=Weno pos aqu\xED estamos jejej"
   - "CIKKAN HEMBRA=Menudo idle de puta madre me estoy marcando, \xBFeh?"
+  moviendose: 0
+  hablarCmbRot: 0
+  hablarRotX: 0
+  hablarRotZ: 0
 --- !u!135 &961490759
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1145,7 +1250,7 @@ MonoBehaviour:
   m_OverrideTileSize: 0
   m_TileSize: 256
   m_OverrideVoxelSize: 0
-  m_VoxelSize: 1.6666666
+  m_VoxelSize: 1
   m_BuildHeightMesh: 0
   m_NavMeshData: {fileID: 23800000, guid: 8e74346d99846a640bf0dae91abe1151, type: 2}
 --- !u!4 &1104993012
@@ -1496,6 +1601,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   input: 1
   texto: []
+  hablables: []
   rotacionVel: 10
 --- !u!143 &1236090950
 CharacterController:
@@ -2146,11 +2252,6 @@ PrefabInstance:
       propertyPath: cambioPosVel
       value: 5
       objectReference: {fileID: 0}
-    - target: {fileID: 2900223902310915861, guid: 5e0717d8e3dc57c4ab9b080ac16d2729,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2900223902310915859, guid: 5e0717d8e3dc57c4ab9b080ac16d2729,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2159,6 +2260,11 @@ PrefabInstance:
     - target: {fileID: 2900223902310915859, guid: 5e0717d8e3dc57c4ab9b080ac16d2729,
         type: 3}
       propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2900223902310915861, guid: 5e0717d8e3dc57c4ab9b080ac16d2729,
+        type: 3}
+      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -2410,27 +2516,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   input: 0
   movimientoVel: 15
---- !u!21 &1955584223
-Material:
-  serializedVersion: 6
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: Hidden/FMColor
-  m_Shader: {fileID: 4800000, guid: ff8efdd52694d4f0091d5d6e468fac4c, type: 3}
-  m_ShaderKeywords: 
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs: []
-    m_Floats: []
-    m_Colors: []
 --- !u!1 &1987692877
 GameObject:
   m_ObjectHideFlags: 0

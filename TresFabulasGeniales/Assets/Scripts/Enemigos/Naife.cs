@@ -11,10 +11,10 @@ public class Naife : MonoBehaviour
     public enum Estado { normal, atacando, frenando, saltando, muriendo };
     public Estado estado;
 
-    [SerializeField] private bool quieto, sentidoHor, embestida, espera, animarFin, gatosCer, agresivo, saltado, chocado;
+    private bool quieto, sentidoHor, embestida, espera, animarFin, gatosCer, agresivo, saltado, chocado, controladoAvt;
     private AreaNaifes padreScr;
     private CapsuleCollider capsula;
-    private float centroY, radio, salud, tiempoEmb, saltoDstMax, saltoDst;
+    public float centroY, radio, salud, tiempoEmb, saltoDstMax, saltoDst;
     private NavMeshAgent agente;
     private Animator animador;
     private Transform padreRot, objetivoTrf, modelo;
@@ -43,8 +43,6 @@ public class Naife : MonoBehaviour
         modelo = animador.transform;
         collidersIgn = new List<Collider> ();
         espalda = new EspaldaEnemigo[] { this.transform.GetChild(1).GetComponent<EspaldaEnemigo> (), this.transform.GetChild(2).GetComponent<EspaldaEnemigo> () };
-        //print (this.transform.localScale.x * capsula.radius);
-        //print (capsula.bounds.extents.x);
     }
 
 
@@ -113,7 +111,7 @@ public class Naife : MonoBehaviour
                     if (espera == false) 
                     {
                         //print ("Vuelvo a la carga en 2 secs.");
-                        this.Invoke ("VolverALaCarga", 2);
+                        this.Invoke ("VolverALaCarga", controladoAvt == true ? 1 : 1.5f);
                     }
                     else 
                     {
@@ -143,7 +141,7 @@ public class Naife : MonoBehaviour
                     if (agresivo == true) 
                     {
                         //print ("Vuelvo a la carga en 1 sec.");
-                        this.Invoke ("VolverALaCarga", 1);
+                        this.Invoke ("VolverALaCarga", 0.5f);
                     }
                     else 
                     {
@@ -202,10 +200,6 @@ public class Naife : MonoBehaviour
             case Estado.atacando:
                 if (embestida == true && collision.transform.CompareTag ("Jugador") == true) 
                 {
-                    //print (collision.transform.name);
-                    //embestida = false;
-                    //estado = Estado.frenando;
-               
                     Physics.IgnoreCollision (capsula, collision.collider, true);
                     collision.transform.GetComponent<Salud>().RecibirDanyo (agente.velocity.normalized);
                     collidersIgn.Add (collision.collider);
@@ -231,6 +225,7 @@ public class Naife : MonoBehaviour
     public void IniciarAtaque (Transform jugador) 
     {
         objetivoTrf = jugador;
+        controladoAvt = objetivoTrf.GetComponent<Ataque>().input;
         this.transform.parent = padreScr.transform;
         padreRot.rotation = Quaternion.identity;
         estado = Estado.atacando;
@@ -253,7 +248,7 @@ public class Naife : MonoBehaviour
             //print ("Se me llamó para volver al estado normal.");
 
             this.CancelInvoke ("VolverALaCarga");
-            this.Invoke ("QuietoOGirando", 1);
+            this.Invoke ("QuietoOGirando", 0.5f);
         }
         else 
         {
@@ -264,9 +259,10 @@ public class Naife : MonoBehaviour
 
 
     // El naife pierde la salud que corresponda, si se queda sin salud desactivamos el objeto y miramos si quedan otros naifes para atacar al jugador.
-    public void Danyar (float danyo) 
+    public void Danyar (float danyo, bool controlado) 
     {
         salud -= danyo;
+        controladoAvt = controlado;
 
         if (salud > 0) 
         {
