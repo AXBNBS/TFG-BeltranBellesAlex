@@ -36,6 +36,72 @@ ModelImporter:
   - first:
       74: 8558205512365889423
     second: Armature.008|ArmatureAction.010
+  - first:
+      74: -960898424075949690
+    second: Armature.001|ArmatureAction
+  - first:
+      74: -8639993316982285888
+    second: Armature.001|ArmatureAction.001
+  - first:
+      74: 1570611337149101020
+    second: Armature.001|ArmatureAction.002
+  - first:
+      74: 546454221387537807
+    second: Armature.001|ArmatureAction.003
+  - first:
+      74: -9126003838388519604
+    second: Armature.001|ArmatureAction.004
+  - first:
+      74: 466967323330049030
+    second: Armature.001|ArmatureAction.005
+  - first:
+      74: -5055066409899995020
+    second: Armature.001|ArmatureAction.006
+  - first:
+      74: 507298839723468392
+    second: Armature.001|ArmatureAction.007
+  - first:
+      74: -4816724595603259374
+    second: Armature.001|ArmatureAction.008
+  - first:
+      74: -1539872344612450275
+    second: Armature.001|ArmatureAction.009
+  - first:
+      74: 359260234213476796
+    second: Armature.001|ArmatureAction.010
+  - first:
+      74: 4531089911397796181
+    second: Armature.009|ArmatureAction
+  - first:
+      74: 4844323948866576991
+    second: Armature.009|ArmatureAction.001
+  - first:
+      74: -6485890846602907707
+    second: Armature.009|ArmatureAction.002
+  - first:
+      74: -3116133976926373356
+    second: Armature.009|ArmatureAction.003
+  - first:
+      74: 5126647118955646180
+    second: Armature.009|ArmatureAction.004
+  - first:
+      74: 4643891022079602573
+    second: Armature.009|ArmatureAction.005
+  - first:
+      74: -2811521879187669694
+    second: Armature.009|ArmatureAction.006
+  - first:
+      74: -5676916721467946573
+    second: Armature.009|ArmatureAction.007
+  - first:
+      74: 6462643547064654750
+    second: Armature.009|ArmatureAction.008
+  - first:
+      74: -1790594371875292989
+    second: Armature.009|ArmatureAction.009
+  - first:
+      74: -2204375393310864589
+    second: Armature.009|ArmatureAction.010
   externalObjects: {}
   materials:
     importMaterials: 1

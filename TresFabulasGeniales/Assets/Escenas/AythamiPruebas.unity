@@ -699,7 +699,7 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: 4b9a7f939f981d04782c11ca36466181,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -20.7
+      value: 49.8
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 4b9a7f939f981d04782c11ca36466181,
         type: 3}
@@ -709,7 +709,7 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: 4b9a7f939f981d04782c11ca36466181,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -270.91
+      value: -407.7
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 4b9a7f939f981d04782c11ca36466181,
         type: 3}
@@ -2725,13 +2725,14 @@ MonoBehaviour:
   perseguir: 0
   descansar: 0
   companyeroCer: 0
+  saltador: 0
   movimiento: {x: 0, y: 0, z: 0}
   saltoVel: 0
   huesos: []
+  aturdimientoImp: {x: 0, y: 0, z: 0}
   movimientoVelNor: 0
   movimientoVelRed: 0
   rotacionVel: 10
-  saltoDst: 0
   aleatoriedad: 0
   deslizVel: 0
   pendienteFrz: 0
@@ -2743,12 +2744,10 @@ MonoBehaviour:
     m_Bits: 0
   companyeroMov: {fileID: 0}
   pararDstSeg: 0
-  pararDstAtq: 0
   ajusteCaiDst: 0
   multiplicadorSalBaj: 0
   deslizFrc: 0
   pendienteRayLon: 0
-  saltador: 0
 --- !u!23 &769476533
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3051,27 +3050,6 @@ Transform:
   m_Father: {fileID: 462798919}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!21 &820650048
-Material:
-  serializedVersion: 6
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: Hidden/FMColor
-  m_Shader: {fileID: 4800000, guid: ff8efdd52694d4f0091d5d6e468fac4c, type: 3}
-  m_ShaderKeywords: 
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs: []
-    m_Floats: []
-    m_Colors: []
 --- !u!1 &878545739
 GameObject:
   m_ObjectHideFlags: 0
@@ -3946,6 +3924,27 @@ Transform:
   m_Father: {fileID: 1967134115}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!21 &1096797118
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Hidden/FMColor
+  m_Shader: {fileID: 4800000, guid: ff8efdd52694d4f0091d5d6e468fac4c, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs: []
+    m_Floats: []
+    m_Colors: []
 --- !u!1001 &1130096010
 PrefabInstance:
   m_ObjectHideFlags: 0
