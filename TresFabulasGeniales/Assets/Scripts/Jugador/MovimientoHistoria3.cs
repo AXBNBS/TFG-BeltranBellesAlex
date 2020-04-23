@@ -21,7 +21,7 @@ public class MovimientoHistoria3 : MonoBehaviour
     private CharacterController characterCtr;
     private float sueloDst;
     private int verticalInp, horizontalInp;
-    private bool saltoInp, engancharseInp, saltado, impulsoMnt;
+    private bool saltoInp, engancharseInp, saltado, impulsoMnt, sueleado;
     private LineRenderer renderizadorLin;
     private Quaternion[] rotacionesBal;
     private Quaternion rotacionBal;
@@ -65,6 +65,7 @@ public class MovimientoHistoria3 : MonoBehaviour
             saltoInp = false;
             engancharseInp = false;
         }
+        sueleado = Sueleado ();
 
         DeterminarEstado ();
         switch (estado)
@@ -117,10 +118,10 @@ public class MovimientoHistoria3 : MonoBehaviour
 
 
     // A ver si debugueamos.
-    private void OnDrawGizmos ()
+    /*private void OnDrawGizmos ()
     {
         Gizmos.DrawRay (this.transform.position, -Vector3.up * sueloDst);   
-    }
+    }*/
 
 
     // Lanzamos un raycast hacia abajo de no mucha mayor longitud que la altura del personaje para comprobar si este está tocando el suelo o no.
@@ -137,7 +138,7 @@ public class MovimientoHistoria3 : MonoBehaviour
         switch (estado) 
         {
             case Estado.normal:
-                if (escalarPos == true && Sueleado () == false) 
+                if (escalarPos == true && sueleado == false) 
                 {
                     estado = Estado.trepando;
                     impulsoCai = Vector3.zero;
@@ -153,8 +154,8 @@ public class MovimientoHistoria3 : MonoBehaviour
                     break;
                 }
 
-                if (engancharseInp == true && this.transform.position.y < limiteBal && enganchePnt != Vector3.zero && Sueleado () == false &&
-                    Physics.Raycast (this.transform.position, enganchePnt - this.transform.position, 15, capas, QueryTriggerInteraction.Ignore) == false) 
+                if (engancharseInp == true && this.transform.position.y < limiteBal && enganchePnt != Vector3.zero && sueleado == false && Physics.Raycast (this.transform.position, enganchePnt - this.transform.position, 15, capas, 
+                    QueryTriggerInteraction.Ignore) == false) 
                 {
                     estado = Estado.balanceandose;
                     balanceo.twii.velocidad = impulsoBal * 2;
@@ -318,7 +319,7 @@ public class MovimientoHistoria3 : MonoBehaviour
         }
         else 
         {
-            if (Sueleado () == true)
+            if (sueleado == true)
             {
                 direccionMov.y = 0;
             }
@@ -337,7 +338,7 @@ public class MovimientoHistoria3 : MonoBehaviour
     // Si el personaje está en el suelo y se ha pulsado el botón de salto, aplicamos una fuerza vertical que le permite saltar.
     private void SaltarSuelo () 
     {
-        if (saltoInp == true && Sueleado () == true) 
+        if (saltoInp == true && sueleado == true) 
         {
             direccionMov.y = saltoVel;
             saltado = true;
