@@ -22,11 +22,12 @@ public class MovimientoHistoria3 : MonoBehaviour
     private int verticalInp, horizontalInp;
     private bool saltoInp, engancharseInp, saltado, impulsoMnt, sueleado;
     private LineRenderer renderizadorLin;
-    private Quaternion[] rotacionesBal;
+    private Quaternion[] rotacionesBal, rotacionesMod;
     private Quaternion rotacionBal;
     private enum Estado { normal, trepando, rodando, balanceandose };
     private Estado estado;
     private Animator animador;
+    private Transform modeloTrf;
 
 
     // Inicialización de variables.
@@ -43,8 +44,10 @@ public class MovimientoHistoria3 : MonoBehaviour
         saltado = false;
         renderizadorLin = this.GetComponent<LineRenderer> ();
         rotacionesBal = new Quaternion[] { Quaternion.Euler (0, 0, 0), Quaternion.Euler (0, 90, 0), Quaternion.Euler (0, 180, 0), Quaternion.Euler (0, 270, 0) };
+        rotacionesMod = new Quaternion[] { Quaternion.identity, Quaternion.Euler (0, 0, 35) };
         estado = Estado.normal;
         animador = this.GetComponentInChildren<Animator> ();
+        modeloTrf = animador.transform;
     }
 
 
@@ -70,6 +73,7 @@ public class MovimientoHistoria3 : MonoBehaviour
         sueleado = Sueleado ();
 
         DeterminarEstado ();
+        RotarModelo ();
         switch (estado)
         {
             case Estado.normal:
@@ -473,7 +477,7 @@ public class MovimientoHistoria3 : MonoBehaviour
     }
 
 
-    // .
+    // Animamos al personaje de acuerdo con su situación actual.
     private void Animar () 
     {
         switch (estado) 
@@ -499,6 +503,13 @@ public class MovimientoHistoria3 : MonoBehaviour
             default:
                 break;
         }
+    }
+
+
+    // .
+    private void RotarModelo () 
+    {
+        modeloTrf.localRotation = Quaternion.Slerp (modeloTrf.localRotation, (sueleado == true || Estado.normal != estado) ? rotacionesMod[0] : rotacionesMod[1], Time.deltaTime * rotacionVel);
     }
 }
 /*using UnityEngine.SceneManagement;
