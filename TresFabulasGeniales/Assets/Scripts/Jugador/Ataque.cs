@@ -112,7 +112,7 @@ public class Ataque : MonoBehaviour
 
 
     // Pal debug.
-    /*private void OnDrawGizmos ()
+    private void OnDrawGizmos ()
     {
         if (ataqueCenTrf != null) 
         {
@@ -123,7 +123,7 @@ public class Ataque : MonoBehaviour
             Gizmos.DrawWireSphere (esferaCenSup, rangoAtq);
             Gizmos.DrawWireSphere (new Vector3 (esferaCenSup.x, esferaCenSup.y - this.transform.localScale.y * (characterCtr.height - characterCtr.radius * 2), esferaCenSup.z), rangoAtq);
         }
-    }*/
+    }
 
 
     // Activamos el trigger del animador que permite que se reproduzca la animación de atacar, tenemos en cuenta el cooldown en el caso de que ataque la IA.
@@ -248,6 +248,7 @@ public class Ataque : MonoBehaviour
 
         foreach (Collider c in colliders) 
         {
+            print (c.name);
             if (c.isTrigger == true && c.GetComponent<BichoPegajoso> () != null) 
             {
                 resultado.Add (c);

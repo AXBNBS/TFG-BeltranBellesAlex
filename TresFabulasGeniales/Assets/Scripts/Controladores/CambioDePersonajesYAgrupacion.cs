@@ -58,7 +58,7 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
         detrases[1] = personajesTrf[1].parent.GetChild (0);
         puntosSeg[0] = personajesTrf[0].parent.GetChild (1);
         puntosSeg[1] = personajesTrf[1].parent.GetChild (1);
-        if (personajesMov[0].input == true)
+        if (personajesMov[0].transform != abedulEmp.transform)
         {
             camara.objetivo = personajesTrf[0];
             camara.detras = detrases[0];
