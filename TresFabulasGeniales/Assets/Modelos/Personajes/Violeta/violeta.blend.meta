@@ -23,16 +23,16 @@ ModelImporter:
     second: Armature.001|ArmatureAction.005
   - first:
       74: -3997514183246978980
-    second: Armature.002|ArmatureAction
+    second: Idle Violeta
   - first:
       74: 8368265636151829555
-    second: Armature.002|ArmatureAction.001
+    second: Correr Violeta
   - first:
       74: -664916953551355124
-    second: Armature.002|ArmatureAction.002
+    second: Salto arriba Violeta
   - first:
       74: 3656176099244414663
-    second: Armature.002|ArmatureAction.003
+    second: Salto abajo Violeta
   - first:
       74: 2693659394510238484
     second: Armature.002|ArmatureAction.004
@@ -68,7 +68,7 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Armature.002|ArmatureAction
+      name: Idle Violeta
       takeName: Armature.002|ArmatureAction
       internalID: 0
       firstFrame: 0
@@ -97,7 +97,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature.002|ArmatureAction.001
+      name: Correr Violeta
       takeName: Armature.002|ArmatureAction.001
       internalID: 0
       firstFrame: 0
@@ -126,7 +126,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature.002|ArmatureAction.002
+      name: Salto arriba Violeta
       takeName: Armature.002|ArmatureAction.002
       internalID: 0
       firstFrame: 0
@@ -155,7 +155,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature.002|ArmatureAction.003
+      name: Salto abajo Violeta
       takeName: Armature.002|ArmatureAction.003
       internalID: 0
       firstFrame: 0

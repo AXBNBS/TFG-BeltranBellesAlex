@@ -174,7 +174,6 @@ public class Ataque : MonoBehaviour
                 if (naife != null) 
                 {
                     naife.Danyar (input == true ? aranyazoFrz : aranyazoFrz / 5, input);
-                    print (this.name + ": IMPACTO");
                 }
                 else 
                 {
@@ -194,7 +193,6 @@ public class Ataque : MonoBehaviour
         {
             BichoPegajoso bicho = b.GetComponent<BichoPegajoso> ();
 
-            print (b.name);
             if (bicho != null) 
             {
                 if (bicho.pegado == false)
@@ -249,7 +247,9 @@ public class Ataque : MonoBehaviour
         foreach (Collider c in colliders) 
         {
             print (c.name);
-            if (c.isTrigger == true && c.GetComponent<BichoPegajoso> () != null) 
+            print (resultado.Contains (c));
+            print (c.GetComponent<BichoPegajoso> () != null);
+            if (resultado.Contains (c) == false && c.GetComponent<BichoPegajoso> () != null) 
             {
                 resultado.Add (c);
 
