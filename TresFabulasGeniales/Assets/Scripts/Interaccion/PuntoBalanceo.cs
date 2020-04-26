@@ -7,8 +7,8 @@ using UnityEngine;
 
 public class PuntoBalanceo : MonoBehaviour
 {
-    [SerializeField] private int offsetY;
     [SerializeField] private bool movimientoX;
+    [SerializeField] private int offsetY;
     private float limiteY;
     private MovimientoHistoria3 jugador;
 

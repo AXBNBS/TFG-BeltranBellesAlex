@@ -13,7 +13,7 @@ public class MovimientoHistoria3 : MonoBehaviour
     public Quaternion rotacionEsc;
     public Transform bolaSup;
 
-    [SerializeField] private int movimientoVel, rotacionVel, saltoVel, escaladaVel, gravedad;
+    [SerializeField] private int movimientoVel, rotacionVel, saltoVel, escaladaVel, gravedad, balanceoVelMin;
     [SerializeField] private LayerMask capas;
     private Camera camara;
     private Vector3 direccionMov, previaPos, impulsoBal, impulsoCai, impulsoPar, offsetCenCtr;
@@ -175,11 +175,11 @@ public class MovimientoHistoria3 : MonoBehaviour
                     break;
                 }
 
-                if (engancharseInp == true && this.transform.position.y < limiteBal && enganchePnt != Vector3.zero && sueleado == false && Physics.Raycast (this.transform.position, enganchePnt - this.transform.position, 15, capas, 
-                    QueryTriggerInteraction.Ignore) == false) 
+                if (engancharseInp == true && this.transform.position.y < limiteBal && enganchePnt != Vector3.zero && sueleado == false && Physics.Raycast (this.transform.position, enganchePnt - this.transform.position, 
+                    Vector3.Distance (this.transform.position, enganchePnt), capas, QueryTriggerInteraction.Ignore) == false) 
                 {
                     estado = Estado.balanceandose;
-                    balanceo.twii.velocidad = impulsoBal * 2;
+                    balanceo.twii.velocidad = impulsoBal / 2;
                     renderizadorLin.enabled = true;
                     if (movimientoXBal == true)
                     {

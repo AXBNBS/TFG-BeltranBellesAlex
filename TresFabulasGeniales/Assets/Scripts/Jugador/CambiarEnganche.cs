@@ -19,11 +19,11 @@ public class CambiarEnganche : MonoBehaviour
 
 
     // .
-    private void Update ()
+    /*private void Update ()
     {
         if (Mathf.RoundToInt (Input.GetAxisRaw ("Engancharse")) != 0) 
         {
             colgarse.balanceo.CambiarEnganche (engancheNue.position);
         }
-    }
+    }*/
 }
