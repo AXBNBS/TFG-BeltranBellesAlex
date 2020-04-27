@@ -9,8 +9,9 @@ using UnityEngine;
 public class Twii
 {
     public Vector3 velocidad;
+    public int gravedad;
 
-    [SerializeField] private int gravedad;
+    //[SerializeField] private int gravedad;
     [SerializeField] private Vector3 gravedadDir;
     [SerializeField] private float resistencia, velocidadMax;
     private Vector3 resistenciaDir;

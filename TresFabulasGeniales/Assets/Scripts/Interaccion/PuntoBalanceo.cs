@@ -9,14 +9,26 @@ public class PuntoBalanceo : MonoBehaviour
 {
     [SerializeField] private bool movimientoX;
     [SerializeField] private int offsetY;
-    private float limiteY;
+    public float limiteEng, limiteSupY, limiteInfY;
     private MovimientoHistoria3 jugador;
 
     
     // Inicializamos una unidad de variable.
     private void Start ()
     {
-        limiteY = this.transform.position.y + offsetY;
+        SphereCollider[] collidersEsf = this.GetComponents<SphereCollider> ();
+
+        limiteEng = this.transform.position.y + offsetY;
+        limiteSupY = limiteEng - 5;
+        foreach (SphereCollider e in collidersEsf) 
+        {
+            if (e.isTrigger == true) 
+            {
+                limiteInfY = e.bounds.min.y;
+
+                break;
+            }
+        }
         jugador = GameObject.FindObjectOfType<MovimientoHistoria3> ();
     }
 
@@ -33,9 +45,12 @@ public class PuntoBalanceo : MonoBehaviour
     {
         if (other.CompareTag ("Jugador") == true) 
         {
+            jugador.enganchePer = true;
             jugador.enganchePnt = this.transform.position;
             jugador.movimientoXBal = movimientoX;
-            jugador.limiteBal = limiteY;
+            jugador.limiteBal = limiteEng;
+            jugador.cuerdaLimSup = limiteSupY;
+            jugador.cuerdaLimInf = limiteInfY;
         }
     }
 
@@ -45,7 +60,7 @@ public class PuntoBalanceo : MonoBehaviour
     {
         if (other.CompareTag ("Jugador") == true) 
         {
-            jugador.enganchePnt = Vector3.zero;
+            jugador.enganchePer = false;
         }
     }
 }

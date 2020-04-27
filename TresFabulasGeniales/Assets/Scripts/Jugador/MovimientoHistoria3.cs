@@ -1,53 +1,51 @@
 ﻿
 using UnityEngine.SceneManagement;
 using UnityEngine;
-using UnityEngine.AI;
-using System.Collections;
+
+
 
 public class MovimientoHistoria3 : MonoBehaviour
 {
-    public bool input, movimientoXEsc, movimientoXBal, escalarPos;
+    public bool input, movimientoXEsc, movimientoXBal, escalarPos, enganchePer;
     public Balanceo balanceo;
     public Vector3 enganchePnt;
-    public float limiteBal, limiteEsc1, limiteEsc2;
+    public float limiteBal, limiteEsc1, limiteEsc2, cuerdaLimSup, cuerdaLimInf;
     public Quaternion rotacionEsc;
     public Transform bolaSup;
 
-    [SerializeField] private int movimientoVel, rotacionVel, saltoVel, escaladaVel, gravedad, balanceoVelMin;
+    [SerializeField] private int movimientoVel, rotacionVel, saltoVel, escaladaVel, gravedad, balanceoVelMin, balanceoDstMin, longitudCueVel, interpolacionBalVel;
     [SerializeField] private LayerMask capas;
-    private Camera camara;
+    [SerializeField] private int[] gravedades;
+    private Transform camaraTrf, modeloTrf, cuerdaIniTrf;
     private Vector3 direccionMov, previaPos, impulsoBal, impulsoCai, impulsoPar, offsetCenCtr;
     private CharacterController characterCtr;
-    private float sueloDst, radioEsfSue;
+    private float radioEsfSue;
     private int verticalInp, horizontalInp;
-    private bool saltoInp, engancharseInp, saltado, impulsoMnt, sueleado;
+    private bool saltoInp, engancharseInp, cuerdaLonInp, cuerdaLonInpUltFrm, saltado, impulsoMnt, sueleado, alteraCue, paradoBal;
     private LineRenderer renderizadorLin;
-    private Quaternion[] rotacionesBal, rotacionesMod;
-    private Quaternion rotacionBal;
+    private Quaternion[] rotacionesMod;
     private enum Estado { normal, trepando, rodando, balanceandose };
     private Estado estado;
     private Animator animador;
-    private Transform modeloTrf;
 
 
     // Inicialización de variables.
     private void Start ()
     {
         escalarPos = false;
-        camara = GameObject.FindGameObjectWithTag("CamaraPrincipal").GetComponent<Camera> ();
+        camaraTrf = GameObject.FindGameObjectWithTag("CamaraPrincipal").transform;
         direccionMov = Vector3.zero;
         characterCtr = this.GetComponent<CharacterController> ();
         previaPos = this.transform.localPosition;
         offsetCenCtr = characterCtr.bounds.extents.y * Vector3.down * 0.9f;
-        sueloDst = characterCtr.height / 2 + 0.1f;
         radioEsfSue = characterCtr.bounds.extents.x / 2;
         saltado = false;
         renderizadorLin = this.GetComponent<LineRenderer> ();
-        rotacionesBal = new Quaternion[] { Quaternion.Euler (0, 0, 0), Quaternion.Euler (0, 90, 0), Quaternion.Euler (0, 180, 0), Quaternion.Euler (0, 270, 0) };
         rotacionesMod = new Quaternion[] { Quaternion.identity, Quaternion.Euler (0, 0, 35) };
         estado = Estado.normal;
         animador = this.GetComponentInChildren<Animator> ();
         modeloTrf = animador.transform;
+        cuerdaIniTrf = this.transform.GetChild (this.transform.childCount - 2);
     }
 
 
@@ -62,6 +60,7 @@ public class MovimientoHistoria3 : MonoBehaviour
             horizontalInp = Mathf.RoundToInt (Input.GetAxisRaw ("Movimiento horizontal"));
             saltoInp = estado != Estado.balanceandose ? Input.GetButtonDown ("Salto") : false;
             engancharseInp = estado != Estado.trepando && estado != Estado.rodando ? Mathf.RoundToInt (Input.GetAxisRaw ("Engancharse")) != 0 : false;
+            cuerdaLonInp = Estado.balanceandose != estado ? false : Mathf.RoundToInt (Input.GetAxisRaw ("Variar altura de cuerda")) != 0;
         }
         else 
         {
@@ -93,6 +92,7 @@ public class MovimientoHistoria3 : MonoBehaviour
             default:
                 Balancear ();
                 CambiarPosicionCuerda ();
+                SubirOBajarPorCuerda ();
 
                 break;
         }
@@ -103,6 +103,7 @@ public class MovimientoHistoria3 : MonoBehaviour
         }
         impulsoMnt = false;
         previaPos = this.transform.localPosition;
+        cuerdaLonInpUltFrm = cuerdaLonInp;
 
         Animar ();
     }
@@ -175,20 +176,12 @@ public class MovimientoHistoria3 : MonoBehaviour
                     break;
                 }
 
-                if (engancharseInp == true && this.transform.position.y < limiteBal && enganchePnt != Vector3.zero && sueleado == false && Physics.Raycast (this.transform.position, enganchePnt - this.transform.position, 
+                if (engancharseInp == true && enganchePer == true && this.transform.position.y < limiteBal && sueleado == false && Physics.Raycast (this.transform.position, enganchePnt - this.transform.position, 
                     Vector3.Distance (this.transform.position, enganchePnt), capas, QueryTriggerInteraction.Ignore) == false) 
                 {
                     estado = Estado.balanceandose;
                     balanceo.twii.velocidad = impulsoBal / 2;
                     renderizadorLin.enabled = true;
-                    if (movimientoXBal == true)
-                    {
-                        rotacionBal = Quaternion.Angle (this.transform.rotation, rotacionesBal[2]) < Quaternion.Angle (this.transform.rotation, rotacionesBal[0]) ? rotacionesBal[2] : rotacionesBal[0];
-                    }
-                    else
-                    {
-                        rotacionBal = Quaternion.Angle (this.transform.rotation, rotacionesBal[1]) < Quaternion.Angle (this.transform.rotation, rotacionesBal[3]) ? rotacionesBal[1] : rotacionesBal[3];
-                    }
 
                     balanceo.CambiarEnganche (enganchePnt);
 
@@ -221,7 +214,8 @@ public class MovimientoHistoria3 : MonoBehaviour
                     renderizadorLin.enabled = false;
                     this.transform.parent = null;
                     impulsoCai = new Vector3 (balanceo.twii.velocidad.x, 0, balanceo.twii.velocidad.z);
-                    direccionMov.y = balanceo.twii.velocidad.y;
+                    direccionMov.y = alteraCue == false ? balanceo.twii.velocidad.y : 0;
+                    alteraCue = false;
                 }
 
                 break;
@@ -233,38 +227,80 @@ public class MovimientoHistoria3 : MonoBehaviour
     //haciendo que la posición del personaje quede fija en el otro y también rotamos al personaje de manera que se alinee con el movimiento.
     private void Balancear ()
     {
-        if (this.transform.position.y < limiteBal) 
+        float engancheDstXZ = Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (enganchePnt.x, enganchePnt.z));
+
+        if (cuerdaLonInp == false) 
         {
-            if (verticalInp != 0)
+            if (cuerdaLonInp != cuerdaLonInpUltFrm) 
             {
-                balanceo.twii.velocidad += camara.transform.forward * verticalInp;
+                balanceo.twii.velocidad.y = 0;
             }
-            if (horizontalInp != 0)
+            if (this.transform.position.y < limiteBal && (verticalInp != 0 || horizontalInp != 0)) 
             {
-                balanceo.twii.velocidad += camara.transform.right * horizontalInp;
+                Vector3 relativoCam = (camaraTrf.forward * verticalInp + camaraTrf.right * horizontalInp).normalized;
+
+                balanceo.twii.velocidad += relativoCam;
             }
-        }
-        if (movimientoXBal == true)
-        {
-            balanceo.twii.velocidad.z = 0;
-            this.transform.position = Vector3.Lerp (this.transform.position, new Vector3 (this.transform.position.x, this.transform.position.y, enganchePnt.z), Time.deltaTime);
+            print (balanceo.twii.velocidad);
         }
         else 
         {
-            balanceo.twii.velocidad.x = 0;
-            this.transform.position = Vector3.Lerp (this.transform.position, new Vector3 (enganchePnt.x, this.transform.position.y, this.transform.position.z), Time.deltaTime);
+            if (paradoBal == false) 
+            {
+                Vector2 velocidadXZ = Vector2.ClampMagnitude (new Vector2 (balanceo.twii.velocidad.x, balanceo.twii.velocidad.z), engancheDstXZ * 2);
+
+                print ("Clampeando aquí increíble.");
+                balanceo.twii.velocidad = new Vector3 (velocidadXZ.x, balanceo.twii.velocidad.y, velocidadXZ.y);
+            }
+            else 
+            {
+                balanceo.twii.velocidad = new Vector3 (0, balanceo.twii.velocidad.y, 0);
+                this.transform.position = Vector3.Lerp (this.transform.position, new Vector3 (enganchePnt.x, this.transform.position.y, enganchePnt.z), Time.deltaTime * interpolacionBalVel);
+            }
         }
-        this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacionBal, Time.deltaTime);
-        this.transform.localPosition = balanceo.Mover (this.transform.localPosition, previaPos, Time.deltaTime);
+        if (alteraCue == false) 
+        {
+            this.transform.localPosition = balanceo.Mover (this.transform.localPosition, previaPos, Time.deltaTime);
+            if (engancheDstXZ < balanceoDstMin) 
+            {
+                paradoBal = balanceo.twii.velocidad.magnitude < balanceoVelMin;
+            }
+        }
+        else 
+        {
+            this.transform.localPosition = new Vector3 (this.transform.localPosition.x, balanceo.Mover(this.transform.localPosition, previaPos, Time.deltaTime).y, this.transform.localPosition.z);
+            paradoBal = true;
+        }
+        
+        /*if (cuerdaLonInp == false && this.transform.position.y < limiteBal && (verticalInp != 0 || horizontalInp != 0))
+        {
+            print("Fithos");
+            balanceo.twii.velocidad += (camaraTrf.forward * verticalInp + camaraTrf.right * horizontalInp).normalized;
+            paradoBal = false;
+
+            Vector3 balanceoDir = new Vector3 (balanceo.twii.velocidad.x, 0, balanceo.twii.velocidad.z);
+            Vector3 camaraDir = new Vector3 (this.transform.position.x - camaraTrf.position.x, 0, this.transform.position.z - camaraTrf.position.z);
+            float anguloY1 = Quaternion.FromToRotation(balanceoDir, camaraDir).eulerAngles.y - 90;
+            float anguloY2 = Quaternion.FromToRotation(-balanceoDir, camaraDir).eulerAngles.y - 90;
+
+            rotacionBal = Quaternion.Euler (0, Mathf.Atan2 (balanceo.twii.velocidad.x, balanceo.twii.velocidad.z) * Mathf.Rad2Deg + 90, 0);
+        }
+        else 
+        {
+            if (alteraCue == false && Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (enganchePnt.x, enganchePnt.z)) < balanceoDstMin) 
+            {
+                paradoBal = balanceo.twii.velocidad.magnitude < balanceoVelMin;
+            }
+        }*/
+        //Vector3 diferenciaCam = new Vector3 ();
+        //this.transform.rotation = Quaternion.Slerp (this.transform.rotation, Quaternion.FromToRotation (new Vector3 (this.transform.position.x - camaraTrf.position.z, 0, this.transform.position.z - camaraTrf.position.z), -this.transform.right), 
+        //Time.deltaTime * rotacionVel);
+        /*print (balanceo.twii.velocidad.normalized == -direccionBalPrv.normalized);
+        if (balanceo.twii.velocidad != Vector3.zero) 
+        {
+            direccionBalPrv = balanceo.twii.velocidad;
+        }*/
     }
-
-
-    // En principio no haría falta (?).
-    /*private void Caer ()
-    {
-        balanceo.cuerda.longitud = Mathf.Infinity;
-        this.transform.localPosition = balanceo.Caida (this.transform.localPosition, Time.deltaTime);
-    }*/
 
 
     // Movemos al personaje mientras camina o cae y lo rotamos acorde al movimiento, también tenemos en cuenta el impulso que puede estar recibiendo mientras cae tras balancearse.
@@ -274,7 +310,7 @@ public class MovimientoHistoria3 : MonoBehaviour
 
         if ((verticalInp != 0 || horizontalInp != 0) && impulsoPar == Vector3.zero) 
         {
-            Vector3 relativoCam = (camara.transform.right * horizontalInp + camara.transform.forward * verticalInp).normalized * movimientoVel;
+            Vector3 relativoCam = (camaraTrf.right * horizontalInp + camaraTrf.forward * verticalInp).normalized * movimientoVel;
 
             if (impulsoCai == Vector3.zero) 
             {
@@ -380,7 +416,7 @@ public class MovimientoHistoria3 : MonoBehaviour
     private void CambiarPosicionCuerda () 
     {
         renderizadorLin.SetPosition (0, enganchePnt);
-        renderizadorLin.SetPosition (1, this.transform.position);
+        renderizadorLin.SetPosition (1, cuerdaIniTrf.position);
     }
 
 
@@ -404,7 +440,7 @@ public class MovimientoHistoria3 : MonoBehaviour
 
             if (movimientoXEsc == true) 
             {
-                relativoCam = (camara.transform.right * horizontalInp + camara.transform.up * verticalInp);
+                relativoCam = (camaraTrf.right * horizontalInp + camaraTrf.up * verticalInp);
                 direccionMov.z = 0;
                 if (Mathf.Abs (relativoCam.y) > Mathf.Abs (relativoCam.x)) 
                 {
@@ -423,7 +459,7 @@ public class MovimientoHistoria3 : MonoBehaviour
             }
             else 
             {
-                relativoCam = (camara.transform.forward * horizontalInp + camara.transform.up * verticalInp);
+                relativoCam = (camaraTrf.forward * horizontalInp + camaraTrf.up * verticalInp);
                 direccionMov.x = 0;
                 if (Mathf.Abs (relativoCam.y) > Mathf.Abs (relativoCam.z))
                 {
@@ -444,20 +480,9 @@ public class MovimientoHistoria3 : MonoBehaviour
         }
         direccionMov += impulsoPar;
         this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacionEsc, Time.deltaTime * rotacionVel);
-        print (direccionMov);
 
         characterCtr.Move (direccionMov * Time.deltaTime);
     }
-
-
-    // .
-    /*private void SaltarBola () 
-    {
-        if (saltoInp == true) 
-        {
-            direccionMov.y = saltoVel;
-        }
-    }*/
 
 
     // Miramos la posición hacia la que se mueve la bola para rotar al jugador de manera acorde, y también nos aseguramos de que su posición se corresponda con la parte superior de la bola.
@@ -465,7 +490,7 @@ public class MovimientoHistoria3 : MonoBehaviour
     {
         if (verticalInp != 0 || horizontalInp != 0)
         {
-            Vector3 relativoCam = (camara.transform.right * horizontalInp + camara.transform.forward * verticalInp);
+            Vector3 relativoCam = (camaraTrf.right * horizontalInp + camaraTrf.forward * verticalInp);
 
             direccionMov.x = relativoCam.x;
             direccionMov.z = relativoCam.z;
@@ -497,7 +522,8 @@ public class MovimientoHistoria3 : MonoBehaviour
                 break;
             case Estado.balanceandose:
                 animador.SetBool ("balanceandose", true);
-                animador.SetBool ("moviendose", balanceo.twii.velocidad != Vector3.zero);
+                animador.SetBool ("moviendose", !paradoBal);
+                animador.SetBool ("ajustarCuerda", alteraCue == true && verticalInp != 0);
 
                 break;
             default:
@@ -506,187 +532,36 @@ public class MovimientoHistoria3 : MonoBehaviour
     }
 
 
-    // .
+    // El modelo rota en Z de manera que esta rotación se corresponda con la animación actual.
     private void RotarModelo () 
     {
         modeloTrf.localRotation = Quaternion.Slerp (modeloTrf.localRotation, (sueleado == true || Estado.normal != estado) ? rotacionesMod[0] : rotacionesMod[1], Time.deltaTime * rotacionVel);
     }
-}
-/*using UnityEngine.SceneManagement;
-using UnityEngine;
 
 
-
-public class SwingController : MonoBehaviour
-{
-
-    public Camera cam;
-    public Balanceo pendulum;
-
-    [SerializeField] private float speed, jumpSpeed, gravity;
-    [SerializeField] private LayerMask capas;
-    private Vector3 moveDirection;
-    private CharacterController controller;
-    private enum State { Swinging, Falling, Walking };
-    private State state;
-    private Vector3 previousPosition;
-    private float distToGround;
-    private Vector3 hitPos;
-
-
-    // .
-    private void Start ()
+    // Si el twii está colgado pero parado, se está pulsando el botón que permite variar la longitud de la cuerda y el input en vertical no es nulo, podemos hacer que este suba o baje por la misma.
+    private void SubirOBajarPorCuerda () 
     {
-        moveDirection = Vector3.zero;
-        controller = this.GetComponent<CharacterController> ();
-        state = State.Walking;
-        pendulum.twiiTrf.parent = pendulum.enganche.engancheTrf;
-        previousPosition = this.transform.localPosition;
-        distToGround = controller.height + 0.1f;
-    }
-
-
-    // .
-    private void Update ()
-    {
-        DetermineState ();
-
-        switch (state)
+        if (paradoBal == true && cuerdaLonInp == true) 
         {
-            case State.Swinging:
-                DoSwingAction ();
-
-                break;
-            case State.Falling:
-                DoFallingAction ();
-
-                break;
-            case State.Walking:
-                DoWalkingAction ();
-
-                break;
-        }
-
-        previousPosition = this.transform.localPosition;
-    }
-
-
-    // .
-    private bool IsGrounded()
-    {
-        //print ("Grounded");
-        return Physics.Raycast (this.transform.position, -Vector3.up, distToGround);
-    }
-
-
-    // .
-    private void DetermineState ()
-    {
-        // Determine State
-        if (IsGrounded () == true)
-        {
-            state = State.Walking;
-        }
-        else if (Mathf.RoundToInt (Input.GetAxisRaw ("Engancharse")) != 0)
-        {
-            RaycastHit hit;
-            Ray ray = cam.ScreenPointToRay (Input.mousePosition);
-
-            if (Physics.Raycast (ray, out hit, capas) == true)
+            if (verticalInp != 0) 
             {
-                if (state == State.Walking)
+                float subida = Time.deltaTime * verticalInp * longitudCueVel;
+
+                if (verticalInp == 1 ? (this.transform.position.y + subida < cuerdaLimSup) : (this.transform.position.y + subida > cuerdaLimInf)) 
                 {
-                    pendulum.twii.velocidad = moveDirection;
+                    balanceo.cuerda.longitud -= subida;
                 }
-                pendulum.CambiarEnganche(hit.point);
-                state = State.Swinging;
-
+                else 
+                {
+                    verticalInp = 0;
+                }
             }
+            alteraCue = true;
         }
-        else if (Input.GetButtonDown ("Fire2") == true)
+        else 
         {
-            if (state == State.Swinging)
-            {
-                state = State.Falling;
-            }
+            alteraCue = false;
         }
     }
-
-
-    // .
-    private void DoSwingAction ()
-    {
-        if (Input.GetKey(KeyCode.W))
-        {
-            pendulum.twii.velocidad += pendulum.twii.velocidad.normalized * 2;
-        }
-        if (Input.GetKey(KeyCode.A))
-        {
-            pendulum.twii.velocidad -= cam.transform.right * 1.2f;
-        }
-        if (Input.GetKey(KeyCode.D))
-        {
-            pendulum.twii.velocidad += cam.transform.right * 1.2f;
-        }
-        this.transform.localPosition = pendulum.Mover (transform.localPosition, previousPosition, Time.deltaTime);
-        previousPosition = this.transform.localPosition;
-    }
-
-
-    // .
-    private void DoFallingAction ()
-    {
-        pendulum.cuerda.longitud = Mathf.Infinity;
-        this.transform.localPosition = pendulum.Fall (transform.localPosition, Time.deltaTime);
-        previousPosition = this.transform.localPosition;
-    }
-
-
-    // .
-    private void DoWalkingAction ()
-    {
-        pendulum.twii.velocidad = Vector3.zero;
-        if (controller.isGrounded == true)
-        {
-            moveDirection = new Vector3 (Mathf.RoundToInt (Input.GetAxisRaw ("Movimiento horizontal")), 0, Mathf.RoundToInt (Input.GetAxisRaw ("Movimiento vertical")));
-            moveDirection = cam.transform.TransformDirection (moveDirection);
-            moveDirection.y = 0;
-            moveDirection *= speed;
-
-            if (Input.GetButton ("Salto") == true)
-            {
-                moveDirection.y = jumpSpeed;
-            }
-
-        }
-        moveDirection.y -= gravity * Time.deltaTime;
-        controller.Move (moveDirection * Time.deltaTime);
-    }
-
-
-    // .
-    private void OnControllerColliderHit (ControllerColliderHit hit)
-    {
-        if (hit.gameObject.name == "Respawn")
-        {
-            //if too far from arena, reset level
-            SceneManager.LoadScene (SceneManager.GetActiveScene().buildIndex);
-        }
-    }
-
-
-    // .
-    private void OnCollisionEnter (Collision collision)
-    {
-        Vector3 undesiredMotion = collision.contacts[0].normal * Vector3.Dot(pendulum.twii.velocidad, collision.contacts[0].normal);
-
-        pendulum.twii.velocidad = pendulum.twii.velocidad - (undesiredMotion * 1.2f);
-        hitPos = transform.position;
-
-        if (collision.gameObject.name == "Respawn")
-        {
-            //if too far from arena, reset level
-            SceneManager.LoadScene (SceneManager.GetActiveScene().buildIndex);
-        }
-    }
-}*/
+}

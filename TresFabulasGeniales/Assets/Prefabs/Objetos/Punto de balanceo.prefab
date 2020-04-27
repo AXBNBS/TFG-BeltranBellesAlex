@@ -119,5 +119,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d014088b723c89943b8781ccfa4ebfc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  offsetY: -5
   movimientoX: 0
+  offsetY: -30
+  limiteEng: 0
+  limiteSupY: 0
+  limiteInfY: 0

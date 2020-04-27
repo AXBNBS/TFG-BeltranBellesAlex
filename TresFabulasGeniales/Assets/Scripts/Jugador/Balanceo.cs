@@ -13,8 +13,6 @@ public class Balanceo
     public Cuerda cuerda;
     public Twii twii;
 
-    private Vector3 posicionUltFrm;
-
 
     // Inicializamos el padre del twii y la longitud de la cuerda.
     public void Inicializar () 
@@ -39,7 +37,6 @@ public class Balanceo
             posicion = Vector3.Normalize (posicion - enganche.posicion) * cuerda.longitud;
             cuerda.longitud = Vector3.Distance (posicion, enganche.posicion);
         }
-        posicionUltFrm = posicion;
 
         return posicion;
     }
