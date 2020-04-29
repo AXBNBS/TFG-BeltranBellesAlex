@@ -5,10 +5,11 @@ using UnityEngine;
 
 
 
+[RequireComponent (typeof (MeshCollider))]
 public class SuperficieEscalable : MonoBehaviour
 {
     [SerializeField] private bool movimientoX;
-    [SerializeField] private Collider trigger;
+    private MeshCollider trigger;
     private MovimientoHistoria3 jugador;
     private float limite1, limite2;
     private Quaternion[] rotacionesEsc;
@@ -18,17 +19,11 @@ public class SuperficieEscalable : MonoBehaviour
     private void Start ()
     {
         jugador = GameObject.FindObjectOfType<MovimientoHistoria3> ();
-        if (movimientoX == true)
-        {
-            limite1 = trigger.bounds.center.x + trigger.bounds.extents.x;
-            limite2 = trigger.bounds.center.x - trigger.bounds.extents.x;
-        }
-        else 
-        {
-            limite1 = trigger.bounds.center.z + trigger.bounds.extents.z;
-            limite2 = trigger.bounds.center.z - trigger.bounds.extents.z;
-        }
+        trigger = this.GetComponent<MeshCollider> ();
+        trigger.convex = true;
+        trigger.isTrigger = true;
         rotacionesEsc = new Quaternion[] { Quaternion.Euler (0, 0, 0), Quaternion.Euler (0, 90, 0), Quaternion.Euler (0, 180, 0), Quaternion.Euler (0, 270, 0) };
+        this.gameObject.layer = LayerMask.NameToLayer ("SuperficieAdherible");
     }
 
 
@@ -37,19 +32,26 @@ public class SuperficieEscalable : MonoBehaviour
     {
         if (other.CompareTag ("Jugador") == true) 
         {
-            print ("Debería escalar xD");
-            jugador.escalarPos = true;
+            print (trigger.bounds.max.x);
             jugador.movimientoXEsc = movimientoX;
-            jugador.limiteEsc1 = limite1;
-            jugador.limiteEsc2 = limite2;
             if (movimientoX == true)
             {
                 jugador.rotacionEsc = this.transform.position.z > jugador.transform.position.z ? rotacionesEsc[1] : rotacionesEsc[3];
             }
             else 
             {
-                jugador.rotacionEsc = this.transform.position.x > jugador.transform.position.x ? rotacionesEsc[0] : rotacionesEsc[2];
+                jugador.rotacionEsc = this.transform.position.x < jugador.transform.position.x ? rotacionesEsc[0] : rotacionesEsc[2];
             }
+        }
+    }
+
+
+    // .
+    private void OnTriggerStay (Collider other)
+    {
+        if (other.CompareTag ("Jugador") == true)
+        {
+            jugador.escalarPos = true;
         }
     }
 

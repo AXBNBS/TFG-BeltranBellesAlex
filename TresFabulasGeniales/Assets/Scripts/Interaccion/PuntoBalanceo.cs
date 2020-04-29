@@ -9,7 +9,7 @@ public class PuntoBalanceo : MonoBehaviour
 {
     [SerializeField] private bool movimientoX;
     [SerializeField] private int offsetY;
-    public float limiteEng, limiteSupY, limiteInfY;
+    private float limiteEng, limiteSupY, limiteInfY;
     private MovimientoHistoria3 jugador;
 
     

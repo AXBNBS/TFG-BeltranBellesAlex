@@ -9,13 +9,14 @@ public class MovimientoHistoria3 : MonoBehaviour
     public bool input, movimientoXEsc, movimientoXBal, escalarPos, enganchePer;
     public Balanceo balanceo;
     public Vector3 enganchePnt;
-    public float limiteBal, limiteEsc1, limiteEsc2, cuerdaLimSup, cuerdaLimInf;
+    public float limiteBal, cuerdaLimSup, cuerdaLimInf;
     public Quaternion rotacionEsc;
     public Transform bolaSup;
 
     [SerializeField] private int movimientoVel, rotacionVel, saltoVel, escaladaVel, gravedad, balanceoVelMin, balanceoDstMin, longitudCueVel, interpolacionBalVel;
-    [SerializeField] private LayerMask capas;
     [SerializeField] private int[] gravedades;
+    [SerializeField] private Collider escenarioCol;
+    private LayerMask capasSue, capasTrp;
     private Transform camaraTrf, modeloTrf, cuerdaIniTrf;
     private Vector3 direccionMov, previaPos, impulsoBal, impulsoCai, impulsoPar, offsetCenCtr;
     private CharacterController characterCtr;
@@ -27,12 +28,15 @@ public class MovimientoHistoria3 : MonoBehaviour
     private enum Estado { normal, trepando, rodando, balanceandose };
     private Estado estado;
     private Animator animador;
+    private bool[] adelanteBalXZ;
 
 
     // Inicialización de variables.
     private void Start ()
     {
         escalarPos = false;
+        capasSue = LayerMask.GetMask ("Default", "Obstaculos", "Movil");
+        capasTrp = LayerMask.GetMask ("SuperficieAdherible");
         camaraTrf = GameObject.FindGameObjectWithTag("CamaraPrincipal").transform;
         direccionMov = Vector3.zero;
         characterCtr = this.GetComponent<CharacterController> ();
@@ -129,10 +133,26 @@ public class MovimientoHistoria3 : MonoBehaviour
     // A ver si debugueamos.
     private void OnDrawGizmos ()
     {
-        if (characterCtr != null) 
+        if (Estado.trepando == estado) 
+        {
+            Vector3 centroEsfSup = new Vector3 (characterCtr.bounds.center.x, characterCtr.bounds.center.y + (characterCtr.bounds.extents.y - characterCtr.bounds.extents.x), characterCtr.bounds.center.z);
+
+            Gizmos.color = Color.red;
+
+            Gizmos.DrawWireSphere (characterCtr.bounds.center + this.transform.right * 1.5f + direccionMov, characterCtr.bounds.extents.x);
+            //Gizmos.DrawWireSphere (Vector3.down * (characterCtr.bounds.size.y - characterCtr.bounds.size.x) + centroEsfSup + direccionMov, characterCtr.bounds.extents.x);
+        }
+        /*if (characterCtr != null) 
         {
             Gizmos.DrawWireSphere (characterCtr.bounds.center + offsetCenCtr, radioEsfSue);
-        }
+        }*/
+    }
+
+
+    // .
+    private void OnTriggerEnter (Collider other)
+    {
+        //other.
     }
 
 
@@ -142,7 +162,7 @@ public class MovimientoHistoria3 : MonoBehaviour
         switch (estado) 
         {
             case Estado.normal:
-                return (direccionMov.y < 0 ? Physics.CheckSphere (characterCtr.bounds.center + offsetCenCtr, radioEsfSue, capas, QueryTriggerInteraction.Ignore) : false);
+                return (direccionMov.y < 0 ? Physics.CheckSphere (characterCtr.bounds.center + offsetCenCtr, radioEsfSue, capasSue, QueryTriggerInteraction.Ignore) : false);
             case Estado.trepando:
             case Estado.balanceandose:
                 return false;
@@ -165,6 +185,8 @@ public class MovimientoHistoria3 : MonoBehaviour
                     estado = Estado.trepando;
                     impulsoCai = Vector3.zero;
 
+                    Physics.IgnoreCollision (characterCtr, escenarioCol, true);
+
                     break;
                 }
 
@@ -177,11 +199,15 @@ public class MovimientoHistoria3 : MonoBehaviour
                 }
 
                 if (engancharseInp == true && enganchePer == true && this.transform.position.y < limiteBal && sueleado == false && Physics.Raycast (this.transform.position, enganchePnt - this.transform.position, 
-                    Vector3.Distance (this.transform.position, enganchePnt), capas, QueryTriggerInteraction.Ignore) == false) 
+                    Vector3.Distance (this.transform.position, enganchePnt), capasSue, QueryTriggerInteraction.Ignore) == false) 
                 {
+                    Vector3 direccion;
+
                     estado = Estado.balanceandose;
                     balanceo.twii.velocidad = impulsoBal / 2;
                     renderizadorLin.enabled = true;
+                    direccion = DireccionDeAngulo (this.transform.rotation.eulerAngles.y);
+                    adelanteBalXZ = new bool[] { Mathf.Sign (direccion.x) == 1, Mathf.Sign (direccion.z) == 1 };
 
                     balanceo.CambiarEnganche (enganchePnt);
 
@@ -192,6 +218,8 @@ public class MovimientoHistoria3 : MonoBehaviour
             case Estado.trepando:
                 if (escalarPos == false) 
                 {
+                    Physics.IgnoreCollision (characterCtr, escenarioCol, false);
+
                     estado = Estado.normal;
                     direccionMov.y = impulsoPar.y;
                 }
@@ -231,6 +259,8 @@ public class MovimientoHistoria3 : MonoBehaviour
 
         if (cuerdaLonInp == false) 
         {
+            //Vector2 balanceoAct;
+
             if (cuerdaLonInp != cuerdaLonInpUltFrm) 
             {
                 balanceo.twii.velocidad.y = 0;
@@ -240,8 +270,20 @@ public class MovimientoHistoria3 : MonoBehaviour
                 Vector3 relativoCam = (camaraTrf.forward * verticalInp + camaraTrf.right * horizontalInp).normalized;
 
                 balanceo.twii.velocidad += relativoCam;
+                this.transform.rotation = Quaternion.Slerp (this.transform.rotation, Quaternion.Euler (0, Mathf.Atan2 (relativoCam.x, relativoCam.z) * Mathf.Rad2Deg + 90, 0), Time.deltaTime * rotacionVel);
             }
-            print (balanceo.twii.velocidad);
+
+            //DecidirRotacionBalanceo (new Vector2 (balanceo.twii.velocidad.x, balanceo.twii.velocidad.z));
+            /*balanceoAct = new Vector2 (balanceo.twii.velocidad.x, balanceo.twii.velocidad.z);
+            print (balanceoAct.normalized);
+            if (balanceoAct != Vector2.zero) 
+            {
+                if (Vector2.Angle (balanceoAct, balanceoVelUltFrm) < 170)
+                {
+                    this.transform.rotation = Quaternion.Slerp (this.transform.rotation, Quaternion.Euler (0, Mathf.Atan2(balanceo.twii.velocidad.x, balanceo.twii.velocidad.z) * Mathf.Rad2Deg + 90, 0), Time.deltaTime * rotacionVel);
+                }
+                balanceoVelUltFrm = balanceoAct;
+            }*/
         }
         else 
         {
@@ -436,7 +478,7 @@ public class MovimientoHistoria3 : MonoBehaviour
     {
         if (verticalInp != 0 || horizontalInp != 0)
         {
-            Vector3 relativoCam;
+            Vector3 relativoCam, esferaCenSup;
 
             if (movimientoXEsc == true) 
             {
@@ -452,14 +494,14 @@ public class MovimientoHistoria3 : MonoBehaviour
                     direccionMov.x = Mathf.Sign (relativoCam.x) / 2;
                     direccionMov.y = 0;
                 }
-                if ((direccionMov.x > 0 && this.transform.position.x >= limiteEsc1) || (direccionMov.x < 0 && this.transform.position.x <= limiteEsc2))
+                /*if ((direccionMov.x > 0 && this.transform.position.x >= limiteEsc1) || (direccionMov.x < 0 && this.transform.position.x <= limiteEsc2))
                 {
                     direccionMov.x = 0;
-                }
+                }*/
             }
             else 
             {
-                relativoCam = (camaraTrf.forward * horizontalInp + camaraTrf.up * verticalInp);
+                relativoCam = (camaraTrf.right * horizontalInp + camaraTrf.up * verticalInp);
                 direccionMov.x = 0;
                 if (Mathf.Abs (relativoCam.y) > Mathf.Abs (relativoCam.z))
                 {
@@ -471,17 +513,22 @@ public class MovimientoHistoria3 : MonoBehaviour
                     direccionMov.y = 0;
                     direccionMov.z = Mathf.Sign (relativoCam.z) / 2;
                 }
-                if ((direccionMov.z > 0 && this.transform.position.z >= limiteEsc1) || (direccionMov.z < 0 && this.transform.position.z <= limiteEsc2)) 
+                /*if ((direccionMov.z > 0 && this.transform.position.z >= limiteEsc1) || (direccionMov.z < 0 && this.transform.position.z <= limiteEsc2)) 
                 {
                     direccionMov.z = 0;
-                }
+                }*/
             }
             direccionMov *= escaladaVel;
+            if (Physics.CheckSphere (characterCtr.bounds.center + this.transform.right * 1.5f + direccionMov, characterCtr.bounds.extents.x, capasTrp, QueryTriggerInteraction.Collide) == false) 
+            {
+                direccionMov = Vector3.zero;
+            }
         }
         direccionMov += impulsoPar;
         this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacionEsc, Time.deltaTime * rotacionVel);
 
         characterCtr.Move (direccionMov * Time.deltaTime);
+        //print (characterCtr.collisionFlags);
     }
 
 
@@ -563,5 +610,22 @@ public class MovimientoHistoria3 : MonoBehaviour
         {
             alteraCue = false;
         }
+    }
+
+
+    // .
+    private void DecidirRotacionBalanceo (Vector2 velocidadXZ) 
+    {
+        if ((Mathf.Abs (velocidadXZ.x) > Mathf.Abs (velocidadXZ.y) && (Mathf.Sign (velocidadXZ.x) == 1) == adelanteBalXZ[0]) || (Mathf.Abs (velocidadXZ.y) > Mathf.Abs (velocidadXZ.x) && (Mathf.Sign (velocidadXZ.y) == 1) == adelanteBalXZ[1])) 
+        {
+            this.transform.rotation = Quaternion.Slerp (this.transform.rotation, Quaternion.Euler (0, Mathf.Atan2 (velocidadXZ.x, velocidadXZ.y) * Mathf.Rad2Deg + 90, 0), Time.deltaTime * rotacionVel);
+        }
+    }
+
+
+    // .
+    public Vector3 DireccionDeAngulo (float gradosAng)
+    {
+        return new Vector3 (Mathf.Sin (gradosAng * Mathf.Deg2Rad), 0, Mathf.Cos (gradosAng * Mathf.Deg2Rad));
     }
 }
