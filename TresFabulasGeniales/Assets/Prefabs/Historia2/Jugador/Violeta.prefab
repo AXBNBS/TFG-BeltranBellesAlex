@@ -369,6 +369,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   input: 1
   texto: []
+  hablables: []
   rotacionVel: 10
 --- !u!114 &3002010986360654492
 MonoBehaviour:
@@ -391,6 +392,7 @@ MonoBehaviour:
   movimiento: {x: 0, y: 0, z: 0}
   saltoVel: 300
   huesos: []
+  aturdimientoImp: {x: 0, y: 0, z: 0}
   movimientoVelNor: 200
   movimientoVelRed: 70
   rotacionVel: 10
@@ -399,10 +401,10 @@ MonoBehaviour:
   pendienteFrz: 100
   capas:
     serializedVersion: 2
-    m_Bits: 7223
+    m_Bits: 4200503
   capasSinAvt:
     serializedVersion: 2
-    m_Bits: 3383
+    m_Bits: 4196663
   companyeroMov: {fileID: 0}
   pararDstSeg: 2
   ajusteCaiDst: 95

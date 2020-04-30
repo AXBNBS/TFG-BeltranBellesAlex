@@ -85,7 +85,7 @@ public class Salud : MonoBehaviour
                 }
             }
             aturdido = true;
-            movimientoScr.aturdimientoImp = movimientoScr.sueleado == true ? new Vector3(impulso.x, 0, impulso.z).normalized : Vector3.zero;
+            movimientoScr.aturdimientoImp = (movimientoScr.input == true && movimientoScr.sueleado == true) ? new Vector3(impulso.x, 0, impulso.z).normalized : Vector3.zero;
 
             Animar (true);
             this.Invoke ("PararAnimacion", 0.3f);

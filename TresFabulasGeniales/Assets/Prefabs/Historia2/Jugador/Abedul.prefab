@@ -579,10 +579,10 @@ MonoBehaviour:
   pendienteFrz: 100
   capas:
     serializedVersion: 2
-    m_Bits: 7223
+    m_Bits: 4200503
   capasSinAvt:
     serializedVersion: 2
-    m_Bits: 3383
+    m_Bits: 4196663
   companyeroMov: {fileID: 0}
   pararDstSeg: 2
   ajusteCaiDst: 5

@@ -11,10 +11,10 @@ public class Naife : MonoBehaviour
     public enum Estado { normal, atacando, frenando, saltando, muriendo };
     public Estado estado;
 
-    private bool quieto, sentidoHor, embestida, espera, animarFin, gatosCer, agresivo, saltado, chocado, controladoAvt;
+    public bool quieto, sentidoHor, embestida, espera, animarFin, gatosCer, agresivo, saltado, chocado, controladoAvt;
     private AreaNaifes padreScr;
     private CapsuleCollider capsula;
-    public float centroY, radio, salud, tiempoEmb, saltoDstMax, saltoDst;
+    private float centroY, radio, salud, tiempoEmb, saltoDstMax, saltoDst;
     private NavMeshAgent agente;
     private Animator animador;
     private Transform padreRot, objetivoTrf, modelo;
@@ -106,7 +106,7 @@ public class Naife : MonoBehaviour
                     //agente.velocity = Vector3.zero;
                     deceleracion = Vector3.zero;
                     agente.enabled = false;
-                    //print ("Frenado completado.");
+                    print ("Suposadament.");
 
                     if (espera == false) 
                     {
@@ -162,11 +162,16 @@ public class Naife : MonoBehaviour
 
 
     // Pos debug como siempre.
-    /*private void OnDrawGizmosSelected ()
+    private void OnDrawGizmosSelected ()
     {
-        Gizmos.color = Color.red;
+        if (capsula != null) 
+        {
+            Gizmos.color = Color.red;
 
-        Gizmos.DrawRay (this.transform.position, this.transform.forward * saltoDstMax);
+            //capsula.bounds.size.z * 1.75f + padreScr.radioGirRan + aleatoriedad
+            Gizmos.DrawWireCube (this.transform.position, new Vector3 ((capsula.bounds.extents.z + padreScr.radioGirRan + 10) * 2, 0, (capsula.bounds.extents.z + padreScr.radioGirRan + 10) * 2));
+        }
+        /*Gizmos.DrawRay (this.transform.position, this.transform.forward * saltoDstMax);
         Gizmos.DrawRay (this.transform.position, -this.transform.forward * saltoDstMax);
         Gizmos.DrawWireSphere (destinoSal, 5);
         if (capsula != null) 
@@ -179,8 +184,8 @@ public class Naife : MonoBehaviour
             Gizmos.DrawWireSphere (Vector3.left * radio + padreRot.position, 5);
             Gizmos.DrawWireCube (padreRot.position, new Vector3 (radio + capsula.bounds.size.x * 3.5f, 0.5f, radio + capsula.bounds.size.z * 3.5f));
             Gizmos.DrawWireSphere (capsula.bounds.center, capsula.bounds.extents.x);
-        }
-    }*/
+        }*/
+    }
 
 
     // Si un naife colisiona con el jugador mientras realiza una embestida, dejará de embestir y empezará a frenar, además se desactivarán las colisiones con el avatar brevemente y este recibirá daños. Si el choche se produce en el estado de 
@@ -203,6 +208,16 @@ public class Naife : MonoBehaviour
                     Physics.IgnoreCollision (capsula, collision.collider, true);
                     collision.transform.GetComponent<Salud>().RecibirDanyo (agente.velocity.normalized);
                     collidersIgn.Add (collision.collider);
+                }
+                else 
+                {
+                    if (collision.transform.CompareTag ("Enemigo") == false) 
+                    {
+                        print ("Weno cuidao.");
+                        embestida = false;
+                        estado = Estado.frenando;
+                        agente.velocity = Vector3.zero;
+                    }
                 }
 
                 break;
@@ -245,7 +260,7 @@ public class Naife : MonoBehaviour
             quieto = true;
             espera = false;
             agente.enabled = false;
-            //print ("Se me llamó para volver al estado normal.");
+            print ("Suposadament.");
 
             this.CancelInvoke ("VolverALaCarga");
             this.Invoke ("QuietoOGirando", 0.5f);
@@ -455,39 +470,65 @@ public class Naife : MonoBehaviour
         capsula.enabled = false;
         this.GetComponent<Parpadeo>().enabled = false;
         this.transform.parent = padreScr.transform;
-        this.transform.localPosition = new Vector3 (this.transform.localPosition.x, padreScr.muertePosYLoc, this.transform.localPosition.z);
+        //this.transform.localPosition = new Vector3 (this.transform.localPosition.x, padreScr.muertePosYLoc, this.transform.localPosition.z);
 
         this.transform.GetChild(0).gameObject.SetActive (false);
         this.CancelInvoke ("QuietoOGirando");
         this.CancelInvoke ("VolverALaCarga");
-        this.Invoke ("Desaparecer", 1.5f);
+        this.Invoke ("Desaparecer", 5);
+        this.Invoke ("Venganza", 2);
     }
 
 
     // Si el naife se encuentra quieto en su estado de ataque o de patrulla, lanzamos un rayo hacia adelante o atrás (según el lado por el cuál esté siendo atacado) y si hay suficiente distancia libre o directamente no hay ningún obstáculo, hacemos 
     //que salte la distancia que corresponda.
-    private void Saltar ()
+    private void Saltar (Vector3 direccion = new Vector3 ())
     {
+        saltoDir = direccion;
+        print (saltoDir);
         if ((agente.enabled == false && Estado.atacando == estado) || (quieto == true && Estado.normal == estado)) 
         {
-            saltoDir = Vector3.Distance (this.transform.position + this.transform.forward, objetivoTrf.position) > Vector3.Distance (this.transform.position - this.transform.forward, objetivoTrf.position) ? this.transform.forward : 
-                -this.transform.forward;
-            if (Physics.SphereCast (new Ray (capsula.bounds.center, saltoDir), capsula.bounds.extents.x, out RaycastHit datosRay, padreScr.longitudRaySal, padreScr.capasSal, QueryTriggerInteraction.Ignore) == true) 
+            if (saltoDir == Vector3.zero) 
             {
-                if (datosRay.distance > capsula.bounds.extents.x * 3) 
+                saltoDir = Vector3.Distance (this.transform.position + this.transform.forward, objetivoTrf.position) > Vector3.Distance (this.transform.position - this.transform.forward, objetivoTrf.position) ? this.transform.forward :
+                    -this.transform.forward;
+            }
+            if (Physics.SphereCast (new Ray (capsula.bounds.center, saltoDir), capsula.bounds.extents.x, out RaycastHit datosRay, padreScr.longitudRaySal, padreScr.capasSal, QueryTriggerInteraction.Ignore) == true)
+            {
+                if (datosRay.distance > capsula.bounds.extents.x * 3)
                 {
                     destinoSal = this.transform.position + (datosRay.distance - capsula.bounds.extents.x) * saltoDir;
-                    saltoDst = datosRay.distance;
+                    if (Physics.Raycast (destinoSal, Vector3.down, capsula.bounds.size.y * 1.2f, padreScr.sueloCap, QueryTriggerInteraction.Ignore) == true)
+                    {
+                        saltoDst = datosRay.distance;
+
+                        PasarASalto ();
+                    }
+                    else 
+                    {
+                        if (direccion == Vector3.zero) 
+                        {
+                            Saltar (-1 * saltoDir);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                destinoSal = this.transform.position + saltoDstMax * saltoDir;
+                if (Physics.Raycast (destinoSal, Vector3.down, capsula.bounds.size.y * 1.2f, padreScr.sueloCap, QueryTriggerInteraction.Ignore) == true)
+                {
+                    saltoDst = saltoDstMax;
 
                     PasarASalto ();
                 }
-            }
-            else 
-            {
-                destinoSal = this.transform.position + saltoDstMax * saltoDir;
-                saltoDst = saltoDstMax;
-
-                PasarASalto ();
+                else 
+                {
+                    if (direccion == Vector3.zero) 
+                    {
+                        Saltar (-1 * saltoDir);
+                    }
+                }
             }
         }
     }
@@ -514,7 +555,7 @@ public class Naife : MonoBehaviour
         if (quieto == false) 
         {
             float aleatoriedad = Random.Range (-padreScr.radioGirVar, +padreScr.radioGirVar);
-            float dimensionesXZ = capsula.bounds.size.z * 1.75f + padreScr.radioGirRan + aleatoriedad;
+            float dimensionesXZ = capsula.bounds.extents.z + padreScr.radioGirRan + aleatoriedad;
 
             radio = padreScr.radioGirRan + aleatoriedad;
             destino = padreScr.PosicionPivoteYDestino (padreRot, this.transform, new Vector3 (dimensionesXZ, 0.5f, dimensionesXZ), radio);
@@ -542,7 +583,13 @@ public class Naife : MonoBehaviour
     // Tras la animación de muerte, se llama a esta función para desactivar el objeto del naife y que el script del padre realice las gestiones que correspondan.
     private void Desaparecer () 
     {
-        padreScr.UnoMuerto (objetivoTrf);
         this.gameObject.SetActive (false);
+    }
+
+
+    // El script del padre realiza las gestiones que correspondan para que, si hay algún naife con vida, este empiece a atacar al avatar.
+    private void Venganza () 
+    {
+        padreScr.UnoMuerto (objetivoTrf);
     }
 }

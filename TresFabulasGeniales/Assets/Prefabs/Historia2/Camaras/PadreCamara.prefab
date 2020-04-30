@@ -153,13 +153,13 @@ MonoBehaviour:
   suavizado: 20
   capasVio:
     serializedVersion: 2
-    m_Bits: 36151
+    m_Bits: 35127
   capasAbd:
     serializedVersion: 2
-    m_Bits: 19767
+    m_Bits: 18743
   capasSinAvt:
     serializedVersion: 2
-    m_Bits: 7479
+    m_Bits: 6455
 --- !u!114 &897433237
 MonoBehaviour:
   m_ObjectHideFlags: 0

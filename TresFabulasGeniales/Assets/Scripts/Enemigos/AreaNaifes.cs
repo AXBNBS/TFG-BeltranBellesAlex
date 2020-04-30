@@ -10,7 +10,7 @@ public class AreaNaifes : MonoBehaviour
 {
     public float[] segundosCmbLim;
     public float radioGirRan, radioGirVar, giroVel, tiempoMinEmb;
-    public LayerMask capasGirAtq, capasSal;
+    public LayerMask capasGirAtq, capasSal, sueloCap;
     public int velocidadRotNor, velocidadRotGir, velocidadRotModEmbFrn, velocidadRotModEsp, velocidadRotModMue, distanciaMinObj, distanciaParIgn, frenadoVel, pararVel, salud, longitudRaySal, saltoVelMax;
     [HideInInspector] public Quaternion[] modeloRotLoc;
     [HideInInspector] public float muertePosYLoc;
@@ -18,9 +18,10 @@ public class AreaNaifes : MonoBehaviour
     [HideInInspector] public IDictionary<Transform, Naife> avataresPer;
 
     private SphereCollider trigger;
-    private List<Transform> avataresDen;
+    public List<Transform> avataresDen;
     private int vivos;
     private MovimientoHistoria2[] avataresMov;
+    private Collider[] triggers;
 
 
     // Inicialización de variables.
@@ -35,6 +36,8 @@ public class AreaNaifes : MonoBehaviour
         avataresDen = new List<Transform> ();
         vivos = naifes.Length;
         avataresMov = GameObject.FindObjectsOfType<MovimientoHistoria2> ();
+        triggers = this.GetComponents<Collider> ();
+        this.tag = "AreaEnemiga";
     }
 
 
@@ -59,7 +62,10 @@ public class AreaNaifes : MonoBehaviour
     {
         if (other.isTrigger == false && other.CompareTag ("Jugador") == true)
         {
-            avataresDen.Add (other.transform);
+            if (avataresDen.Contains (other.transform) == false) 
+            {
+                avataresDen.Add (other.transform);
+            }
 
             if (avataresPer.ContainsKey (other.transform) == false) 
             {
@@ -95,6 +101,7 @@ public class AreaNaifes : MonoBehaviour
             {
                 if (avataresDen.Count == 0 || avataresPer.ContainsKey (avataresDen[0]) == true) 
                 {
+                    print ("Saludos jeje");
                     //print ("Vuelta al pasado desde OnTriggerExit.");
                     avataresPer[other.transform].VolverALaRutina ();
                 }
@@ -221,5 +228,20 @@ public class AreaNaifes : MonoBehaviour
                 n.CorrerSiempre (correr);
             }
         }
+    }
+
+
+    // Devuelve "true" si alguno de los triggers aún contiene al avatar dentro.
+    private bool SigueDentro (Vector3 posicion) 
+    {
+        foreach (Collider c in triggers) 
+        {
+            if (c.bounds.Contains (posicion) == true) 
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -61,7 +61,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         camaraTrf = GameObject.FindGameObjectWithTag("CamaraPrincipal").transform;
         objetivoSeg = companyeroMov.transform.GetChild (1);
         companyeroTrf = companyeroMov.transform;
-        animator = this.GetComponentInChildren<Animator> ();
+        animator = this.transform.GetChild(6).GetComponent<Animator> ();
         offsetEsfSue = Vector3.up;
         mallaAgtNav = this.GetComponent<NavMeshAgent> ();
         mallaAgtNav.speed = movimientoVelNor;
@@ -129,7 +129,7 @@ public class MovimientoHistoria2 : MonoBehaviour
                 break;
             case Estado.siguiendo:
                 Seguir ();
-                DesagruparSiEso ();
+                //DesagruparSiEso ();
 
                 break;
             default:
@@ -289,6 +289,9 @@ public class MovimientoHistoria2 : MonoBehaviour
                 break;
             case "AreaEnemiga":
                 enemigosCer = false;
+                enemigoTrf = null;
+
+                TratarDeVolver ();
 
                 break;
         } 
@@ -785,7 +788,10 @@ public class MovimientoHistoria2 : MonoBehaviour
         }
         else 
         {
-            mallaAgtNav.SetDestination (posicionPnt);
+            if (mallaAgtNav.destination != posicionPnt) 
+            {
+                mallaAgtNav.SetDestination (posicionPnt);
+            }
 
             mirarDir = (posicionPnt - this.transform.position).normalized;
             objetivoRot = Quaternion.LookRotation(mirarDir).eulerAngles;
@@ -796,7 +802,7 @@ public class MovimientoHistoria2 : MonoBehaviour
 
 
     // Si la distancia en Y entra ambos personajes es mayor a 5, automáticamente los desagrupamos.
-    private void DesagruparSiEso ()
+    /*private void DesagruparSiEso ()
     {
         if (Mathf.Abs (this.transform.position.y - companyeroMov.transform.position.y) > 5)
         {
@@ -804,7 +810,7 @@ public class MovimientoHistoria2 : MonoBehaviour
 
             CambioDePersonajesYAgrupacion.instancia.juntos = false;
         }
-    }
+    }*/
 
 
     // Gestiona las animaciones del personaje de acuerdo a su situación actual.
@@ -1015,6 +1021,16 @@ public class MovimientoHistoria2 : MonoBehaviour
         {
             //print (this.name + "-- no estoy en pendiente.");
             return false;
+        }
+    }
+
+
+    // Si el personaje sigue en estado.
+    private void TratarDeVolver () 
+    {
+        if (mallaAgtNav.enabled == true && Estado.atacando == estado) 
+        {
+            mallaAgtNav.SetDestination (areaNai.GetComponent<SphereCollider>().bounds.center);
         }
     }
 }

@@ -40,7 +40,7 @@ TagManager:
   - 
   - IgnorarBakeo
   - Avatares
-  - Obstaculos
+  - BarreraEnemigos
   - Movil
   - Enemigos
   - PuntosBalanceo
@@ -52,7 +52,7 @@ TagManager:
   - SuperficieAdherible
   - GenteHabladora
   - SuperficiesResbaladizas
-  - 
+  - EnemigosIgnoran
   - 
   - 
   - 
