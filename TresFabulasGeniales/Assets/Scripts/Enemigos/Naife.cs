@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.AI;
-
-
+using UnityEngine.Networking;
 
 public class Naife : MonoBehaviour
 {
     public enum Estado { normal, atacando, frenando, saltando, muriendo };
     public Estado estado;
 
+    [SerializeField] private bool alturaCmp;
     public bool quieto, sentidoHor, embestida, espera, animarFin, gatosCer, agresivo, saltado, chocado, controladoAvt;
     private AreaNaifes padreScr;
     private CapsuleCollider capsula;
@@ -66,6 +66,10 @@ public class Naife : MonoBehaviour
                 if (quieto == false) 
                 {
                     GirarAlrededor ();
+                    if (alturaCmp == true && agente.enabled == false) 
+                    {
+                        AjustarAltura ();
+                    }
                 }
 
                 break;
@@ -106,7 +110,7 @@ public class Naife : MonoBehaviour
                     //agente.velocity = Vector3.zero;
                     deceleracion = Vector3.zero;
                     agente.enabled = false;
-                    print ("Suposadament.");
+                    //print ("Suposadament.");
 
                     if (espera == false) 
                     {
@@ -170,6 +174,7 @@ public class Naife : MonoBehaviour
 
             //capsula.bounds.size.z * 1.75f + padreScr.radioGirRan + aleatoriedad
             Gizmos.DrawWireCube (this.transform.position, new Vector3 ((capsula.bounds.extents.z + padreScr.radioGirRan + 10) * 2, 0, (capsula.bounds.extents.z + padreScr.radioGirRan + 10) * 2));
+            Gizmos.DrawRay (capsula.bounds.center, capsula.bounds.size.y * Vector3.down);
         }
         /*Gizmos.DrawRay (this.transform.position, this.transform.forward * saltoDstMax);
         Gizmos.DrawRay (this.transform.position, -this.transform.forward * saltoDstMax);
@@ -211,7 +216,7 @@ public class Naife : MonoBehaviour
                 }
                 else 
                 {
-                    if (collision.transform.CompareTag ("Enemigo") == false) 
+                    if (embestida == true && collision.transform.CompareTag ("Enemigo") == false) 
                     {
                         print ("Weno cuidao.");
                         embestida = false;
@@ -247,6 +252,7 @@ public class Naife : MonoBehaviour
         agente.enabled = true;
         embestida = false;
 
+        ChecarNavMesh ();
         this.CancelInvoke ("QuietoOGirando");
     }
 
@@ -260,7 +266,7 @@ public class Naife : MonoBehaviour
             quieto = true;
             espera = false;
             agente.enabled = false;
-            print ("Suposadament.");
+            //print ("Suposadament.");
 
             this.CancelInvoke ("VolverALaCarga");
             this.Invoke ("QuietoOGirando", 0.5f);
@@ -401,7 +407,7 @@ public class Naife : MonoBehaviour
                 -this.transform.forward;
         }
         //print (objetivoDir);
-        embestida = !Physics.SphereCast (new Ray (capsula.bounds.center, objetivoDir), capsula.bounds.extents.x, objetivoDir.magnitude, padreScr.capasGirAtq, QueryTriggerInteraction.Ignore);
+        embestida = Mathf.Abs (capsula.bounds.min.y - objetivoTrf.position.y) < 10 && !Physics.SphereCast (new Ray (capsula.bounds.center, objetivoDir), capsula.bounds.extents.x, objetivoDir.magnitude, padreScr.capasGirAtq, QueryTriggerInteraction.Ignore);
         objetivoDir = objetivoDir.normalized;
     }
 
@@ -485,7 +491,7 @@ public class Naife : MonoBehaviour
     private void Saltar (Vector3 direccion = new Vector3 ())
     {
         saltoDir = direccion;
-        print (saltoDir);
+        //print (saltoDir);
         if ((agente.enabled == false && Estado.atacando == estado) || (quieto == true && Estado.normal == estado)) 
         {
             if (saltoDir == Vector3.zero) 
@@ -568,6 +574,30 @@ public class Naife : MonoBehaviour
         {
             this.transform.parent = padreScr.transform;
             padreRot.rotation = Quaternion.identity;
+
+            ChecarNavMesh ();
+        }
+    }
+
+
+    // Comprueba si el agente se encuentra en una posición que existe dentro del NavMesh y, si este no es el caso, se le mueve a la posición más cercana perteneciente al NavMesh que encontremos.
+    private void ChecarNavMesh () 
+    {
+        NavMesh.SamplePosition (this.transform.position, out NavMeshHit datos, capsula.bounds.size.x, NavMesh.AllAreas);
+
+        if (datos.position.magnitude != float.PositiveInfinity && (Mathf.Approximately (this.transform.position.x, datos.position.x) == false || Mathf.Approximately (this.transform.position.x, datos.position.z) == false)) 
+        {
+            this.transform.position = new Vector3 (datos.position.x, this.transform.position.y, datos.position.z);
+        }
+    }
+
+
+    // Se lanza un raycast desde el centro del enemigo hasta abajo y, si este choca con algún collider, ajustamos la posición del naife para que este se posicione correctamente apoyado sobre el suelo.
+    private void AjustarAltura () 
+    {
+        if (Physics.Raycast (capsula.bounds.center, Vector3.down, out RaycastHit info, capsula.bounds.size.y, padreScr.sueloCap, QueryTriggerInteraction.Ignore) == true) 
+        {
+            this.transform.position = new Vector3 (this.transform.position.x, capsula.bounds.size.y + info.point.y, this.transform.position.z);
         }
     }
 

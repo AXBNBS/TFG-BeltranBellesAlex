@@ -30,7 +30,7 @@ public class Empujar : MonoBehaviour
         longitudRay = this.transform.localScale.x * characterCtr.radius * 3;
         offsetY = characterCtr.height / 2;
         movimientoScr = this.GetComponent<MovimientoHistoria2> ();
-        animador = this.GetComponentInChildren<Animator> ();
+        animador = this.transform.GetChild(6).GetComponent<Animator> ();
     }
 
 

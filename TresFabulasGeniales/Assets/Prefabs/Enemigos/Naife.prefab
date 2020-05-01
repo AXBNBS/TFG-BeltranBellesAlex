@@ -79,7 +79,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 1479372276
   m_Radius: 3
-  m_Speed: 380
+  m_Speed: 350
   m_Acceleration: 300
   avoidancePriority: 50
   m_AngularSpeed: 0
@@ -118,6 +118,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   estado: 0
+  alturaCmp: 0
+  quieto: 0
+  sentidoHor: 0
+  embestida: 0
+  espera: 0
+  animarFin: 0
+  gatosCer: 0
+  agresivo: 0
+  saltado: 0
+  chocado: 0
+  controladoAvt: 0
 --- !u!1 &4234741656090347710
 GameObject:
   m_ObjectHideFlags: 0

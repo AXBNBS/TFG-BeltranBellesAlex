@@ -685,8 +685,8 @@ public class MovimientoHistoria2 : MonoBehaviour
             }
             if (saludScr.aturdido == true) 
             {
-                movimiento.x = aturdimientoImp.x * movimientoVel * 4;
-                movimiento.z = aturdimientoImp.z * movimientoVel * 4;
+                movimiento.x = aturdimientoImp.x * movimientoVel * 2;
+                movimiento.z = aturdimientoImp.z * movimientoVel * 2;
             }
             if (pendiente == false)
             {

@@ -34,7 +34,7 @@ public class Ataque : MonoBehaviour
         agente = this.GetComponent<NavMeshAgent> ();
         saltado = false;
         aranyado = false;
-        animador = this.GetComponentInChildren<Animator> ();
+        animador = this.transform.GetChild(6).GetComponent<Animator> ();
         golpeablesCap = LayerMask.GetMask (new string[] { "Enemigos", "Bichos" });
         ataqueCenTrf = this.transform.GetChild (this.transform.childCount - 1);
     }
@@ -246,9 +246,9 @@ public class Ataque : MonoBehaviour
 
         foreach (Collider c in colliders) 
         {
-            print (c.name);
-            print (resultado.Contains (c));
-            print (c.GetComponent<BichoPegajoso> () != null);
+            //print (c.name);
+            //print (resultado.Contains (c));
+            //print (c.GetComponent<BichoPegajoso> () != null);
             if (resultado.Contains (c) == false && c.GetComponent<BichoPegajoso> () != null) 
             {
                 resultado.Add (c);

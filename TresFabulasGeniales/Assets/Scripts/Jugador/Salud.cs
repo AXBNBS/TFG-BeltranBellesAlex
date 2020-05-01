@@ -26,7 +26,7 @@ public class Salud : MonoBehaviour
         aturdido = false;
         devolverInp = false;
         invulnerable = false;
-        animador = this.GetComponentInChildren<Animator> ();
+        animador = this.transform.GetChild(6).GetComponent<Animator> ();
         movimientoScr = this.GetComponent<MovimientoHistoria2> ();
         ataqueScr = this.GetComponent<Ataque> ();
         empujeScr = this.GetComponent<Empujar> ();

@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-
-
+using UnityEngine.AI;
 
 [RequireComponent (typeof (SphereCollider))]
 public class AreaNaifes : MonoBehaviour
@@ -38,6 +37,8 @@ public class AreaNaifes : MonoBehaviour
         avataresMov = GameObject.FindObjectsOfType<MovimientoHistoria2> ();
         triggers = this.GetComponents<Collider> ();
         this.tag = "AreaEnemiga";
+
+        this.InvokeRepeating ("MirarSiHayQueAtacar", 0, 1);
     }
 
 
@@ -66,18 +67,6 @@ public class AreaNaifes : MonoBehaviour
             {
                 avataresDen.Add (other.transform);
             }
-
-            if (avataresPer.ContainsKey (other.transform) == false) 
-            {
-                Naife perseguidor = PrimeroSinBlanco ();
-
-                if (perseguidor != null)
-                {
-                    perseguidor.IniciarAtaque (other.transform);
-                    avataresPer.Add (other.transform, perseguidor);
-                }
-            }
-
             if (avataresDen.Count == 1)
             {
                 TodosCorriendo (true);
@@ -97,11 +86,10 @@ public class AreaNaifes : MonoBehaviour
             {
                 TodosCorriendo (false);
             }
-            if (other.GetComponent<MovimientoHistoria2>().input == true && avataresPer.ContainsKey (other.transform) == true) 
+            if (other.GetComponent<NavMeshAgent>().enabled == false && avataresPer.ContainsKey (other.transform) == true) 
             {
                 if (avataresDen.Count == 0 || avataresPer.ContainsKey (avataresDen[0]) == true) 
                 {
-                    print ("Saludos jeje");
                     //print ("Vuelta al pasado desde OnTriggerExit.");
                     avataresPer[other.transform].VolverALaRutina ();
                 }
@@ -226,6 +214,25 @@ public class AreaNaifes : MonoBehaviour
             if (n.Vencido () == false && Naife.Estado.normal == n.estado) 
             {
                 n.CorrerSiempre (correr);
+            }
+        }
+    }
+
+
+    // Se comprueba si hay algún avatar en la zona y, si este no está siendo perseguido por ningún naife y existen naifes sin blanco asignado, se encuentra a uno que vaya a por él.
+    private void MirarSiHayQueAtacar () 
+    {
+        foreach (Transform a in avataresDen) 
+        {
+            if (avataresPer.ContainsKey (a) == false)
+            {
+                Naife perseguidor = PrimeroSinBlanco ();
+
+                if (perseguidor != null)
+                {
+                    perseguidor.IniciarAtaque (a);
+                    avataresPer.Add (a, perseguidor);
+                }
             }
         }
     }

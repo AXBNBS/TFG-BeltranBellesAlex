@@ -11,11 +11,11 @@ public class BichoPegajoso : MonoBehaviour
     public bool pegado;
     public MovimientoHistoria2 pegadoA;
 
-    [SerializeField] private int empujeDst, empujeVel, saltoVel, distanciaPar;
+    [SerializeField] private int empujeDst, empujeVel, saltoVel, distanciaPar, rotacionVel;
     [SerializeField] private float objetivoRnd, saltoRnd;
     private NavMeshAgent agente;
     private Transform objetivoTrf, padre;
-    private Vector3 posicionIni, objetivoOff, pegadoOff, puntoVue, escalaIni;
+    private Vector3 posicionIni, objetivoOff, puntoVue, escalaIni;
     private bool volando, sueloToc, parado;
     private CharacterController personajeCtr;
     private float puntoVueDst, gravedad, baseOff, fuerzaY;
@@ -137,6 +137,8 @@ public class BichoPegajoso : MonoBehaviour
                 }
 
                 agente.velocity = agente.baseOffset > baseOff ? agente.desiredVelocity : Vector3.zero;
+                this.transform.rotation = Quaternion.Slerp (this.transform.rotation, Quaternion.Euler (0, Quaternion.LookRotation (this.transform.position - agente.destination).eulerAngles.y + 90, 0), Time.deltaTime * rotacionVel);
+                //this.transform.rotation = Quaternion.Slerp (this.transform.rotation, Quaternion.Euler (0, Mathf.Atan2 (agente.velocity.x, agente.velocity.z) * Mathf.Rad2Deg - 90, 0), Time.deltaTime * rotacionVel);
             }
             else 
             {
