@@ -218,7 +218,7 @@ public class Naife : MonoBehaviour
                 {
                     if (embestida == true && collision.transform.CompareTag ("Enemigo") == false) 
                     {
-                        print ("Weno cuidao.");
+                        //print ("Weno cuidao.");
                         embestida = false;
                         estado = Estado.frenando;
                         agente.velocity = Vector3.zero;
@@ -478,6 +478,7 @@ public class Naife : MonoBehaviour
         this.transform.parent = padreScr.transform;
         //this.transform.localPosition = new Vector3 (this.transform.localPosition.x, padreScr.muertePosYLoc, this.transform.localPosition.z);
 
+        GameObject.Destroy (this.GetComponent<Rigidbody> ());
         this.transform.GetChild(0).gameObject.SetActive (false);
         this.CancelInvoke ("QuietoOGirando");
         this.CancelInvoke ("VolverALaCarga");
