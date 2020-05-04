@@ -8,11 +8,10 @@ using System.Linq;
 
 public class MovimientoHistoria2 : MonoBehaviour
 {
-    public bool input, sueleado, perseguir, descansar, companyeroCer, saltador;
-    public Vector3 movimiento;
+    public bool input, sueleado, perseguir, descansar, companyeroCer, saltador, plataformaAbj;
+    public Vector3 movimiento, aturdimientoImp, plataformaMov;
     public int saltoVel;
     public List<Transform> huesos;
-    public Vector3 aturdimientoImp;
 
     [SerializeField] private int movimientoVelNor, movimientoVelRed, rotacionVel, aleatoriedad, deslizVel, pendienteFrz;
     [SerializeField] private LayerMask capas, capasSinAvt;
@@ -72,6 +71,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         saludScr = this.GetComponent<Salud> ();
         bichosPeg = new HashSet<BichoPegajoso> ();
         normales = new List<Vector3> ();
+        //this.transform.position = Vector3.zero;
 
         huesos.RemoveAt (0);
         foreach (Transform h in huesos) 
@@ -588,7 +588,14 @@ public class MovimientoHistoria2 : MonoBehaviour
         switch (estado) 
         {
             case Estado.normal:
-                return movimiento.y < 0 ? Physics.CheckSphere (this.transform.position + offsetEsfSue, radioEsfSue, capasSinAvt, QueryTriggerInteraction.Ignore) : false;
+                if (plataformaAbj == false) 
+                {
+                    return movimiento.y < 0 ? Physics.CheckSphere (this.transform.position + offsetEsfSue, radioEsfSue, capasSinAvt, QueryTriggerInteraction.Ignore) : false;
+                }
+                else 
+                {
+                    return true;
+                }
             case Estado.siguiendo:
                 return true;
             default:
@@ -690,7 +697,15 @@ public class MovimientoHistoria2 : MonoBehaviour
             }
             if (pendiente == false)
             {
-                banderitas = characterCtr.Move (Time.deltaTime * movimiento);
+                if (plataformaAbj == false) 
+                {
+                    banderitas = characterCtr.Move (Time.deltaTime * movimiento);
+                }
+                banderitas = characterCtr.collisionFlags;
+                /*else 
+                {
+                    banderitas = characterCtr.Move (new Vector3 (movimiento.x + plataformaMov.x, plataformaMov.y, movimiento.z + plataformaMov.z) * Time.deltaTime);
+                }*/
                 //print ("En terreno normal. Velocidad del controlador: " + characterCtr.velocity);
             }
             else 
@@ -775,7 +790,9 @@ public class MovimientoHistoria2 : MonoBehaviour
         Vector3 diferencia = posicionPnt - objetivoSeg.parent.position;
         Ray rayo = new Ray (objetivoSeg.parent.position, diferencia);
         
-        yendo = Vector3.Distance (this.transform.position, posicionPnt) > mallaAgtNav.stoppingDistance && Physics.Raycast (rayo, diferencia.magnitude, capas, QueryTriggerInteraction.Ignore) == false;
+        //yendo = Vector3.Distance (this.transform.position, posicionPnt) > mallaAgtNav.stoppingDistance && Physics.Raycast (rayo, diferencia.magnitude, capas, QueryTriggerInteraction.Ignore) == false;
+        yendo = Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (posicionPnt.x, posicionPnt.z)) > mallaAgtNav.stoppingDistance && 
+            Physics.Raycast (rayo, diferencia.magnitude, capas, QueryTriggerInteraction.Ignore) == false;
 
         if (yendo == false)
         {

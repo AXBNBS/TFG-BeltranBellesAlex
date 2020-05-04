@@ -34,6 +34,20 @@ public class Fundido : MonoBehaviour
     }
 
 
+    // Para moverse rápido en las distintas escenas, podemos pulsar P o O para ir a la siguiente o la anterior respectivamente.
+    private void Update ()
+    {
+        if (Input.GetKeyDown (KeyCode.P) == true) 
+        {
+            FundidoAEscena (SceneManager.GetActiveScene().buildIndex + 1);
+        }
+        if (Input.GetKeyDown (KeyCode.O) == true) 
+        {
+            FundidoAEscena (SceneManager.GetActiveScene().buildIndex - 1);
+        }
+    }
+
+
     // No entiendo como funciona pero de alguna manera se llama a "AlCargarEscena" cada vez que se carga una escena gracias a esto.
     private void OnEnable () 
     {
@@ -87,6 +101,7 @@ public class Fundido : MonoBehaviour
         else 
         {
             Time.timeScale = 1;
+            animador.speed = 0;
 
             this.StartCoroutine (CargarEscena ());
             //SceneManager.LoadScene (escenaInd);
@@ -113,5 +128,6 @@ public class Fundido : MonoBehaviour
         {
             yield return null;
         }
+        animador.speed = 1;
     }
 }

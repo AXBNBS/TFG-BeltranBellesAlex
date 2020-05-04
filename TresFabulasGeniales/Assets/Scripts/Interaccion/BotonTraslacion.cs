@@ -7,15 +7,18 @@ using UnityEngine;
 
 public class BotonTraslacion : MonoBehaviour
 {
-    [SerializeField] private Transform objetoTrf;
+    public Transform objetoTrf;
+
     [SerializeField] private bool mantener;
     [SerializeField] private Vector3 posicionFin;
     [SerializeField] private int velocidadMov;
-    private Vector3 posicionIni, desplazamiento;
+    [SerializeField] private BotonTraslacion igual;
+    private Vector3 posicionIni, desplazamiento, traslacion;
     private bool[] positivoDsp;
-    private bool mover;
+    private bool pulsado, limiteAlc;
     private Renderer[] renderizadores;
     private BoxCollider cajaCol;
+    private Rigidbody plataformaCueRig;
 
 
     // Inicialización de variables.
@@ -23,20 +26,39 @@ public class BotonTraslacion : MonoBehaviour
     {
         posicionIni = objetoTrf.position;
         desplazamiento = (posicionFin - posicionIni).normalized;
+        print (desplazamiento);
         positivoDsp = new bool[] { Mathf.Sign (desplazamiento.x) == +1, Mathf.Sign (desplazamiento.y) == +1, Mathf.Sign (desplazamiento.z) == +1 };
+        limiteAlc = true;
         renderizadores = this.GetComponentsInChildren<Renderer> ();
         renderizadores[1].enabled = false;
         cajaCol = renderizadores[0].GetComponent<BoxCollider> ();
+
+        //objetoTrf.TryGetComponent (out plataformaCueRig);
     }
 
 
     // Si el movimiento está permitido en las circunstancias actuales, trasladamos el objeto en el sentido que corresponda.
     private void Update ()
     {
-        if (MovimientoPermitido () == true) 
+        if (limiteAlc == false && MovimientoPermitido () == true) 
         {
-            objetoTrf.Translate ((mover == true ? desplazamiento : -desplazamiento) * Time.deltaTime * velocidadMov, Space.World);
+            traslacion = (pulsado == true ? desplazamiento : -desplazamiento) * velocidadMov;
+            //if (plataformaCueRig == null)
+            //{
+                objetoTrf.Translate (traslacion * Time.deltaTime, Space.World);
+            //}
+            /*else 
+            {
+                plataformaCueRig.MovePosition (plataformaCueRig.transform.position + traslacion * Time.deltaTime);
+            }*/
         }
+        /*else 
+        {
+            if (plataforma != null) 
+            {
+                plataforma.movimiento = Vector3.zero;
+            }
+        }*/
     }
 
 
@@ -46,10 +68,19 @@ public class BotonTraslacion : MonoBehaviour
     {
         if (other.CompareTag ("Jugador") == true) 
         {
-            mover = true;
+            print ("Weno sí.");
+            pulsado = true;
             renderizadores[1].enabled = true;
             renderizadores[0].enabled = false;
             cajaCol.enabled = false;
+            if (igual != null && igual.pulsado == true) 
+            {
+                limiteAlc = igual.limiteAlc;
+            }
+            else 
+            {
+                limiteAlc = false;
+            }
         }
     }
 
@@ -60,10 +91,19 @@ public class BotonTraslacion : MonoBehaviour
     {
         if (mantener == true && other.CompareTag ("Jugador") == true) 
         {
-            mover = false;
+            print ("Weno no.");
+            pulsado = false;
             renderizadores[0].enabled = true;
             renderizadores[1].enabled = false;
             cajaCol.enabled = true;
+            if (igual != null && igual.pulsado == true)
+            {
+                limiteAlc = igual.limiteAlc;
+            }
+            else 
+            {
+                limiteAlc = false;
+            }
         }
     }
 
@@ -74,37 +114,33 @@ public class BotonTraslacion : MonoBehaviour
     {
         Vector3 nuevaPos = objetoTrf.position;
 
-        if (mover == false) 
+        if (pulsado == false) 
         {
             nuevaPos -= desplazamiento;
+            if ((desplazamiento.y != 0 && (positivoDsp[1] == true ? nuevaPos.y < posicionIni.y : nuevaPos.y > posicionIni.y)) || (desplazamiento.x != 0 && (positivoDsp[0] == true ? nuevaPos.x < posicionIni.x : nuevaPos.x > posicionIni.x)) ||
+                (desplazamiento.z != 0 && (positivoDsp[2] == true ? nuevaPos.z < posicionIni.z : nuevaPos.z > posicionIni.z))) 
+            {
+                limiteAlc = true;
+                if (igual != null)
+                {
+                    igual.limiteAlc = true;
+                }
 
-            if (desplazamiento.x != 0 && (positivoDsp[0] == true ? nuevaPos.x < posicionIni.x : nuevaPos.x > posicionIni.x)) 
-            {
-                return false;
-            }
-            if (desplazamiento.y != 0 && (positivoDsp[1] == true ? nuevaPos.y < posicionIni.y : nuevaPos.y > posicionIni.y))
-            {
-                return false;
-            }
-            if (desplazamiento.z != 0 && (positivoDsp[2] == true ? nuevaPos.z < posicionIni.z : nuevaPos.z > posicionIni.z))
-            {
                 return false;
             }
         }
         else 
         {
             nuevaPos += desplazamiento;
+            if ((desplazamiento.x != 0 && (positivoDsp[0] == true ? nuevaPos.x > posicionFin.x : nuevaPos.x < posicionFin.x)) || (desplazamiento.y != 0 && (positivoDsp[1] == true ? nuevaPos.y > posicionFin.y : nuevaPos.y < posicionFin.y)) ||
+                (desplazamiento.z != 0 && (positivoDsp[2] == true ? nuevaPos.z > posicionFin.z : nuevaPos.z < posicionFin.z)))
+            {
+                limiteAlc = true;
+                if (igual != null)
+                {
+                    igual.limiteAlc = true;
+                }
 
-            if (desplazamiento.x != 0 && (positivoDsp[0] == true ? nuevaPos.x > posicionFin.x : nuevaPos.x < posicionFin.x))
-            {
-                return false;
-            }
-            if (desplazamiento.y != 0 && (positivoDsp[1] == true ? nuevaPos.y > posicionFin.y : nuevaPos.y < posicionFin.y))
-            {
-                return false;
-            }
-            if (desplazamiento.z != 0 && (positivoDsp[2] == true ? nuevaPos.z > posicionFin.z : nuevaPos.z < posicionFin.z))
-            {
                 return false;
             }
         }
