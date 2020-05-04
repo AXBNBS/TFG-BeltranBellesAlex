@@ -29,7 +29,6 @@ TagManager:
   - HuesoRestringido
   - Resbaladizo
   - Ruta
-  - PlataformaMovil
   layers:
   - Default
   - TransparentFX
@@ -54,7 +53,7 @@ TagManager:
   - GenteHabladora
   - SuperficiesResbaladizas
   - EnemigosIgnoran
-  - Morenas
+  - 
   - 
   - 
   - 
