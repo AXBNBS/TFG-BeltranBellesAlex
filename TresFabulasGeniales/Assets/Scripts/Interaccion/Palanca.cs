@@ -8,12 +8,13 @@ using UnityEngine;
 public class Palanca : MonoBehaviour
 {
     [SerializeField] private Transform objetoTrf;
-    [SerializeField] private float finalY;
+    [SerializeField] private float bajada;
     [SerializeField] private int velocidadMov, colocacionVel;
     private bool activada, jugadorCer, recolocar;
-    private List<Transform> avataresCer;
+    private List<CharacterController> avataresCer;
     private Vector2 centroTrg;
     private Vector3 posicionObj;
+    private float objetivoY;
 
 
     // Inicialización de variables.
@@ -21,21 +22,16 @@ public class Palanca : MonoBehaviour
     {
         Collider[] colliders = this.GetComponents<Collider> ();
 
-        avataresCer = new List<Transform> ();
-        foreach (Collider c in colliders) 
+        avataresCer = new List<CharacterController> ();
+        foreach (Collider c in colliders)
         {
-            if (c.isTrigger == true) 
+            if (c.isTrigger == true)
             {
                 centroTrg = new Vector2 (c.bounds.center.x, c.bounds.center.z);
 
                 break;
             }
         }
-        /*desplazamiento = (posicionFin - posicionIni).normalized;
-        positivoDsp = new bool[] { Mathf.Sign (desplazamiento.x) == +1, Mathf.Sign (desplazamiento.y) == +1, Mathf.Sign (desplazamiento.z) == +1 };
-        renderizadores = this.GetComponentsInChildren<Renderer> ();
-        renderizadores[1].enabled = false;
-        cajaCol = renderizadores[0].GetComponent<BoxCollider> ();*/
     }
 
 
@@ -49,7 +45,8 @@ public class Palanca : MonoBehaviour
                 CambioDePersonajesYAgrupacion.instancia.PararInput ();
 
                 recolocar = true;
-                posicionObj = new Vector3 (centroTrg.x, avataresCer[0].position.y, centroTrg.y);
+                posicionObj = new Vector3 (centroTrg.x, avataresCer[0].transform.position.y, centroTrg.y);
+                objetivoY = objetoTrf.position.y - bajada;
             }
         }
         else 
@@ -62,7 +59,9 @@ public class Palanca : MonoBehaviour
 
         if (activada == true) 
         {
-            if (objetoTrf.position.y > finalY) 
+            print (objetoTrf.position.y);
+            print (objetivoY);
+            if (objetoTrf.position.y > objetivoY) 
             {
                 objetoTrf.Translate (Time.deltaTime * Vector3.down * velocidadMov, Space.World);
             }
@@ -78,11 +77,12 @@ public class Palanca : MonoBehaviour
     //cuando sobresale.
     private void OnTriggerEnter (Collider other)
     {
-        if (other.CompareTag ("Jugador") == true) 
+        if (other.isTrigger == false && other.CompareTag ("Jugador") == true) 
         {
             jugadorCer = true;
             
-            avataresCer.Add (other.transform);
+            avataresCer.Add (other.GetComponent<CharacterController> ());
+            //print (other.transform.name);
         }
     }
 
@@ -91,9 +91,9 @@ public class Palanca : MonoBehaviour
     //desactivamos el del botón pulsado. Se activa también el collider del botón cuando sobresale.
     private void OnTriggerExit (Collider other)
     {
-        if (other.CompareTag ("Jugador") == true) 
+        if (other.isTrigger == false && other.CompareTag ("Jugador") == true) 
         {
-            avataresCer.Remove (other.transform);
+            avataresCer.Remove (other.GetComponent<CharacterController> ());
             
             if (avataresCer.Count == 0) 
             {
@@ -103,15 +103,17 @@ public class Palanca : MonoBehaviour
     }
 
 
-    // .
+    // Coloca al avatar en frente de la palanca, trasladándolo y rotándolo.
     private void ColocarAvatar () 
     {
-        Quaternion rotacionObj = Quaternion.Euler (0, Quaternion.LookRotation(this.transform.position - avataresCer[0].position).eulerAngles.y + 90, 0);
+        Quaternion rotacionObj = Quaternion.Euler (0, Quaternion.LookRotation(this.transform.position - avataresCer[0].transform.position).eulerAngles.y + 90, 0);
 
-        if (Vector3.Distance (avataresCer[0].position, posicionObj) > 1 || Quaternion.Angle (avataresCer[0].rotation, rotacionObj) > 1) 
+        if (Vector3.Distance (avataresCer[0].transform.position, posicionObj) > 1 || Quaternion.Angle (avataresCer[0].transform.rotation, rotacionObj) > 1) 
         {
-            avataresCer[0].position = Vector3.Lerp (avataresCer[0].position, posicionObj, Time.deltaTime * colocacionVel);
-            avataresCer[0].rotation = Quaternion.Lerp (avataresCer[0].rotation, rotacionObj, Time.deltaTime * colocacionVel);
+            avataresCer[0].transform.rotation = Quaternion.Lerp (avataresCer[0].transform.rotation, rotacionObj, Time.deltaTime * colocacionVel);
+
+            avataresCer[0].Move (Vector3.Lerp (avataresCer[0].transform.position, posicionObj, Time.deltaTime * colocacionVel) - avataresCer[0].transform.position);
+            //avataresCer[0].transfposition = Vector3.Lerp(avataresCer[0].position, posicionObj, Time.deltaTime * colocacionVel);
         }
         else 
         {

@@ -103,7 +103,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         {
             horizontalInp = Mathf.RoundToInt (Input.GetAxisRaw ("Movimiento horizontal"));
             verticalInp = Mathf.RoundToInt (Input.GetAxisRaw ("Movimiento vertical"));
-            saltarInp = empujando == false && deslizar == false ? Input.GetButtonDown ("Salto") : false;
+            saltarInp = (empujando == false && deslizar == false) ? Input.GetButtonDown ("Salto") : false;
         }
         movimiento.x = 0;
         movimiento.z = 0;
@@ -289,9 +289,9 @@ public class MovimientoHistoria2 : MonoBehaviour
                 break;
             case "AreaEnemiga":
                 enemigosCer = false;
-                enemigoTrf = null;
+                //enemigoTrf = null;
 
-                TratarDeVolver ();
+                //TratarDeVolver ();
 
                 break;
         } 
@@ -697,21 +697,18 @@ public class MovimientoHistoria2 : MonoBehaviour
             }
             if (pendiente == false)
             {
-                if (plataformaAbj == false) 
-                {
-                    banderitas = characterCtr.Move (Time.deltaTime * movimiento);
-                }
-                banderitas = characterCtr.collisionFlags;
+                banderitas = characterCtr.Move (Time.deltaTime * movimiento);
                 /*else 
                 {
                     banderitas = characterCtr.Move (new Vector3 (movimiento.x + plataformaMov.x, plataformaMov.y, movimiento.z + plataformaMov.z) * Time.deltaTime);
                 }*/
-                //print ("En terreno normal. Velocidad del controlador: " + characterCtr.velocity);
+                //print (this.name + ": en terreno normal. Velocidad del controlador: " + characterCtr.velocity);
             }
             else 
             {
                 banderitas = characterCtr.Move ((Vector3.down * pendienteFrz + movimiento) * Time.deltaTime);
-                //print ("En una pendiente. Velocidad del controlador: " + characterCtr.velocity);
+                //print (this.name + ": tremendo motor el unidades este.");
+                //print (this.name + ": en una pendiente. Velocidad del controlador: " + characterCtr.velocity);
             }
             deslizar = ObtenerMenorPendiente () > characterCtr.slopeLimit || (sueleado == false && banderitas != CollisionFlags.None && banderitas != CollisionFlags.Sides);
             //print (this.name + "-> Menor ángulo obtenido: " + ObtenerMenorPendiente ());
@@ -741,7 +738,14 @@ public class MovimientoHistoria2 : MonoBehaviour
             case Estado.normal:
                 if (sueleado == true && saltado == false && saludScr.aturdido == false)
                 {
-                    movimiento.y = -10;
+                    //if (plataformaAbj == false) 
+                    //{
+                        movimiento.y = -10;
+                    /*}
+                    else 
+                    {
+                        movimiento.y = 0;
+                    }*/
                     empuje = Vector3.zero;
                 }
                 else 

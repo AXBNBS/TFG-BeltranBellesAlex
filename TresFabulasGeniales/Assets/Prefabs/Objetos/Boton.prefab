@@ -59,8 +59,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: -0.19, y: 0.25, z: 0}
+  m_Size: {x: 1.5312502, y: 1.640624, z: 1}
+  m_Center: {x: -0.1859376, y: 0.24011432, z: -1.4231166e-15}
 --- !u!114 &4192429911065908951
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -77,6 +77,9 @@ MonoBehaviour:
   mantener: 0
   posicionFin: {x: 0, y: 0, z: 0}
   velocidadMov: 100
+  igual: {fileID: 0}
+  pulsado: 0
+  limiteAlc: 0
 --- !u!65 &2034978897093025254
 BoxCollider:
   m_ObjectHideFlags: 0

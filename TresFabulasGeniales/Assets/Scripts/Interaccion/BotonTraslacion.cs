@@ -15,10 +15,9 @@ public class BotonTraslacion : MonoBehaviour
     [SerializeField] private BotonTraslacion igual;
     private Vector3 posicionIni, desplazamiento, traslacion;
     private bool[] positivoDsp;
-    private bool pulsado, limiteAlc;
+    [SerializeField] private bool pulsado, limiteAlc;
     private Renderer[] renderizadores;
     private BoxCollider cajaCol;
-    private Rigidbody plataformaCueRig;
 
 
     // Inicialización de variables.
@@ -26,26 +25,27 @@ public class BotonTraslacion : MonoBehaviour
     {
         posicionIni = objetoTrf.position;
         desplazamiento = (posicionFin - posicionIni).normalized;
-        print (desplazamiento);
+        //print (desplazamiento);
         positivoDsp = new bool[] { Mathf.Sign (desplazamiento.x) == +1, Mathf.Sign (desplazamiento.y) == +1, Mathf.Sign (desplazamiento.z) == +1 };
         limiteAlc = true;
         renderizadores = this.GetComponentsInChildren<Renderer> ();
         renderizadores[1].enabled = false;
         cajaCol = renderizadores[0].GetComponent<BoxCollider> ();
-
-        //objetoTrf.TryGetComponent (out plataformaCueRig);
     }
 
 
     // Si el movimiento está permitido en las circunstancias actuales, trasladamos el objeto en el sentido que corresponda.
-    private void Update ()
+    private void FixedUpdate ()
     {
         if (limiteAlc == false && MovimientoPermitido () == true) 
         {
             traslacion = (pulsado == true ? desplazamiento : -desplazamiento) * velocidadMov;
-            //if (plataformaCueRig == null)
-            //{
-                objetoTrf.Translate (traslacion * Time.deltaTime, Space.World);
+            /*if (plataformaScr != null) 
+            {
+                plataformaScr.negativaY = traslacion.y < 0;
+            }*/
+
+            objetoTrf.Translate (traslacion * Time.deltaTime, Space.World);
             //}
             /*else 
             {
@@ -68,7 +68,7 @@ public class BotonTraslacion : MonoBehaviour
     {
         if (other.CompareTag ("Jugador") == true) 
         {
-            print ("Weno sí.");
+            //print ("Weno sí.");
             pulsado = true;
             renderizadores[1].enabled = true;
             renderizadores[0].enabled = false;
@@ -91,7 +91,7 @@ public class BotonTraslacion : MonoBehaviour
     {
         if (mantener == true && other.CompareTag ("Jugador") == true) 
         {
-            print ("Weno no.");
+            //print ("Weno no.");
             pulsado = false;
             renderizadores[0].enabled = true;
             renderizadores[1].enabled = false;

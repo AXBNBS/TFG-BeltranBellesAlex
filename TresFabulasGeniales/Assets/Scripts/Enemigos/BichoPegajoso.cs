@@ -106,7 +106,7 @@ public class BichoPegajoso : MonoBehaviour
         this.transform.localScale = escalaIni;
         pegado = false;
         volando = true;
-        puntoVue = this.transform.position - this.transform.forward * empujeDst;
+        puntoVue = this.transform.position - this.transform.right * empujeDst;
         puntoVueDst = Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (puntoVue.x, puntoVue.z));
         agente.baseOffset = baseOff;
         fuerzaY = 0;
@@ -194,7 +194,7 @@ public class BichoPegajoso : MonoBehaviour
     }*/
 
 
-    // .
+    // Tras un breve periodo de tiempo en el suelo, los esmoches salen de su aturdimiento y vuelven a por el jugador.
     private void SalirDeAturdimiento () 
     {
         volando = false;

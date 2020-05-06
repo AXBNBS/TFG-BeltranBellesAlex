@@ -83,7 +83,8 @@ public class SeguimientoCamara : MonoBehaviour
         {
             if (dialogando == false) 
             {
-                if (CambioDePersonajesYAgrupacion.instancia != null && this.transform.position == objetivo.position)
+                //if (CambioDePersonajesYAgrupacion.instancia != null && Vector3.Distance (this.transform.position, objetivo.position) < 5)
+                if (CambioDePersonajesYAgrupacion.instancia != null && input == false && Vector3.Distance (this.transform.position, objetivo.position) < 5)
                 {
                     cambioCmp = true;
                     desplazandose = false;

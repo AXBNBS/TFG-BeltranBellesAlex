@@ -123,6 +123,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objetoTrf: {fileID: 0}
-  finalY: 0
-  velocidadMov: 100
+  bajada: 255
+  velocidadMov: 50
   colocacionVel: 3
+  activada: 0
+  jugadorCer: 0
+  recolocar: 0
+  objetivoY: 0
