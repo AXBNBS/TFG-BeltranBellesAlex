@@ -13,7 +13,7 @@ public class Texto : MonoBehaviour
     public bool hablando;
     
     [SerializeField] private string[] texto;
-    [SerializeField] private bool moviendose, hablarCmbRot;
+    [SerializeField] private bool moviendose, hablarCmbRot, gira;
     [SerializeField] private float hablarRotX, hablarRotZ;
     private float rotacionVel;
     private Hablar[] jugadores;

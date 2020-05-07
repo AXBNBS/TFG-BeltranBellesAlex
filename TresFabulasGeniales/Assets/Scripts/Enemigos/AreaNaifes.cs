@@ -22,7 +22,7 @@ public class AreaNaifes : MonoBehaviour
     public List<Transform> avataresDen;
     private int vivos;
     private MovimientoHistoria2[] avataresMov;
-    private Collider[] triggers;
+    //private Collider[] triggers;
 
 
     // Inicialización de variables.
@@ -37,7 +37,7 @@ public class AreaNaifes : MonoBehaviour
         avataresDen = new List<Transform> ();
         vivos = naifes.Length;
         avataresMov = GameObject.FindObjectsOfType<MovimientoHistoria2> ();
-        triggers = this.GetComponents<Collider> ();
+        //triggers = this.GetComponents<Collider> ();
         this.tag = "AreaEnemiga";
 
         this.InvokeRepeating ("MirarSiHayQueAtacar", 0, 1);
@@ -178,8 +178,11 @@ public class AreaNaifes : MonoBehaviour
         }
         else 
         {
+            trigger.enabled = false;
+
             avataresMov[0].CombateTerminado ();
             avataresMov[1].CombateTerminado ();
+            this.CancelInvoke ("MirarSiHayQueAtacar");
         }
     }
 
@@ -241,7 +244,7 @@ public class AreaNaifes : MonoBehaviour
 
 
     // Devuelve "true" si alguno de los triggers aún contiene al avatar dentro.
-    private bool SigueDentro (Vector3 posicion) 
+    /*private bool SigueDentro (Vector3 posicion) 
     {
         foreach (Collider c in triggers) 
         {
@@ -252,5 +255,5 @@ public class AreaNaifes : MonoBehaviour
         }
 
         return false;
-    }
+    }*/
 }
