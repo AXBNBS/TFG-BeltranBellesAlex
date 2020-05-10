@@ -59,7 +59,7 @@ MonoBehaviour:
   centradoVel: 10
   dialogoCap:
     serializedVersion: 2
-    m_Bits: 52535
+    m_Bits: 2305
 --- !u!1 &2900223902310915862
 GameObject:
   m_ObjectHideFlags: 0
