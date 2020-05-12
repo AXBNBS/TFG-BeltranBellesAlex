@@ -5,7 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Escenas/CasaBeltranuki.unity
     guid: 805271dc44a062b4aa1fb16161f5f59d
   - enabled: 1
