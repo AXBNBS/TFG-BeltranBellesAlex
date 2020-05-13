@@ -12,12 +12,13 @@ public class Empujar : MonoBehaviour
     private bool agarrado, ejeX;
     private LayerMask movilCap;
     private CharacterController characterCtr;
-    private float longitudRay, offsetY;
+    private float longitudRay;
     private MovimientoHistoria2 movimientoScr;
     private ObjetoMovil empujado;
     private RaycastHit rayoDat;
     private Animator animador;
     private Collider objetoMovTrg;
+    private Vector3 rayoDir;
 
 
     // Inicialización de variables.
@@ -27,8 +28,7 @@ public class Empujar : MonoBehaviour
         agarrado = false;
         movilCap = LayerMask.GetMask ("Movil");
         characterCtr = this.GetComponent<CharacterController> ();
-        longitudRay = this.transform.localScale.x * characterCtr.radius * 3;
-        offsetY = characterCtr.height / 2;
+        longitudRay = characterCtr.bounds.extents.x * 3;
         movimientoScr = this.GetComponent<MovimientoHistoria2> ();
         animador = this.transform.GetChild(6).GetComponent<Animator> ();
     }
@@ -63,6 +63,16 @@ public class Empujar : MonoBehaviour
             cercano = true;
             objetoMovTrg = other;
             empujado = other.GetComponent<ObjetoMovil> ();
+            ejeX = empujado.EjeDeTrigger (objetoMovTrg);
+            if (ejeX == false) 
+            {
+                rayoDir = empujado.transform.position.z > this.transform.position.z ? Vector3.forward : Vector3.back;
+            }
+            else 
+            {
+                rayoDir = empujado.transform.position.x > this.transform.position.x ? Vector3.right : Vector3.left;
+            }
+            print ("Tu puta madre.");
         }
     }
 
@@ -85,29 +95,26 @@ public class Empujar : MonoBehaviour
     }*/
 
 
-    // Si el imput está permitido, estamos cerca del objeto, nuestro personaje está en el suelo, se está pulsando el botón de interacción y el objeto está delante del personaje a poca distancia, rotamos al personaje para que esté perfectamente alineado
-    //con él y a una distancia correcta para evitar que el personaje atraviese el objeto o se quede demasiado lejos del mismo, también ofrecemos los datos necesarios sobre el objeto al personaje para realizar el empuje.
+    // Si el imput está permitido, estamos cerca del objeto, nuestro personaje está en el suelo, se está pulsando el botón de interacción y el objeto está delante del personaje a poca distancia, rotamos al personaje para que esté perfectamente 
+    //alineado con él y a una distancia correcta para evitar que el personaje atraviese el objeto o se quede demasiado lejos del mismo, también ofrecemos los datos necesarios sobre el objeto al personaje para realizar el empuje.
     private void EmpujePermitido ()
     {
-        Vector3 puntoIni = new Vector3 (this.transform.position.x, this.transform.position.y + offsetY, this.transform.position.z);
-
-        if (input == true && cercano == true && movimientoScr.sueleado == true && empujado.bloqueado == false && Input.GetButton ("Interacción") == true && Physics.Raycast (puntoIni, -this.transform.right, out rayoDat, longitudRay, movilCap, 
+        if (input == true && cercano == true && movimientoScr.sueleado == true && empujado.bloqueado == false && Input.GetButton ("Interacción") == true && Physics.Raycast (characterCtr.bounds.center, rayoDir, out rayoDat, longitudRay, movilCap, 
             QueryTriggerInteraction.Ignore) == true)
         {
-            Vector3 diferencia;
+            Vector3 diferencia = rayoDat.point - characterCtr.bounds.center;
 
-            ejeX = empujado.EjeDeTrigger (objetoMovTrg);
-            diferencia = rayoDat.point - puntoIni;
             diferencia.y = 0;
-            print ("Jugador: " + puntoIni + ". Punto del rayo: " + rayoDat.point + ". Diferencia: " + diferencia + ".");
-            if (ejeX == true)
+            //print ("Jugador: " + puntoIni + ". Punto del rayo: " + rayoDat.point + ". Diferencia: " + diferencia + ".");
+            this.transform.rotation = Quaternion.FromToRotation (-this.transform.right, rayoDir);
+            /*if (ejeX == true) 
             {
                 this.transform.rotation = Quaternion.Euler (0, Vector3.Angle (diferencia.x > 0 ? this.transform.right : -this.transform.right, diferencia), 0);
             }
             else 
             {
                 this.transform.rotation = Quaternion.Euler (0, diferencia.z > 0 ? Vector3.Angle (-this.transform.right, diferencia) + 90 : Vector3.Angle (-this.transform.right, diferencia) - 90, 0);
-            }
+            }*/
             agarrado = true;
 
             if (CambioDePersonajesYAgrupacion.instancia.juntos == true) 

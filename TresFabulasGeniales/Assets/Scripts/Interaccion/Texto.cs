@@ -71,7 +71,7 @@ public class Texto : MonoBehaviour
                 agente.enabled = false;
             }
         }
-        if (moviendose == false || agente.enabled == false) 
+        if (gira == true && (moviendose == false || agente.enabled == false)) 
         {
             if (hablando == false)
             {

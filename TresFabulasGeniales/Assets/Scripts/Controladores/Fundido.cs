@@ -112,7 +112,7 @@ public class Fundido : MonoBehaviour
     // Función que se llama al completar el fade in, se encarga de iniciar el diálgo entre los narradores si hemos vuelto a la escena inicial.
     private void EscenaVisible () 
     {
-        if (SceneManager.GetActiveScene().buildIndex == 0) 
+        if (SceneManager.GetActiveScene().name == "CasaBeltranuki") 
         {
             GameObject.FindObjectOfType<Hablar>().IniciarDialogo ();
         }

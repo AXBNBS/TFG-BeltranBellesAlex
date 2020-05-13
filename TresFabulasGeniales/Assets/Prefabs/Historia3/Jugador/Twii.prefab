@@ -42,6 +42,7 @@ GameObject:
   - component: {fileID: 5110995538423111811}
   - component: {fileID: 5110995538423111810}
   - component: {fileID: 5110995538423111821}
+  - component: {fileID: 3276275374873721944}
   m_Layer: 9
   m_Name: Twii
   m_TagString: Jugador
@@ -212,8 +213,6 @@ MonoBehaviour:
       velocidadMax: 350
   enganchePnt: {x: 0, y: 0, z: 0}
   limiteBal: 0
-  limiteEsc1: 0
-  limiteEsc2: 0
   cuerdaLimSup: 0
   cuerdaLimInf: 0
   rotacionEsc: {x: 0, y: 0, z: 0, w: 0}
@@ -227,10 +226,24 @@ MonoBehaviour:
   balanceoDstMin: 5
   longitudCueVel: 30
   interpolacionBalVel: 3
-  capas:
-    serializedVersion: 2
-    m_Bits: 3073
   gravedades: 960000002c010000
+  escenarioCol: {fileID: 0}
+--- !u!114 &3276275374873721944
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5110995538423111820}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1199e3fd3e2e5c4d9176e8dd2d671d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  input: 0
+  texto: []
+  hablables: []
+  rotacionVel: 0
 --- !u!1 &6128944828724793267
 GameObject:
   m_ObjectHideFlags: 0

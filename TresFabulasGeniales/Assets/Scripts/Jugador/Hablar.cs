@@ -203,6 +203,7 @@ public class Hablar : MonoBehaviour
         mostradoTxt[1].text = "";
         personaje = "";
         frase = "";
+        //print (texto == null);
         foreach (char c in texto[parrafoAct])
         {
             if (comenzando == false)

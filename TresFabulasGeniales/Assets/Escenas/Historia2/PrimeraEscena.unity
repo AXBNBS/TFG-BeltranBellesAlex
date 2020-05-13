@@ -4392,8 +4392,9 @@ GameObject:
   m_Component:
   - component: {fileID: 300830391}
   - component: {fileID: 300830390}
+  - component: {fileID: 300830392}
   m_Layer: 0
-  m_Name: fondo
+  m_Name: Fondo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4509,6 +4510,14 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 31
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!81 &300830392
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 300830389}
+  m_Enabled: 1
 --- !u!1 &306752335
 GameObject:
   m_ObjectHideFlags: 0
@@ -13130,6 +13139,11 @@ PrefabInstance:
     - target: {fileID: 5998366576337067661, guid: 39e89c1e00709cf4eb8818c94a4b8d5d,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3334571557981936837, guid: 39e89c1e00709cf4eb8818c94a4b8d5d,
+        type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -37915,6 +37929,11 @@ PrefabInstance:
     - target: {fileID: 4235652003701463317, guid: 07b2f6a95289f1a42b168b1ad3ef6d47,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4235652004276101772, guid: 07b2f6a95289f1a42b168b1ad3ef6d47,
+        type: 3}
+      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
