@@ -12,19 +12,21 @@ public class ObjetoMovil : MonoBehaviour
     [SerializeField] private List<Collider> triggers;
     [SerializeField] private bool[] movimientoX;
     [SerializeField] private bool rueda;
-    private CharacterController characterCtr;
     private int gravedad, indiceTrg, fuerzaY, rotacionVel;
     private Empujar empujarScr;
     private Transform[] sueleadoresTrf;
     private Vector3[] sueleadoresOff;
     private Quaternion[] sueleadoresRot;
+    private CharacterController violetaPerCtr;
+    private bool violetaCer;
 
 
     // Inicialización de variables.
     private void Start ()
     {
+        GameObject[] avataresObj = GameObject.FindGameObjectsWithTag ("Jugador");
+
         caer = false;
-        characterCtr = this.GetComponent<CharacterController> ();
         gravedad = -11;
         fuerzaY = 0;
         rotacionVel = 50;
@@ -36,6 +38,7 @@ public class ObjetoMovil : MonoBehaviour
         sueleadoresRot = new Quaternion[sueleadoresTrf.Length];
         sueleadoresRot[0] = sueleadoresTrf[0].rotation;
         sueleadoresRot[1] = sueleadoresTrf[1].rotation;
+        violetaPerCtr = avataresObj[0].transform != empujarScr.transform ? avataresObj[0].GetComponent<CharacterController> () : avataresObj[1].GetComponent<CharacterController> ();
     }
 
 
@@ -56,7 +59,8 @@ public class ObjetoMovil : MonoBehaviour
         {
             fuerzaY += gravedad;
 
-            characterCtr.Move (new Vector3 (0, fuerzaY, 0) * Time.deltaTime);
+            this.transform.Translate (new Vector3 (0, fuerzaY, 0) * Time.deltaTime, Space.World);
+            //characterCtr.Move (new Vector3 (0, fuerzaY, 0) * Time.deltaTime);
         }
         else 
         {
@@ -71,18 +75,13 @@ public class ObjetoMovil : MonoBehaviour
         switch (other.tag) 
         {
             case "CaidaObjeto":
-                foreach (Collider t in triggers)
-                {
-                    t.enabled = false;
-                }
                 caer = true;
-                empujarScr.cercano = false;
 
                 break;
             case "Jugador":
-                if (other.GetComponent<Empujar> () == null) 
+                if (other == violetaPerCtr) 
                 {
-                    bloqueado = true;
+                    violetaCer = true;
                 }
 
                 break;
@@ -100,9 +99,9 @@ public class ObjetoMovil : MonoBehaviour
 
                 break;
             case "Jugador":
-                if (other.GetComponent<Empujar> () == null)
+                if (other == violetaPerCtr)
                 {
-                    bloqueado = false;
+                    violetaCer = false;
                 }
 
                 break;
@@ -133,17 +132,26 @@ public class ObjetoMovil : MonoBehaviour
     // Movemos el objeto de acuerdo con el empuje aplicado con el personaje, si este objeto ha de rotar al moverlo tenemos esto en cuenta y lo rotamos en el eje y sentido correcto.
     public void Mover (Vector3 movimiento) 
     {
-        characterCtr.Move (Time.deltaTime * movimiento);
-        if (rueda == true && movimiento != Vector3.zero) 
+        if (violetaCer == false || Vector3.Distance (this.transform.position + movimiento, violetaPerCtr.bounds.center) > Vector3.Distance (violetaPerCtr.bounds.center, this.transform.position)) 
         {
-            if (movimientoX[indiceTrg] == true) 
+            bloqueado = false;
+
+            this.transform.Translate (Time.deltaTime * movimiento, Space.World);
+            if (rueda == true && movimiento != Vector3.zero)
             {
-                this.transform.Rotate (movimiento.x > 0 ? new Vector3 (-rotacionVel, 0, 0) * Time.deltaTime : new Vector3 (+rotacionVel, 0, 0) * Time.deltaTime);
+                if (movimientoX[indiceTrg] == true)
+                {
+                    this.transform.Rotate (new Vector3 (movimiento.x > 0 ? -rotacionVel : +rotacionVel, 0, 0) * Time.deltaTime);
+                }
+                else
+                {
+                    this.transform.Rotate (new Vector3 (0, 0, movimiento.z > 0 ? -rotacionVel : +rotacionVel) * Time.deltaTime);
+                }
             }
-            else 
-            {
-                this.transform.Rotate (movimiento.z > 0 ? new Vector3 (0, 0, -rotacionVel) * Time.deltaTime : new Vector3 (0, 0, +rotacionVel) * Time.deltaTime);
-            }
+        }
+        else 
+        {
+            bloqueado = true;
         }
     }
 }

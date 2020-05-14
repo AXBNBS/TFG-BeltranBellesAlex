@@ -720,8 +720,16 @@ public class MovimientoHistoria2 : MonoBehaviour
         {
             Vector3 movimientoEmp = new Vector3(movimiento.x, 0, movimiento.z).normalized * empujeVel;
 
-            characterCtr.Move (Time.deltaTime * movimientoEmp);
-            empujado.Mover (movimientoEmp); 
+            empujado.Mover (movimientoEmp);
+
+            if (empujado.bloqueado == false) 
+            {
+                characterCtr.Move (Time.deltaTime * movimientoEmp);
+            }
+            else 
+            {
+                movimiento = Vector3.zero;
+            }
         }
 
         empujadoFrm = false;

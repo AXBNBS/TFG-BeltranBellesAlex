@@ -478,7 +478,7 @@ public class MovimientoHistoria3 : MonoBehaviour
     {
         if (verticalInp != 0 || horizontalInp != 0)
         {
-            Vector3 relativoCam, esferaCenSup;
+            Vector3 relativoCam;
 
             if (movimientoXEsc == true) 
             {
