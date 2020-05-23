@@ -63,7 +63,7 @@ public class Empujar : MonoBehaviour
             objetoMovTrg = other;
             empujado = other.GetComponent<ObjetoMovil> ();
             ejeX = empujado.EjeDeTrigger (objetoMovTrg);
-            print ("He entrado.");
+            //print ("He entrado.");
         }
     }
 
@@ -80,7 +80,6 @@ public class Empujar : MonoBehaviour
             {
                 rayoDir = empujado.transform.position.x > this.transform.position.x ? Vector3.right : Vector3.left;
             }
-            print ("Aquí sigo.");
         }
     }
 
@@ -92,7 +91,7 @@ public class Empujar : MonoBehaviour
         {
             cercano = false;
             empujado = null;
-            print ("He salido.");
+            //print ("He salido.");
         }
     }
 

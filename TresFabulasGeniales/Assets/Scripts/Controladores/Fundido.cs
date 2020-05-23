@@ -37,11 +37,11 @@ public class Fundido : MonoBehaviour
     // Para moverse rápido en las distintas escenas, podemos pulsar P o O para ir a la siguiente o la anterior respectivamente.
     private void Update ()
     {
-        if (Input.GetKeyDown (KeyCode.P) == true) 
+        if (Input.GetKeyDown (KeyCode.P) == true && (SceneManager.sceneCountInBuildSettings - 1) != SceneManager.GetActiveScene().buildIndex) 
         {
             FundidoAEscena (SceneManager.GetActiveScene().buildIndex + 1);
         }
-        if (Input.GetKeyDown (KeyCode.O) == true) 
+        if (Input.GetKeyDown (KeyCode.O) == true && SceneManager.GetActiveScene().buildIndex != 0) 
         {
             FundidoAEscena (SceneManager.GetActiveScene().buildIndex - 1);
         }

@@ -161,6 +161,27 @@ Transform:
   m_Father: {fileID: 2118156254}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!21 &248016424
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Hidden/FMColor
+  m_Shader: {fileID: 4800000, guid: ff8efdd52694d4f0091d5d6e468fac4c, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs: []
+    m_Floats: []
+    m_Colors: []
 --- !u!1 &392228552
 GameObject:
   m_ObjectHideFlags: 0
@@ -274,6 +295,7 @@ MonoBehaviour:
   - CILINDRO=Ve a que te operen de la cabeza o algo xdxdxd*Puto pringao.
   moviendose: 0
   hablarCmbRot: 0
+  gira: 0
   hablarRotX: 0
   hablarRotZ: 0
 --- !u!135 &392228558
@@ -772,6 +794,7 @@ MonoBehaviour:
   - "CIKKAN HEMBRA=Menudo idle de puta madre me estoy marcando, \xBFeh?"
   moviendose: 0
   hablarCmbRot: 0
+  gira: 0
   hablarRotX: 0
   hablarRotZ: 0
 --- !u!135 &961490759
@@ -807,7 +830,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &993092719
 Transform:
   m_ObjectHideFlags: 0
@@ -907,7 +930,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movimientoX: 1
-  trigger: {fileID: 993092723}
 --- !u!1 &1051712382
 GameObject:
   m_ObjectHideFlags: 0
@@ -1149,27 +1171,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1119513720}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!21 &1126632237
-Material:
-  serializedVersion: 6
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: Hidden/FMColor
-  m_Shader: {fileID: 4800000, guid: ff8efdd52694d4f0091d5d6e468fac4c, type: 3}
-  m_ShaderKeywords: 
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs: []
-    m_Floats: []
-    m_Colors: []
 --- !u!1 &1151398532
 GameObject:
   m_ObjectHideFlags: 0
@@ -1493,6 +1494,7 @@ MonoBehaviour:
   movimientoXEsc: 0
   movimientoXBal: 0
   escalarPos: 0
+  enganchePer: 0
   balanceo:
     twiiTrf: {fileID: 1236090948}
     enganche:
@@ -1508,18 +1510,24 @@ MonoBehaviour:
       velocidadMax: 17
   enganchePnt: {x: 0, y: 0, z: 0}
   limiteBal: 0
+  cuerdaLimSup: 0
+  cuerdaLimInf: 0
   limiteEsc1: 0
   limiteEsc2: 0
   rotacionEsc: {x: 0, y: 0, z: 0, w: 0}
   bolaSup: {fileID: 0}
   movimientoVel: 15
+  rodarVel: 0
   rotacionVel: 10
   saltoVel: 30
   escaladaVel: 10
   gravedad: -2
-  capas:
-    serializedVersion: 2
-    m_Bits: 7479
+  balanceoVelMin: 0
+  balanceoDstMin: 0
+  longitudCueVel: 0
+  interpolacionBalVel: 0
+  gravedades: 
+  escenarioCol: {fileID: 0}
 --- !u!120 &1236090954
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -2197,7 +2205,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!135 &1771751639
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -2301,7 +2309,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   input: 0
-  movimientoVel: 15
+  movimientoVel: 1
 --- !u!1 &1987692877
 GameObject:
   m_ObjectHideFlags: 0
@@ -2482,6 +2490,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1286592909, guid: d06a0d8de54c0024eb6d7b8af94dc5ae, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d06a0d8de54c0024eb6d7b8af94dc5ae, type: 3}
 --- !u!1001 &5110995538420072394
@@ -2585,6 +2597,11 @@ PrefabInstance:
         type: 3}
       propertyPath: gravedad
       value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5110995538423111821, guid: 3b126197ef55f64449cd150e317ae89e,
+        type: 3}
+      propertyPath: rodarVel
+      value: 50
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3b126197ef55f64449cd150e317ae89e, type: 3}

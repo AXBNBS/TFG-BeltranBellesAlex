@@ -78,7 +78,7 @@ public class Bola : MonoBehaviour
         {
             Vector3 relativoCam = camara.TransformDirection(new Vector3 (verticalInp, 0, horizontalInp)).normalized;
 
-            cuerpoRig.AddForce (relativoCam * movimientoVel);
+            cuerpoRig.MovePosition (this.transform.position + relativoCam * movimientoVel);
         }
     }
 }
