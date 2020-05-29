@@ -4405,7 +4405,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!82 &300830390
 AudioSource:
   m_ObjectHideFlags: 0
@@ -13642,6 +13642,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: Luces
       objectReference: {fileID: 0}
+    - target: {fileID: 1756736937334158839, guid: 9a75c53ca90425145b4f0e335d53c582,
+        type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1756736937334158839, guid: 9a75c53ca90425145b4f0e335d53c582,
+        type: 3}
+      propertyPath: m_Shadows.m_Bias
+      value: 0.18
+      objectReference: {fileID: 0}
+    - target: {fileID: 1756736937334158839, guid: 9a75c53ca90425145b4f0e335d53c582,
+        type: 3}
+      propertyPath: m_Shadows.m_Resolution
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1756736937334158839, guid: 9a75c53ca90425145b4f0e335d53c582,
+        type: 3}
+      propertyPath: m_Intensity
+      value: 0.4
+      objectReference: {fileID: 0}
     - target: {fileID: 1756736936005818585, guid: 9a75c53ca90425145b4f0e335d53c582,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -13696,26 +13716,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1756736937334158839, guid: 9a75c53ca90425145b4f0e335d53c582,
-        type: 3}
-      propertyPath: m_Shadows.m_Type
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1756736937334158839, guid: 9a75c53ca90425145b4f0e335d53c582,
-        type: 3}
-      propertyPath: m_Shadows.m_Bias
-      value: 0.18
-      objectReference: {fileID: 0}
-    - target: {fileID: 1756736937334158839, guid: 9a75c53ca90425145b4f0e335d53c582,
-        type: 3}
-      propertyPath: m_Shadows.m_Resolution
-      value: -1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1756736937334158839, guid: 9a75c53ca90425145b4f0e335d53c582,
-        type: 3}
-      propertyPath: m_Intensity
-      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 1756736936057825439, guid: 9a75c53ca90425145b4f0e335d53c582,
         type: 3}
