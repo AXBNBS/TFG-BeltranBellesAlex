@@ -383,6 +383,10 @@ PrefabInstance:
       propertyPath: ShapeModule.m_Scale.z
       value: 4150
       objectReference: {fileID: 0}
+    - target: {fileID: 19800000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
+      propertyPath: cullingMode
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 19900000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
       propertyPath: m_MinParticleSize
       value: 0.1

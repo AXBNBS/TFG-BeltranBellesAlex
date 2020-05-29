@@ -229,6 +229,11 @@ PrefabInstance:
       propertyPath: InitialModule.startColor.maxColor.b
       value: 0.6226415
       objectReference: {fileID: 0}
+    - target: {fileID: 418554902859510108, guid: 1310af595ea45c647aab22d6d8cec095,
+        type: 3}
+      propertyPath: cullingMode
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 418554902433598000, guid: 1310af595ea45c647aab22d6d8cec095,
         type: 3}
       propertyPath: InitialModule.startColor.maxColor.r
@@ -243,6 +248,11 @@ PrefabInstance:
         type: 3}
       propertyPath: InitialModule.startColor.maxColor.b
       value: 0.6226415
+      objectReference: {fileID: 0}
+    - target: {fileID: 418554902433598000, guid: 1310af595ea45c647aab22d6d8cec095,
+        type: 3}
+      propertyPath: cullingMode
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 418554902646999309, guid: 1310af595ea45c647aab22d6d8cec095,
         type: 3}
@@ -2839,6 +2849,10 @@ PrefabInstance:
       propertyPath: ShapeModule.m_Scale.z
       value: 4150
       objectReference: {fileID: 0}
+    - target: {fileID: 19800000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
+      propertyPath: cullingMode
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 19900000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
       propertyPath: m_MinParticleSize
       value: 0.1
@@ -4033,6 +4047,10 @@ PrefabInstance:
       propertyPath: ShapeModule.m_Scale.z
       value: 4150
       objectReference: {fileID: 0}
+    - target: {fileID: 19800000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
+      propertyPath: cullingMode
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 19900000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
       propertyPath: m_MinParticleSize
       value: 0.1
@@ -4405,7 +4423,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!82 &300830390
 AudioSource:
   m_ObjectHideFlags: 0
@@ -10541,6 +10559,10 @@ PrefabInstance:
       propertyPath: ShapeModule.m_Scale.z
       value: 4150
       objectReference: {fileID: 0}
+    - target: {fileID: 19800000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
+      propertyPath: cullingMode
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 19900000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
       propertyPath: m_MinParticleSize
       value: 0.1
@@ -12362,6 +12384,11 @@ PrefabInstance:
       propertyPath: InitialModule.startColor.maxColor.b
       value: 0.6226415
       objectReference: {fileID: 0}
+    - target: {fileID: 418554902859510108, guid: 1310af595ea45c647aab22d6d8cec095,
+        type: 3}
+      propertyPath: cullingMode
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 418554902433598000, guid: 1310af595ea45c647aab22d6d8cec095,
         type: 3}
       propertyPath: InitialModule.startColor.maxColor.r
@@ -12376,6 +12403,11 @@ PrefabInstance:
         type: 3}
       propertyPath: InitialModule.startColor.maxColor.b
       value: 0.6226415
+      objectReference: {fileID: 0}
+    - target: {fileID: 418554902433598000, guid: 1310af595ea45c647aab22d6d8cec095,
+        type: 3}
+      propertyPath: cullingMode
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 418554902646999309, guid: 1310af595ea45c647aab22d6d8cec095,
         type: 3}
@@ -13642,26 +13674,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Luces
       objectReference: {fileID: 0}
-    - target: {fileID: 1756736937334158839, guid: 9a75c53ca90425145b4f0e335d53c582,
-        type: 3}
-      propertyPath: m_Shadows.m_Type
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1756736937334158839, guid: 9a75c53ca90425145b4f0e335d53c582,
-        type: 3}
-      propertyPath: m_Shadows.m_Bias
-      value: 0.18
-      objectReference: {fileID: 0}
-    - target: {fileID: 1756736937334158839, guid: 9a75c53ca90425145b4f0e335d53c582,
-        type: 3}
-      propertyPath: m_Shadows.m_Resolution
-      value: -1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1756736937334158839, guid: 9a75c53ca90425145b4f0e335d53c582,
-        type: 3}
-      propertyPath: m_Intensity
-      value: 0.4
-      objectReference: {fileID: 0}
     - target: {fileID: 1756736936005818585, guid: 9a75c53ca90425145b4f0e335d53c582,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -13716,6 +13728,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1756736937334158839, guid: 9a75c53ca90425145b4f0e335d53c582,
+        type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1756736937334158839, guid: 9a75c53ca90425145b4f0e335d53c582,
+        type: 3}
+      propertyPath: m_Shadows.m_Bias
+      value: 0.18
+      objectReference: {fileID: 0}
+    - target: {fileID: 1756736937334158839, guid: 9a75c53ca90425145b4f0e335d53c582,
+        type: 3}
+      propertyPath: m_Shadows.m_Resolution
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1756736937334158839, guid: 9a75c53ca90425145b4f0e335d53c582,
+        type: 3}
+      propertyPath: m_Intensity
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 1756736936057825439, guid: 9a75c53ca90425145b4f0e335d53c582,
         type: 3}
@@ -14105,6 +14137,10 @@ PrefabInstance:
     - target: {fileID: 19800000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
       propertyPath: ShapeModule.m_Scale.z
       value: 4150
+      objectReference: {fileID: 0}
+    - target: {fileID: 19800000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
+      propertyPath: cullingMode
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 19900000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
       propertyPath: m_MinParticleSize
@@ -14873,6 +14909,10 @@ PrefabInstance:
     - target: {fileID: 19800000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
       propertyPath: ShapeModule.m_Scale.z
       value: 4150
+      objectReference: {fileID: 0}
+    - target: {fileID: 19800000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
+      propertyPath: cullingMode
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 19900000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
       propertyPath: m_MinParticleSize
@@ -17620,6 +17660,10 @@ PrefabInstance:
     - target: {fileID: 19800000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
       propertyPath: ShapeModule.m_Scale.z
       value: 4150
+      objectReference: {fileID: 0}
+    - target: {fileID: 19800000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
+      propertyPath: cullingMode
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 19900000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
       propertyPath: m_MinParticleSize
@@ -20492,6 +20536,11 @@ PrefabInstance:
       propertyPath: InitialModule.startColor.maxColor.b
       value: 0.6226415
       objectReference: {fileID: 0}
+    - target: {fileID: 418554902859510108, guid: 1310af595ea45c647aab22d6d8cec095,
+        type: 3}
+      propertyPath: cullingMode
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 418554902433598000, guid: 1310af595ea45c647aab22d6d8cec095,
         type: 3}
       propertyPath: InitialModule.startColor.maxColor.r
@@ -20506,6 +20555,11 @@ PrefabInstance:
         type: 3}
       propertyPath: InitialModule.startColor.maxColor.b
       value: 0.6226415
+      objectReference: {fileID: 0}
+    - target: {fileID: 418554902433598000, guid: 1310af595ea45c647aab22d6d8cec095,
+        type: 3}
+      propertyPath: cullingMode
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 418554902646999309, guid: 1310af595ea45c647aab22d6d8cec095,
         type: 3}
@@ -23048,6 +23102,11 @@ PrefabInstance:
       propertyPath: InitialModule.startColor.maxColor.b
       value: 0.6226415
       objectReference: {fileID: 0}
+    - target: {fileID: 418554902859510108, guid: 1310af595ea45c647aab22d6d8cec095,
+        type: 3}
+      propertyPath: cullingMode
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 418554902433598000, guid: 1310af595ea45c647aab22d6d8cec095,
         type: 3}
       propertyPath: InitialModule.startColor.maxColor.r
@@ -23062,6 +23121,11 @@ PrefabInstance:
         type: 3}
       propertyPath: InitialModule.startColor.maxColor.b
       value: 0.6226415
+      objectReference: {fileID: 0}
+    - target: {fileID: 418554902433598000, guid: 1310af595ea45c647aab22d6d8cec095,
+        type: 3}
+      propertyPath: cullingMode
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 418554902646999309, guid: 1310af595ea45c647aab22d6d8cec095,
         type: 3}
@@ -23750,6 +23814,10 @@ PrefabInstance:
     - target: {fileID: 19800000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
       propertyPath: ShapeModule.m_Scale.z
       value: 4150
+      objectReference: {fileID: 0}
+    - target: {fileID: 19800000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
+      propertyPath: cullingMode
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 19900000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
       propertyPath: m_MinParticleSize
@@ -24871,6 +24939,10 @@ PrefabInstance:
       propertyPath: ShapeModule.m_Scale.z
       value: 4150
       objectReference: {fileID: 0}
+    - target: {fileID: 19800000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
+      propertyPath: cullingMode
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 19900000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
       propertyPath: m_MinParticleSize
       value: 0.1
@@ -25876,6 +25948,10 @@ PrefabInstance:
       propertyPath: ShapeModule.m_Scale.z
       value: 4150
       objectReference: {fileID: 0}
+    - target: {fileID: 19800000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
+      propertyPath: cullingMode
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 19900000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
       propertyPath: m_MinParticleSize
       value: 0.1
@@ -26550,6 +26626,10 @@ PrefabInstance:
     - target: {fileID: 19800000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
       propertyPath: ShapeModule.m_Scale.z
       value: 4150
+      objectReference: {fileID: 0}
+    - target: {fileID: 19800000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
+      propertyPath: cullingMode
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 19900000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
       propertyPath: m_MinParticleSize
@@ -27833,6 +27913,10 @@ PrefabInstance:
       propertyPath: ShapeModule.m_Scale.z
       value: 4150
       objectReference: {fileID: 0}
+    - target: {fileID: 19800000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
+      propertyPath: cullingMode
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 19900000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
       propertyPath: m_MinParticleSize
       value: 0.1
@@ -27945,6 +28029,11 @@ PrefabInstance:
       propertyPath: InitialModule.startColor.maxColor.b
       value: 0.6226415
       objectReference: {fileID: 0}
+    - target: {fileID: 418554902859510108, guid: 1310af595ea45c647aab22d6d8cec095,
+        type: 3}
+      propertyPath: cullingMode
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 418554902433598000, guid: 1310af595ea45c647aab22d6d8cec095,
         type: 3}
       propertyPath: InitialModule.startColor.maxColor.r
@@ -27959,6 +28048,11 @@ PrefabInstance:
         type: 3}
       propertyPath: InitialModule.startColor.maxColor.b
       value: 0.6226415
+      objectReference: {fileID: 0}
+    - target: {fileID: 418554902433598000, guid: 1310af595ea45c647aab22d6d8cec095,
+        type: 3}
+      propertyPath: cullingMode
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 418554902646999309, guid: 1310af595ea45c647aab22d6d8cec095,
         type: 3}
@@ -28346,6 +28440,11 @@ PrefabInstance:
       propertyPath: InitialModule.startColor.maxColor.b
       value: 0.6226415
       objectReference: {fileID: 0}
+    - target: {fileID: 418554902859510108, guid: 1310af595ea45c647aab22d6d8cec095,
+        type: 3}
+      propertyPath: cullingMode
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 418554902433598000, guid: 1310af595ea45c647aab22d6d8cec095,
         type: 3}
       propertyPath: InitialModule.startColor.maxColor.r
@@ -28360,6 +28459,11 @@ PrefabInstance:
         type: 3}
       propertyPath: InitialModule.startColor.maxColor.b
       value: 0.6226415
+      objectReference: {fileID: 0}
+    - target: {fileID: 418554902433598000, guid: 1310af595ea45c647aab22d6d8cec095,
+        type: 3}
+      propertyPath: cullingMode
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 418554902646999309, guid: 1310af595ea45c647aab22d6d8cec095,
         type: 3}
@@ -28743,6 +28847,10 @@ PrefabInstance:
     - target: {fileID: 19800000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
       propertyPath: ShapeModule.m_Scale.z
       value: 4150
+      objectReference: {fileID: 0}
+    - target: {fileID: 19800000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
+      propertyPath: cullingMode
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 19900000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
       propertyPath: m_MinParticleSize
@@ -29608,6 +29716,10 @@ PrefabInstance:
     - target: {fileID: 19800000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
       propertyPath: ShapeModule.m_Scale.z
       value: 4150
+      objectReference: {fileID: 0}
+    - target: {fileID: 19800000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
+      propertyPath: cullingMode
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 19900000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
       propertyPath: m_MinParticleSize
@@ -31109,6 +31221,10 @@ PrefabInstance:
       propertyPath: ShapeModule.m_Scale.z
       value: 4150
       objectReference: {fileID: 0}
+    - target: {fileID: 19800000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
+      propertyPath: cullingMode
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 19900000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
       propertyPath: m_MinParticleSize
       value: 0.1
@@ -31291,6 +31407,10 @@ PrefabInstance:
     - target: {fileID: 19800000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
       propertyPath: ShapeModule.m_Scale.z
       value: 4150
+      objectReference: {fileID: 0}
+    - target: {fileID: 19800000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
+      propertyPath: cullingMode
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 19900000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
       propertyPath: m_MinParticleSize
@@ -33209,6 +33329,10 @@ PrefabInstance:
     - target: {fileID: 19800000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
       propertyPath: ShapeModule.m_Scale.z
       value: 4150
+      objectReference: {fileID: 0}
+    - target: {fileID: 19800000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
+      propertyPath: cullingMode
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 19900000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
       propertyPath: m_MinParticleSize
@@ -35473,6 +35597,10 @@ PrefabInstance:
       propertyPath: ShapeModule.m_Scale.z
       value: 4150
       objectReference: {fileID: 0}
+    - target: {fileID: 19800000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
+      propertyPath: cullingMode
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 19900000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
       propertyPath: m_MinParticleSize
       value: 0.1
@@ -36706,6 +36834,10 @@ PrefabInstance:
     - target: {fileID: 19800000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
       propertyPath: ShapeModule.m_Scale.z
       value: 4150
+      objectReference: {fileID: 0}
+    - target: {fileID: 19800000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
+      propertyPath: cullingMode
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 19900000, guid: 1f7aa4d40edff6e48b549003cad031e1, type: 3}
       propertyPath: m_MinParticleSize
