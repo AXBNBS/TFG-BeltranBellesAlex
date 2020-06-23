@@ -7,10 +7,11 @@ using UnityEngine;
 public class MovimientoHistoria3 : MonoBehaviour
 {
     public bool input, movimientoXEsc, movimientoXBal, escalarPos, enganchePer;
-    public Balanceo balanceo;
+    public float limiteBal, cuerdaLimSup, cuerdaLimInf, escaladaXZ;
+    public float[] limitesEsc;
     public Vector3 enganchePnt;
-    public float limiteBal, cuerdaLimSup, cuerdaLimInf;
     public Quaternion rotacionEsc;
+    public Balanceo balanceo;
     public Transform bolaSup;
 
     [SerializeField] private int movimientoVel, rotacionVel, saltoVel, escaladaVel, gravedad, balanceoVelMin, balanceoDstMin, longitudCueVel, interpolacionBalVel;
@@ -34,7 +35,6 @@ public class MovimientoHistoria3 : MonoBehaviour
     // Inicialización de variables.
     private void Start ()
     {
-        escalarPos = false;
         capasSue = LayerMask.GetMask ("Default", "Obstaculos", "Movil");
         capasTrp = LayerMask.GetMask ("SuperficieAdherible");
         camaraTrf = GameObject.FindGameObjectWithTag("CamaraPrincipal").transform;
@@ -467,7 +467,7 @@ public class MovimientoHistoria3 : MonoBehaviour
     {
         if (saltoInp == true) 
         {
-            impulsoPar = -this.transform.forward * saltoVel;
+            impulsoPar = this.transform.right * saltoVel;
             impulsoPar.y = saltoVel;
         }
     }
@@ -476,6 +476,9 @@ public class MovimientoHistoria3 : MonoBehaviour
     // Según el tipo de superficie escalable, el input en horizontal se usará para movernos en un eje u otro.
     private void Trepar () 
     {
+        Vector3 centro = characterCtr.bounds.center;
+
+        float diferencia;
         if (verticalInp != 0 || horizontalInp != 0)
         {
             Vector3 relativoCam;
@@ -483,52 +486,66 @@ public class MovimientoHistoria3 : MonoBehaviour
             if (movimientoXEsc == true) 
             {
                 relativoCam = (camaraTrf.right * horizontalInp + camaraTrf.up * verticalInp);
-                direccionMov.z = 0;
                 if (Mathf.Abs (relativoCam.y) > Mathf.Abs (relativoCam.x)) 
                 {
                     direccionMov.x = 0;
-                    direccionMov.y = Mathf.Sign (relativoCam.y);
+                    direccionMov.y = Mathf.Sign (relativoCam.y) * escaladaVel;
+                    if ((direccionMov.y > 0 && centro.y > limitesEsc[2]) || (direccionMov.y < 0 && centro.y < limitesEsc[3]))
+                    {
+                        direccionMov.y = 0;
+                    }
                 }
                 else 
                 {
-                    direccionMov.x = Mathf.Sign (relativoCam.x) / 2;
+                    direccionMov.x = Mathf.Sign (relativoCam.x) / 2 * escaladaVel;
+                    if ((direccionMov.x > 0 && centro.x > limitesEsc[0]) || (direccionMov.x < 0 && centro.x < limitesEsc[1]))
+                    {
+                        direccionMov.x = 0;
+                    }
                     direccionMov.y = 0;
                 }
-                /*if ((direccionMov.x > 0 && this.transform.position.x >= limiteEsc1) || (direccionMov.x < 0 && this.transform.position.x <= limiteEsc2))
-                {
-                    direccionMov.x = 0;
-                }*/
             }
             else 
             {
                 relativoCam = (camaraTrf.right * horizontalInp + camaraTrf.up * verticalInp);
-                direccionMov.x = 0;
                 if (Mathf.Abs (relativoCam.y) > Mathf.Abs (relativoCam.z))
                 {
-                    direccionMov.y = Mathf.Sign (relativoCam.y);
+                    direccionMov.y = Mathf.Sign (relativoCam.y) * escaladaVel;
+                    if ((direccionMov.y > 0 && centro.y > limitesEsc[2]) || (direccionMov.y < 0 && centro.y < limitesEsc[3]))
+                    {
+                        direccionMov.y = 0;
+                    }
                     direccionMov.z = 0;
                 }
                 else
                 {
                     direccionMov.y = 0;
-                    direccionMov.z = Mathf.Sign (relativoCam.z) / 2;
+                    direccionMov.z = Mathf.Sign (relativoCam.z) / 2 * escaladaVel;
+                    if ((direccionMov.z > 0 && centro.z > limitesEsc[0]) || (direccionMov.z < 0 && centro.z < limitesEsc[1]))
+                    {
+                        direccionMov.z = 0;
+                    }
                 }
-                /*if ((direccionMov.z > 0 && this.transform.position.z >= limiteEsc1) || (direccionMov.z < 0 && this.transform.position.z <= limiteEsc2)) 
-                {
-                    direccionMov.z = 0;
-                }*/
             }
-            direccionMov *= escaladaVel;
-            if (Physics.CheckSphere (characterCtr.bounds.center + this.transform.right * 1.5f + direccionMov, characterCtr.bounds.extents.x, capasTrp, QueryTriggerInteraction.Collide) == false) 
+            /*if (Physics.CheckSphere (characterCtr.bounds.center + this.transform.right * 1.5f + direccionMov, characterCtr.bounds.extents.x, capasTrp, QueryTriggerInteraction.Collide) == false) 
             {
                 direccionMov = Vector3.zero;
-            }
+            }*/
+        }
+        if (movimientoXEsc == true) 
+        {
+            diferencia = escaladaXZ - centro.z;
+            direccionMov.z = diferencia > 1.5f ? diferencia : 0;
+        }
+        else 
+        {
+            diferencia = escaladaXZ - centro.x;
+            direccionMov.x = diferencia > 1.5f ? diferencia : 0;
         }
         direccionMov += impulsoPar;
         this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacionEsc, Time.deltaTime * rotacionVel);
 
         characterCtr.Move (direccionMov * Time.deltaTime);
-        //print (characterCtr.collisionFlags);
     }
 
 

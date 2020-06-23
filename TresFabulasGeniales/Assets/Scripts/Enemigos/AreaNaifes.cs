@@ -37,7 +37,6 @@ public class AreaNaifes : MonoBehaviour
         avataresDen = new List<Transform> ();
         vivos = naifes.Length;
         avataresMov = GameObject.FindObjectsOfType<MovimientoHistoria2> ();
-        //triggers = this.GetComponents<Collider> ();
         this.tag = "AreaEnemiga";
 
         this.InvokeRepeating ("MirarSiHayQueAtacar", 0, 1);
@@ -98,7 +97,7 @@ public class AreaNaifes : MonoBehaviour
                 else 
                 {
                     avataresPer[other.transform].IniciarAtaque (avataresDen[0]);
-                    avataresPer.Add (avataresDen[0], avataresPer[other.transform]);
+                    //avataresPer.Add (avataresDen[0], avataresPer[other.transform]);
                     //print ("Nos rayamos.");
                 }
                 avataresPer.Remove (other.transform);
@@ -173,7 +172,7 @@ public class AreaNaifes : MonoBehaviour
             if (avatar != null && avataresPer.Remove (avatar) == true && perseguidor != null) 
             {
                 perseguidor.IniciarAtaque (avatar);
-                avataresPer.Add (avatar, perseguidor);
+                //avataresPer.Add (avatar, perseguidor);
             }
         }
         else 
@@ -236,7 +235,7 @@ public class AreaNaifes : MonoBehaviour
                 if (perseguidor != null)
                 {
                     perseguidor.IniciarAtaque (a);
-                    avataresPer.Add (a, perseguidor);
+                    //avataresPer.Add (a, perseguidor);
                 }
             }
         }

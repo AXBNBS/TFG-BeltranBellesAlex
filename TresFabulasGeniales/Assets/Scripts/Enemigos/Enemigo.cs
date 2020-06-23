@@ -58,7 +58,6 @@ public class Enemigo : MonoBehaviour
         centroY = centro.position.y;
         saltoDst = saltoRayDst - this.transform.localScale.x * personajeCtr.radius;
         gravedad = -10;
-        cambioY = 0;
         personajeCtrRad = this.transform.localScale.x * personajeCtr.radius;
         revisarTmp = 0.5f / zona.vivos * prioridad;
         cercanoDst = jugador.GetComponent<SphereCollider>().radius * jugador.transform.localScale.x + personajeCtrRad;
@@ -127,19 +126,15 @@ public class Enemigo : MonoBehaviour
             }
         }
 
-        AplicarGravedad ();
         Animar ();
     }
 
 
     // Si el enemigo ha muerto, lo acercamos lentamente al suelo para que cuadre con la animación de muerte.
-    /*private void FixedUpdate ()
+    private void FixedUpdate ()
     {
-        if (puntosGol < 0 && this.transform.position.y > limiteY) 
-        {
-            this.transform.Translate (new Vector3 (0, -0.6f, 0));
-        }
-    }*/
+        AplicarGravedad ();
+    }
 
 
     // Puede servir para ver que hacer cuando no podemos llegar al punto.
@@ -294,7 +289,7 @@ public class Enemigo : MonoBehaviour
             animador.SetBool ("aturdido", false);
             animador.SetBool ("saltando", false);
             rebotador.SetActive (false);
-            this.Invoke ("Desaparecer", 1.5f);
+            this.Invoke ("Desaparecer", 5);
 
             return true;
         }

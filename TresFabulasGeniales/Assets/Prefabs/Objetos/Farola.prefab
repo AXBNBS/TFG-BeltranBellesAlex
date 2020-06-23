@@ -147,7 +147,7 @@ MeshRenderer:
   m_GameObject: {fileID: 1678844193084501171}
   m_Enabled: 1
   m_CastShadows: 1
-  m_ReceiveShadows: 1
+  m_ReceiveShadows: 0
   m_DynamicOccludee: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
@@ -325,17 +325,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fddaf6bc17db32409bf94f76546b366, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  renderer: {fileID: 7718390321903136873}
-  materialesIni:
-  - {fileID: 2100000, guid: bef784180256f6144b5beefd5f7aea9f, type: 2}
-  - {fileID: 2100000, guid: f32b85847b8ed2a4bab9545307f44967, type: 2}
-  - {fileID: 2100000, guid: bef784180256f6144b5beefd5f7aea9f, type: 2}
-  - {fileID: 2100000, guid: f32b85847b8ed2a4bab9545307f44967, type: 2}
-  materialesAlt:
-  - {fileID: 2100000, guid: 200a43177b1e85543941947cd5db15a2, type: 2}
-  - {fileID: 2100000, guid: 200a43177b1e85543941947cd5db15a2, type: 2}
-  - {fileID: 2100000, guid: 200a43177b1e85543941947cd5db15a2, type: 2}
-  - {fileID: 2100000, guid: 200a43177b1e85543941947cd5db15a2, type: 2}
+  cambiar: 
+  materialAlt: {fileID: 0}
 --- !u!1001 &236372964
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -524,12 +515,6 @@ GameObject:
 --- !u!4 &5006512735934854822 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: da858804a95d4d04680d7d2d01e128fb,
-    type: 3}
-  m_PrefabInstance: {fileID: 1162091964}
-  m_PrefabAsset: {fileID: 0}
---- !u!23 &7718390321903136873 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: -1504981713932161579, guid: da858804a95d4d04680d7d2d01e128fb,
     type: 3}
   m_PrefabInstance: {fileID: 1162091964}
   m_PrefabAsset: {fileID: 0}
