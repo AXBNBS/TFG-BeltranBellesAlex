@@ -22,7 +22,7 @@ public class Naife : MonoBehaviour
     private Quaternion rotacionObj;
     private List<Collider> collidersIgn;
     private EspaldaEnemigo[] espalda;
-    private NavMeshPath camino;
+    //private NavMeshPath camino;
 
 
     // Inicialización de variables.
@@ -45,7 +45,7 @@ public class Naife : MonoBehaviour
         sueloOff = capsula.bounds.size.y * Vector3.down;
         collidersIgn = new List<Collider> ();
         espalda = new EspaldaEnemigo[] { this.transform.GetChild(1).GetComponent<EspaldaEnemigo> (), this.transform.GetChild(2).GetComponent<EspaldaEnemigo> () };
-        camino = new NavMeshPath ();
+        //camino = new NavMeshPath ();
     }
 
 
@@ -79,43 +79,25 @@ public class Naife : MonoBehaviour
             case Estado.atacando:
                 if (agente.enabled == true) 
                 {
-                    if (CaminoHaciaObjetivo (objetivoTrf.position) == true) 
-                    {
-                        agente.SetDestination (objetivoTrf.position);
+                    agente.SetDestination (objetivoTrf.position);
 
-                        if (embestida == true)
+                    if (embestida == true)
+                    {
+                        if (padreScr.tiempoMinEmb > tiempoEmb || Vector3.Angle (new Vector3 (objetivoTrf.position.x - this.transform.position.x, 0, objetivoTrf.position.z - this.transform.position.z), objetivoDir) < 100)
                         {
-                            if (padreScr.tiempoMinEmb > tiempoEmb || Vector3.Angle (new Vector3 (objetivoTrf.position.x - this.transform.position.x, 0, objetivoTrf.position.z - this.transform.position.z), objetivoDir) < 100)
-                            {
-                                agente.velocity = objetivoDir * agente.speed;
-                                tiempoEmb += Time.deltaTime;
-                            }
-                            else
-                            {
-                                tiempoEmb = 0;
-                                embestida = false;
-                                estado = Estado.frenando;
-                            }
+                            agente.velocity = objetivoDir * agente.speed;
+                            tiempoEmb += Time.deltaTime;
                         }
                         else
-                        {
-                            PuedoEmbestir ();
-                        }
-                    }
-                    else 
-                    {
-                        if (embestida == true) 
                         {
                             tiempoEmb = 0;
                             embestida = false;
                             estado = Estado.frenando;
                         }
-                        else 
-                        {
-                            VolverALaRutina ();
-                        }
-
-                        padreScr.avataresPer.Remove (objetivoTrf);
+                    }
+                    else
+                    {
+                        PuedoEmbestir ();
                     }
 
                     RotarSegunVelocidad ();
@@ -265,27 +247,24 @@ public class Naife : MonoBehaviour
     // El naife recibe el transform del jugador a atacar, deja de estar parado y pasa al estado de ataque.
     public void IniciarAtaque (Transform jugador) 
     {
-        if (CaminoHaciaObjetivo (jugador.position) == true) 
-        {
-            objetivoTrf = jugador;
-            controladoAvt = objetivoTrf.GetComponent<Ataque>().input;
-            this.transform.parent = padreScr.transform;
-            padreRot.rotation = Quaternion.identity;
-            estado = Estado.atacando;
-            agente.enabled = true;
-            embestida = false;
+        objetivoTrf = jugador;
+        controladoAvt = objetivoTrf.GetComponent<Ataque>().input;
+        this.transform.parent = padreScr.transform;
+        padreRot.rotation = Quaternion.identity;
+        estado = Estado.atacando;
+        agente.enabled = true;
+        embestida = false;
 
-            ChecarNavMesh ();
-            this.CancelInvoke ("QuietoOGirando");
-            padreScr.avataresPer.Add (jugador, this);
-        }
+        ChecarNavMesh ();
+        this.CancelInvoke ("QuietoOGirando");
+        padreScr.avataresPer.Add (jugador, this);
     }
 
 
     // El naife vuelve a su estado normal, y lo preparamos para que encuentre un nuevo punto alrededor del cual girar.
     public void VolverALaRutina () 
     {
-        if (embestida == false && Estado.frenando != estado && Estado.saltando != estado) 
+        if (embestida == false && (Estado.atacando == estado || Estado.normal == estado)) 
         {
             estado = Estado.normal;
             quieto = true;
@@ -505,8 +484,9 @@ public class Naife : MonoBehaviour
 
         GameObject.Destroy (this.GetComponent<Rigidbody> ());
         this.transform.GetChild(0).gameObject.SetActive (false);
-        this.CancelInvoke ("QuietoOGirando");
-        this.CancelInvoke ("VolverALaCarga");
+        this.CancelInvoke ();
+        //this.CancelInvoke ("QuietoOGirando");
+        //this.CancelInvoke ("VolverALaCarga");
         this.Invoke ("Desaparecer", 5);
         this.Invoke ("Venganza", 2);
     }
@@ -586,6 +566,7 @@ public class Naife : MonoBehaviour
         quieto = !quieto;
         if (quieto == false) 
         {
+            //print (padreScr.name + " y " + this.name + ": se viene crasheo.");
             float aleatoriedad = Random.Range (-padreScr.radioGirVar, +padreScr.radioGirVar);
             float dimensionesXZ = capsula.bounds.extents.z + padreScr.radioGirRan + aleatoriedad;
 
@@ -629,7 +610,7 @@ public class Naife : MonoBehaviour
 
 
     // Devuelve verdadero si encontramos un camino completo desde la posición del naife a la de su objetivo, suponiendo que este se encuentre a su misma altura.
-    private bool CaminoHaciaObjetivo (Vector3 avatarPos) 
+    /*private bool CaminoHaciaObjetivo (Vector3 avatarPos) 
     {
         Vector3 naifePosSue = this.transform.position + sueloOff;
 
@@ -637,7 +618,7 @@ public class Naife : MonoBehaviour
         print (this.name + ": " + camino.status);
 
         return NavMeshPathStatus.PathComplete == camino.status;
-    }
+    }*/
 
 
     // Tras haber frenado completamente después de una embestida, reactivamos el agente para que se prepare para volver a embestir al jugador. 

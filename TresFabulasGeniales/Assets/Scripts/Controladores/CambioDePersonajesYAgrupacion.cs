@@ -9,6 +9,7 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
 {
     public static CambioDePersonajesYAgrupacion instancia;
     public bool input, juntos, violetaAct;
+    [HideInInspector] public int avataresDstMax;
 
     [SerializeField] private LayerMask capasSinAvt;
     private Hablar[] personajesHbl;
@@ -29,6 +30,7 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
         instancia = this;
         juntos = false;
         violetaAct = true;
+        avataresDstMax = 105;
         personajesHbl = GameObject.FindObjectsOfType<Hablar> ();
         personajesMov = new MovimientoHistoria2[2];
         personajesMov[0] = personajesHbl[0].GetComponent<MovimientoHistoria2> ();
@@ -210,9 +212,11 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     // Si en un cierto radio se encuantra el otro avatar, haremos que este comienze a seguir a aquel que esté siendo controlado por el jugador.
     private void Juntar ()
     {
-        if (personajesMov[personajeAct].companyeroCer == true)
+        int companyeroInd = personajeAct == 0 ? 1 : 0;
+
+        if (personajesMov[personajeAct].companyeroCer == true && personajesMov[companyeroInd].AvatarAtacando () == false)
         {
-            personajesMov[personajeAct == 0 ? 1 : 0].GestionarSeguimiento (true);
+            personajesMov[companyeroInd].GestionarSeguimiento (true);
         }
     }
 }

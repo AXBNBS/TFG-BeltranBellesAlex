@@ -18,7 +18,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     [SerializeField] private MovimientoHistoria2 companyeroMov;
     [SerializeField] private float pararDstSeg, ajusteCaiDst, multiplicadorSalBaj, deslizFrc, pendienteRayLon;
     private int gravedad, movimientoVel, empujeVel;
-    private bool saltarInp, yendo, empujando, limitadoX, enemigosCer, saltado, cambiando, siguiendoAcb, deslizar, sueleadorToc, pendiente, empujadoFrm;
+    private bool saltarInp, yendo, empujando, limitadoX, enemigosCer, saltado, cambiando, siguiendoAcb, deslizar, pendiente, empujadoFrm;
     private CharacterController characterCtr;
     private float offsetXZ, horizontalInp, verticalInp, offsetBas, radioRotAtq, radioEsfSue, saltoDst, aranyazoDst;
     private Transform camaraTrf, objetivoSeg, companyeroTrf, enemigoTrf;
@@ -36,6 +36,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     private Naife naifeScr;
     private HashSet<BichoPegajoso> bichosPeg;
     private List<Vector3> normales;
+    private NavMeshPath camino;
 
 
     // Inicialización de variables.
@@ -71,7 +72,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         saludScr = this.GetComponent<Salud> ();
         bichosPeg = new HashSet<BichoPegajoso> ();
         normales = new List<Vector3> ();
-        //this.transform.position = Vector3.zero;
+        camino = new NavMeshPath ();
 
         huesos.RemoveAt (0);
         foreach (Transform h in huesos) 
@@ -129,7 +130,7 @@ public class MovimientoHistoria2 : MonoBehaviour
                 break;
             case Estado.siguiendo:
                 Seguir ();
-                //DesagruparSiEso ();
+                DesagruparSiEso ();
 
                 break;
             default:
@@ -269,19 +270,23 @@ public class MovimientoHistoria2 : MonoBehaviour
 
 
     // Pone "sueleado" a "true" para evitar que se reproduzca la animación de estar en el aire cuando realmente no lo está.
-    private void OnTriggerStay (Collider other)
+    /*private void OnTriggerStay (Collider other)
     {
         if (other.CompareTag ("Sueleador") == true)
         {
             sueleadorToc = true;
         }
-    }
+    }*/
 
 
     // Si el avatar ha salido de una zona con enemigos, desactivamos el booleano que indica si hay enemigos cerca. También miramos si ha salido de un sueleador para desactivar el booleano que lo indica.
     private void OnTriggerExit (Collider other)
     {
-        switch (other.tag) 
+        if (other.CompareTag ("AreaEnemiga") == true) 
+        {
+            enemigosCer = false;
+        }
+        /*switch (other.tag) 
         {
             case "Sueleador":
                 sueleadorToc = false;
@@ -294,7 +299,7 @@ public class MovimientoHistoria2 : MonoBehaviour
                 //TratarDeVolver ();
 
                 break;
-        } 
+        }*/
     }
 
 
@@ -493,6 +498,13 @@ public class MovimientoHistoria2 : MonoBehaviour
         {
             CombateTerminado ();
         }
+    }
+
+
+    // Devuelve verdadero si actualmente la IA del avatar está ocupada atacando enemigos.
+    public bool AvatarAtacando () 
+    {
+        return Estado.atacando == estado;
     }
 
 
@@ -795,6 +807,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     // Seguimos al personaje si no estamos lo suficientemente cerca de él y el punto a seguir no está en una zona no accesible, también rotamos mirando hacia el punto que estamos siguiendo o hacia el otro personaje según la situación.
     private void Seguir ()
     {
+        //print (mallaAgtNav.velocity);
         Vector3 mirarDir, objetivoRot;
         Quaternion rotacionY;
 
@@ -819,7 +832,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         {
             if (mallaAgtNav.destination != posicionPnt) 
             {
-                mallaAgtNav.SetDestination (posicionPnt);
+                mallaAgtNav.SetDestination (new Vector3 (posicionPnt.x, this.transform.position.y, posicionPnt.z));
             }
 
             mirarDir = (posicionPnt - this.transform.position).normalized;
@@ -827,19 +840,36 @@ public class MovimientoHistoria2 : MonoBehaviour
             rotacionY = Quaternion.Euler (this.transform.rotation.eulerAngles.x, objetivoRot.y + 90, this.transform.rotation.eulerAngles.z);
             this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacionY, rotacionVel / 2 * Time.deltaTime);
         }
+        print (Vector3.Distance (this.transform.position, companyeroMov.transform.position));
     }
 
 
-    // Si la distancia en Y entra ambos personajes es mayor a 5, automáticamente los desagrupamos.
-    /*private void DesagruparSiEso ()
+    // Los avatares se separarán automáticamente si hay más de una cierta distancia entre ellos.
+    private void DesagruparSiEso ()
     {
-        if (Mathf.Abs (this.transform.position.y - companyeroMov.transform.position.y) > 5)
+        if (Vector3.Distance (this.transform.position, companyeroMov.transform.position) > CambioDePersonajesYAgrupacion.instancia.avataresDstMax) 
+        {
+            GestionarSeguimiento (false);
+            print ("Desagrupado.");
+        }
+        //NavMesh.CalculatePath (this.transform.position, new Vector3 (objetivoSeg.position.x, this.transform.position.y, objetivoSeg.position.z), NavMesh.AllAreas, camino);
+        //print (this.name + ": " + camino.status);
+        /*if (yendo == true && mallaAgtNav.velocity == Vector3.zero) 
+        {
+            NavMesh.CalculatePath (this.transform.position, new Vector3 (objetivoSeg.position.x, this.transform.position.y, objetivoSeg.position.z), NavMesh.AllAreas, camino);
+            if (NavMeshPathStatus.PathComplete != camino.status) 
+            {
+                GestionarSeguimiento (false);
+            }
+        }*/
+        //return NavMeshPathStatus.PathComplete == camino.status;
+        /*if (Mathf.Abs (this.transform.position.y - companyeroMov.transform.position.y) > 5)
         {
             GestionarSeguimiento (false);
 
             CambioDePersonajesYAgrupacion.instancia.juntos = false;
-        }
-    }*/
+        }*/
+    }
 
 
     // Gestiona las animaciones del personaje de acuerdo a su situación actual.
@@ -854,7 +884,7 @@ public class MovimientoHistoria2 : MonoBehaviour
 
                 break;
             case Estado.siguiendo:
-                animator.SetBool ("moviendose", yendo);
+                animator.SetBool ("moviendose", yendo == true && mallaAgtNav.velocity != Vector3.zero);
                 animator.SetBool ("tocandoSuelo", true);
 
                 break;
@@ -1055,11 +1085,11 @@ public class MovimientoHistoria2 : MonoBehaviour
 
 
     // Si el personaje sigue en estado.
-    private void TratarDeVolver () 
+    /*private void TratarDeVolver () 
     {
         if (mallaAgtNav.enabled == true && Estado.atacando == estado) 
         {
             mallaAgtNav.SetDestination (areaNai.GetComponent<SphereCollider>().bounds.center);
         }
-    }
+    }*/
 }

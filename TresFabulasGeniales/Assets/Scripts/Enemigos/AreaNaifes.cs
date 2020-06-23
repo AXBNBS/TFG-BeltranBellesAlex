@@ -6,7 +6,6 @@ using UnityEngine.AI;
 
 
 
-[RequireComponent (typeof (SphereCollider))]
 public class AreaNaifes : MonoBehaviour
 {
     public float[] segundosCmbLim;
@@ -18,11 +17,11 @@ public class AreaNaifes : MonoBehaviour
     [HideInInspector] public Naife[] naifes;
     [HideInInspector] public IDictionary<Transform, Naife> avataresPer;
 
-    private SphereCollider trigger;
-    public List<Transform> avataresDen;
+    [SerializeField] private float radioTrg;
     private int vivos;
+    private Collider trigger;
+    private List<Transform> avataresDen;
     private MovimientoHistoria2[] avataresMov;
-    //private Collider[] triggers;
 
 
     // Inicialización de variables.
@@ -32,9 +31,13 @@ public class AreaNaifes : MonoBehaviour
         muertePosYLoc = 6;
         naifes = this.GetComponentsInChildren<Naife> ();
         avataresPer = new Dictionary<Transform, Naife> ();
-        trigger = this.GetComponent<SphereCollider> ();
+        trigger = this.GetComponent<Collider> ();
         trigger.isTrigger = true;
         avataresDen = new List<Transform> ();
+        if (this.TryGetComponent<SphereCollider> (out SphereCollider esferaTrg) == true) 
+        {
+            radioTrg = esferaTrg.radius;
+        }
         vivos = naifes.Length;
         avataresMov = GameObject.FindObjectsOfType<MovimientoHistoria2> ();
         this.tag = "AreaEnemiga";
@@ -117,22 +120,22 @@ public class AreaNaifes : MonoBehaviour
         int mejorInd = 0;
         Vector3 centro = new Vector3 (naife.position.x, pivote.position.y, naife.position.z);
         Collider naifeCol = naife.GetComponent<Collider> ();
-        List<Collider> obstaculos = Physics.OverlapBox(centro, cajaDim, Quaternion.identity, capasGirAtq, QueryTriggerInteraction.Ignore).ToList<Collider> ();
+        List<Collider> obstaculos = Physics.OverlapBox (centro, cajaDim, Quaternion.identity, capasGirAtq, QueryTriggerInteraction.Ignore).ToList<Collider> ();
 
         obstaculos.Remove (naifeCol);
 
         //print ("Antes del while.");
-        while (obstaculos.Count != 0 || (Vector2.Distance (new Vector2 (trigger.bounds.center.x, trigger.bounds.center.z), new Vector2 (centro.x, centro.z)) + radio) > trigger.radius) 
+        while (obstaculos.Count != 0 || (Vector2.Distance (new Vector2 (trigger.bounds.center.x, trigger.bounds.center.z), new Vector2 (centro.x, centro.z)) + radio) > radioTrg) 
         {
             /*foreach (Collider c in obstaculos) 
             {
                 print (c.name);
             }
             print ("Antes del random.");*/
-            centro = Random.insideUnitSphere * trigger.radius + trigger.bounds.center;
+            centro = Random.insideUnitSphere * radioTrg + trigger.bounds.center;
             centro.y = pivote.position.y;
             //print ("Después del random.");
-            obstaculos = Physics.OverlapBox(centro, cajaDim, Quaternion.identity, capasGirAtq, QueryTriggerInteraction.Ignore).ToList<Collider> ();
+            obstaculos = Physics.OverlapBox (centro, cajaDim, Quaternion.identity, capasGirAtq, QueryTriggerInteraction.Ignore).ToList<Collider> ();
 
             obstaculos.Remove (naifeCol);
         }
@@ -235,7 +238,6 @@ public class AreaNaifes : MonoBehaviour
                 if (perseguidor != null)
                 {
                     perseguidor.IniciarAtaque (a);
-                    //avataresPer.Add (a, perseguidor);
                 }
             }
         }

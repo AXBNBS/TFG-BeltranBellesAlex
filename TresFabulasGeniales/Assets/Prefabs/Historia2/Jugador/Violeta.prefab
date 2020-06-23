@@ -389,10 +389,12 @@ MonoBehaviour:
   descansar: 0
   companyeroCer: 0
   saltador: 1
+  plataformaAbj: 0
   movimiento: {x: 0, y: 0, z: 0}
+  aturdimientoImp: {x: 0, y: 0, z: 0}
+  plataformaMov: {x: 0, y: 0, z: 0}
   saltoVel: 300
   huesos: []
-  aturdimientoImp: {x: 0, y: 0, z: 0}
   movimientoVelNor: 200
   movimientoVelRed: 70
   rotacionVel: 10
@@ -401,7 +403,7 @@ MonoBehaviour:
   pendienteFrz: 100
   capas:
     serializedVersion: 2
-    m_Bits: 4200503
+    m_Bits: 4200449
   capasSinAvt:
     serializedVersion: 2
     m_Bits: 4196663
