@@ -11,14 +11,14 @@ public class Naife : MonoBehaviour
     public Estado estado;
 
     [SerializeField] private bool alturaCmp;
-    public bool quieto, sentidoHor, embestida, espera, animarFin, gatosCer, agresivo, saltado, chocado, controladoAvt;
+    private bool quieto, sentidoHor, embestida, espera, animarFin, gatosCer, agresivo, saltado, chocado, controladoAvt;
     private AreaNaifes padreScr;
     private CapsuleCollider capsula;
     private float centroY, radio, salud, tiempoEmb, saltoDstMax, saltoDst;
     private NavMeshAgent agente;
     private Animator animador;
     private Transform padreRot, objetivoTrf, modelo;
-    private Vector3 destino, destinoSal, objetivoDir, deceleracion, saltoDir, sueloOff;
+    private Vector3 destino, destinoSal, objetivoDir, deceleracion, saltoDir;
     private Quaternion rotacionObj;
     private List<Collider> collidersIgn;
     private EspaldaEnemigo[] espalda;
@@ -42,7 +42,6 @@ public class Naife : MonoBehaviour
         padreRot.name = "Pivote " + this.name.ToLower ();
         padreRot.parent = padreScr.transform;
         modelo = animador.transform;
-        sueloOff = capsula.bounds.size.y * Vector3.down;
         collidersIgn = new List<Collider> ();
         espalda = new EspaldaEnemigo[] { this.transform.GetChild(1).GetComponent<EspaldaEnemigo> (), this.transform.GetChild(2).GetComponent<EspaldaEnemigo> () };
         //camino = new NavMeshPath ();

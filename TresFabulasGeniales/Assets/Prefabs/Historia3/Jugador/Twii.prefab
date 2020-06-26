@@ -198,6 +198,13 @@ MonoBehaviour:
   movimientoXBal: 0
   escalarPos: 0
   enganchePer: 0
+  limiteBal: 0
+  cuerdaLimSup: 0
+  cuerdaLimInf: 0
+  escaladaXZ: 0
+  limitesEsc: []
+  enganchePnt: {x: 0, y: 0, z: 0}
+  rotacionEsc: {x: 0, y: 0, z: 0, w: 0}
   balanceo:
     twiiTrf: {fileID: 5110995538423111808}
     enganche:
@@ -211,22 +218,19 @@ MonoBehaviour:
       gravedadDir: {x: 0, y: -1, z: 0}
       resistencia: 0.005
       velocidadMax: 350
-  enganchePnt: {x: 0, y: 0, z: 0}
-  limiteBal: 0
-  cuerdaLimSup: 0
-  cuerdaLimInf: 0
-  rotacionEsc: {x: 0, y: 0, z: 0, w: 0}
   bolaSup: {fileID: 0}
-  movimientoVel: 350
+  bolaScr: {fileID: 0}
+  movimientoVel: 250
   rotacionVel: 10
-  saltoVel: 157
+  saltoVel: 200
   escaladaVel: 10
   gravedad: -10
   balanceoVelMin: 20
   balanceoDstMin: 5
   longitudCueVel: 30
   interpolacionBalVel: 3
-  gravedades: 960000002c010000
+  pendienteRayLon: 2
+  pendienteFrz: {x: 0, y: -50, z: 0}
   escenarioCol: {fileID: 0}
 --- !u!114 &3276275374873721944
 MonoBehaviour:

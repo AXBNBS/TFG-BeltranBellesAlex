@@ -1,6 +1,6 @@
 ﻿
-using UnityEngine.SceneManagement;
 using UnityEngine;
+using System.Collections.Generic;
 
 
 
@@ -13,36 +13,40 @@ public class MovimientoHistoria3 : MonoBehaviour
     public Quaternion rotacionEsc;
     public Balanceo balanceo;
     public Transform bolaSup;
+    [HideInInspector] public Bola bolaScr;
 
-    [SerializeField] private int movimientoVel, rotacionVel, saltoVel, escaladaVel, gravedad, balanceoVelMin, balanceoDstMin, longitudCueVel, interpolacionBalVel;
-    [SerializeField] private int[] gravedades;
+    [SerializeField] private int movimientoVel, rotacionVel, saltoVel, escaladaVel, gravedad, balanceoVelMin, balanceoDstMin, longitudCueVel, interpolacionBalVel, deslizVel;
+    //[SerializeField] private int[] gravedades;
+    [SerializeField] private float pendienteRayLon, deslizFrc;
+    [SerializeField] private Vector3 pendienteFrz;
     [SerializeField] private Collider escenarioCol;
-    private LayerMask capasSue, capasTrp;
+    private LayerMask capasSue;
     private Transform camaraTrf, modeloTrf, cuerdaIniTrf;
-    private Vector3 direccionMov, previaPos, impulsoBal, impulsoCai, impulsoPar, offsetCenCtr;
-    private CharacterController characterCtr;
+    private Vector3 direccionMov, previaPos, impulsoBal, impulsoCai, impulsoPar, offsetCenCtr, normal;
+    private List<Vector3> normales;
+    private CharacterController personajeCtr;
     private float radioEsfSue;
     private int verticalInp, horizontalInp;
-    private bool saltoInp, engancharseInp, cuerdaLonInp, cuerdaLonInpUltFrm, saltado, impulsoMnt, sueleado, alteraCue, paradoBal;
+    [SerializeField] private bool saltoInp, engancharseInp, cuerdaLonInp, cuerdaLonInpUltFrm, saltado, impulsoMnt, sueleado, alteraCue, paradoBal, pendiente, deslizar;
     private LineRenderer renderizadorLin;
     private Quaternion[] rotacionesMod;
     private enum Estado { normal, trepando, rodando, balanceandose };
     private Estado estado;
     private Animator animador;
-    private bool[] adelanteBalXZ;
+    //private bool[] adelanteBalXZ;
 
 
     // Inicialización de variables.
     private void Start ()
     {
-        capasSue = LayerMask.GetMask ("Default", "Obstaculos", "Movil");
-        capasTrp = LayerMask.GetMask ("SuperficieAdherible");
+        capasSue = LayerMask.GetMask ("Default");
         camaraTrf = GameObject.FindGameObjectWithTag("CamaraPrincipal").transform;
         direccionMov = Vector3.zero;
-        characterCtr = this.GetComponent<CharacterController> ();
+        personajeCtr = this.GetComponent<CharacterController> ();
         previaPos = this.transform.localPosition;
-        offsetCenCtr = characterCtr.bounds.extents.y * Vector3.down * 0.9f;
-        radioEsfSue = characterCtr.bounds.extents.x / 2;
+        offsetCenCtr = personajeCtr.bounds.extents.y * Vector3.down;
+        normales = new List<Vector3> ();
+        radioEsfSue = personajeCtr.bounds.extents.x * 0.5f;
         saltado = false;
         renderizadorLin = this.GetComponent<LineRenderer> ();
         rotacionesMod = new Quaternion[] { Quaternion.identity, Quaternion.Euler (0, 0, 35) };
@@ -53,7 +57,7 @@ public class MovimientoHistoria3 : MonoBehaviour
     }
 
 
-    // Determinamos el estado actual en el que se encuentra el personaje y actuamos en consecuencia, haciendo que siga caminando (afectado también por la gravedad), trepando, desplazándose con una bola o balanceándose.
+    // Determinamos el estado actual en el que se encuentra el personaje y actuamos en consecuencia, haciendo que siga caminando (afectado también por la gravedad), trepando, desplazándose con una bola o balanceándose. Recogemos aquí también el input.
     private void Update ()
     {
         direccionMov.x = 0;
@@ -62,7 +66,7 @@ public class MovimientoHistoria3 : MonoBehaviour
         {
             verticalInp = Mathf.RoundToInt (Input.GetAxisRaw ("Movimiento vertical"));
             horizontalInp = Mathf.RoundToInt (Input.GetAxisRaw ("Movimiento horizontal"));
-            saltoInp = estado != Estado.balanceandose ? Input.GetButtonDown ("Salto") : false;
+            saltoInp = (deslizar == false && estado != Estado.balanceandose) ? Input.GetButtonDown ("Salto") : false;
             engancharseInp = estado != Estado.trepando && estado != Estado.rodando ? Mathf.RoundToInt (Input.GetAxisRaw ("Engancharse")) != 0 : false;
             cuerdaLonInp = Estado.balanceandose != estado ? false : Mathf.RoundToInt (Input.GetAxisRaw ("Variar altura de cuerda")) != 0;
         }
@@ -80,6 +84,9 @@ public class MovimientoHistoria3 : MonoBehaviour
         switch (estado)
         {
             case Estado.normal:
+                pendiente = EnPendiente ();
+                print (pendiente);
+
                 SaltarSuelo ();
                 Caminar ();
 
@@ -120,49 +127,40 @@ public class MovimientoHistoria3 : MonoBehaviour
     }
 
 
-    // Si golpeamos el objeto que provoca que reaparezcamos, la escena es reiniciada.
+    // Cada vez que el "character controller" colisiona con una superfície, añadimos su normal a la lista y reducimos el empuje a 0 por el momento.
     private void OnControllerColliderHit (ControllerColliderHit hit)
     {
-        if (hit.transform.CompareTag ("Reaparecer") == true)
-        {
-            SceneManager.LoadScene (SceneManager.GetActiveScene().buildIndex);
-        }
+        normales.Add (hit.normal);
     }
 
 
-    // A ver si debugueamos.
+    // Debug.
     private void OnDrawGizmos ()
     {
-        if (Estado.trepando == estado) 
+        if (personajeCtr != null) 
         {
-            Vector3 centroEsfSup = new Vector3 (characterCtr.bounds.center.x, characterCtr.bounds.center.y + (characterCtr.bounds.extents.y - characterCtr.bounds.extents.x), characterCtr.bounds.center.z);
-
             Gizmos.color = Color.red;
 
-            Gizmos.DrawWireSphere (characterCtr.bounds.center + this.transform.right * 1.5f + direccionMov, characterCtr.bounds.extents.x);
-            //Gizmos.DrawWireSphere (Vector3.down * (characterCtr.bounds.size.y - characterCtr.bounds.size.x) + centroEsfSup + direccionMov, characterCtr.bounds.extents.x);
+            Gizmos.DrawWireSphere (personajeCtr.bounds.center + offsetCenCtr, radioEsfSue);
+            Gizmos.DrawRay (personajeCtr.bounds.center + offsetCenCtr, pendienteRayLon * Vector3.down);
         }
-        /*if (characterCtr != null) 
-        {
-            Gizmos.DrawWireSphere (characterCtr.bounds.center + offsetCenCtr, radioEsfSue);
-        }*/
     }
 
 
-    // .
-    private void OnTriggerEnter (Collider other)
+    // Como su propio nombre indica, realiza las operaciones necesarias para obtener un vector representando una cierta dirección en base a un ángulo dado.
+    private Vector3 DireccionDeAngulo (float gradosAng)
     {
-        //other.
+        return new Vector3 (Mathf.Sin (gradosAng * Mathf.Deg2Rad), 0, Mathf.Cos (gradosAng * Mathf.Deg2Rad));
     }
 
 
-    // Lanzamos un raycast hacia abajo de no mucha mayor longitud que la altura del personaje para comprobar si este está tocando el suelo o no.
+    // Dependiendo del estado del personaje, sabremos si está tocando el suelo o no. En el caso de que esté en su estado normal y el movimiento en Y sea negativo, será necesario utilizar un "CheckSphere" para aclararlo.
     private bool Sueleado ()
     {
         switch (estado) 
         {
             case Estado.normal:
-                return (direccionMov.y < 0 ? Physics.CheckSphere (characterCtr.bounds.center + offsetCenCtr, radioEsfSue, capasSue, QueryTriggerInteraction.Ignore) : false);
+                return direccionMov.y < 0 ? Physics.CheckSphere (personajeCtr.bounds.center + offsetCenCtr, radioEsfSue, capasSue, QueryTriggerInteraction.Ignore) : false;
             case Estado.trepando:
             case Estado.balanceandose:
                 return false;
@@ -173,8 +171,7 @@ public class MovimientoHistoria3 : MonoBehaviour
     }
 
 
-    // Si el personaje no está balanceándose pero está por debajo del enganche, dentro de un cierto radio respecto a él, se está pulsando el botón de balancearse y no hay obstáculos entre él y el punto, pasamos a columpiarnos. En cambio, si sí está
-    //enganchado y el botón deja de pulsarse, el personaje empieza a caer teniendo en cuenta su inercia tras el balanceo.
+    // Definimos, para cada posible estado, las condiciones bajo las cuáles podemos permitir que se cambie a otro.
     private void DeterminarEstado ()
     {
         switch (estado) 
@@ -185,7 +182,7 @@ public class MovimientoHistoria3 : MonoBehaviour
                     estado = Estado.trepando;
                     impulsoCai = Vector3.zero;
 
-                    Physics.IgnoreCollision (characterCtr, escenarioCol, true);
+                    //Physics.IgnoreCollision (characterCtr, escenarioCol, true);
 
                     break;
                 }
@@ -207,7 +204,7 @@ public class MovimientoHistoria3 : MonoBehaviour
                     balanceo.twii.velocidad = impulsoBal / 2;
                     renderizadorLin.enabled = true;
                     direccion = DireccionDeAngulo (this.transform.rotation.eulerAngles.y);
-                    adelanteBalXZ = new bool[] { Mathf.Sign (direccion.x) == 1, Mathf.Sign (direccion.z) == 1 };
+                    //adelanteBalXZ = new bool[] { Mathf.Sign (direccion.x) == 1, Mathf.Sign (direccion.z) == 1 };
 
                     balanceo.CambiarEnganche (enganchePnt);
 
@@ -218,7 +215,7 @@ public class MovimientoHistoria3 : MonoBehaviour
             case Estado.trepando:
                 if (escalarPos == false) 
                 {
-                    Physics.IgnoreCollision (characterCtr, escenarioCol, false);
+                    //Physics.IgnoreCollision (characterCtr, escenarioCol, false);
 
                     estado = Estado.normal;
                     direccionMov.y = impulsoPar.y;
@@ -231,6 +228,7 @@ public class MovimientoHistoria3 : MonoBehaviour
                     estado = Estado.normal;
                     this.transform.parent = null;
                     bolaSup = null;
+                    bolaScr.input = false;
                     direccionMov.y = saltoVel;
                 }
 
@@ -251,8 +249,8 @@ public class MovimientoHistoria3 : MonoBehaviour
     }
 
 
-    // Se le permite al jugador influir en el balanceo usando el input para impulsar al personaje (aunque a partir de cierta altura no es posible ya que sino el movimiento deja de ser realista), además, limitamos el movimiento a un sólo eje,
-    //haciendo que la posición del personaje quede fija en el otro y también rotamos al personaje de manera que se alinee con el movimiento.
+    // Se le permite al jugador influir en el balanceo usando el input para impulsar al personaje (aunque a partir de cierta altura no es posible ya que sino el movimiento deja de ser realista). Además, rotamos al personaje de manera que su rotación se
+    //alinee con el movimiento.
     private void Balancear ()
     {
         float engancheDstXZ = Vector2.Distance (new Vector2 (this.transform.position.x, this.transform.position.z), new Vector2 (enganchePnt.x, enganchePnt.z));
@@ -291,7 +289,6 @@ public class MovimientoHistoria3 : MonoBehaviour
             {
                 Vector2 velocidadXZ = Vector2.ClampMagnitude (new Vector2 (balanceo.twii.velocidad.x, balanceo.twii.velocidad.z), engancheDstXZ * 2);
 
-                print ("Clampeando aquí increíble.");
                 balanceo.twii.velocidad = new Vector3 (velocidadXZ.x, balanceo.twii.velocidad.y, velocidadXZ.y);
             }
             else 
@@ -348,6 +345,8 @@ public class MovimientoHistoria3 : MonoBehaviour
     // Movemos al personaje mientras camina o cae y lo rotamos acorde al movimiento, también tenemos en cuenta el impulso que puede estar recibiendo mientras cae tras balancearse.
     private void Caminar ()
     {
+        CollisionFlags banderitas;
+
         balanceo.twii.velocidad = Vector3.zero;
 
         if ((verticalInp != 0 || horizontalInp != 0) && impulsoPar == Vector3.zero) 
@@ -388,28 +387,43 @@ public class MovimientoHistoria3 : MonoBehaviour
             Rotar ();
         }
 
-        characterCtr.Move (Time.deltaTime * direccionMov);
+        if (deslizar == true)
+        {
+            float inputX = direccionMov.x;
+            float inputZ = direccionMov.z;
 
-        if (characterCtr.isGrounded == true) 
+            direccionMov.x = (1 - normal.y) * normal.x * (1 - deslizFrc) * deslizVel;
+            direccionMov.z = (1 - normal.y) * normal.z * (1 - deslizFrc) * deslizVel;
+            if (Mathf.Sign (direccionMov.x) == Mathf.Sign (inputX))
+            {
+                direccionMov.x += inputX;
+            }
+            if (Mathf.Sign (direccionMov.z) == Mathf.Sign (inputZ))
+            {
+                direccionMov.z += inputZ;
+            }
+        }
+        banderitas = personajeCtr.Move ((direccionMov + (pendiente == true ? pendienteFrz : Vector3.zero)) * Time.deltaTime);
+        deslizar = ObtenerMenorPendiente () > personajeCtr.slopeLimit || (sueleado == false && banderitas != CollisionFlags.None && banderitas != CollisionFlags.Sides);
+
+        if (personajeCtr.isGrounded == true) 
         {
             impulsoCai = Vector3.zero;
         }
+
+        normales.Clear ();
     }
 
 
     // Hacemos que el personaje rote de acuerdo con la dirección hacia donde se mueve.
     private void Rotar () 
     {
-        float angulo;
-        Quaternion rotacion;
-
-        angulo = Mathf.Atan2 (direccionMov.x, direccionMov.z) * Mathf.Rad2Deg + 90;
-        rotacion = Quaternion.Euler (this.transform.rotation.x, angulo, this.transform.rotation.z);
-        this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacion, rotacionVel * Time.deltaTime);
+        this.transform.rotation = Quaternion.Lerp (this.transform.rotation, Quaternion.Euler (0, Mathf.Atan2 (direccionMov.x, direccionMov.z) * Mathf.Rad2Deg + 90, 0), rotacionVel * Time.deltaTime);
     }
 
 
-    // Si el personaje está tocando el suelo o enganchado, la gravedad aplicada es casi nula; en caso contrario, se incrementa según cae.
+    // Si el personaje está enganchado o trepando, no se aplica gravedad. En caso contrario, se le aplica una gravedad muy pequeña para mantenerlo cerca del suelo si lo está tocando. La gravedad se incrementa constantemente si, en cambio, el personaje
+    //está en el aire.
     private void AplicarGravedad () 
     {
         if (estado != Estado.normal && estado != Estado.rodando)
@@ -447,7 +461,7 @@ public class MovimientoHistoria3 : MonoBehaviour
     }
 
 
-    // Usamos está función para poner la variable a "false" tras un pequeño intervalo de tiempo.
+    // Usamos está función para poner la variable que indica que hemos saltado a "false" tras un pequeño intervalo de tiempo.
     private void FinImpulso () 
     {
         saltado = false;
@@ -473,10 +487,10 @@ public class MovimientoHistoria3 : MonoBehaviour
     }
 
 
-    // Según el tipo de superficie escalable, el input en horizontal se usará para movernos en un eje u otro.
+    // Según el tipo de superficie escalable, el input en horizontal se usará para movernos en un eje u otro y el vertical será siempre en la misma dirección. En base a esto movemos al personaje correctamente para simular que trepa por la superfície.
     private void Trepar () 
     {
-        Vector3 centro = characterCtr.bounds.center;
+        Vector3 centro = personajeCtr.bounds.center;
 
         float diferencia;
         if (verticalInp != 0 || horizontalInp != 0)
@@ -545,7 +559,7 @@ public class MovimientoHistoria3 : MonoBehaviour
         direccionMov += impulsoPar;
         this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacionEsc, Time.deltaTime * rotacionVel);
 
-        characterCtr.Move (direccionMov * Time.deltaTime);
+        personajeCtr.Move (direccionMov * Time.deltaTime);
     }
 
 
@@ -575,7 +589,7 @@ public class MovimientoHistoria3 : MonoBehaviour
                 animador.SetBool ("escalando", false);
                 animador.SetBool ("balanceandose", false);
                 animador.SetBool ("moviendose", direccionMov.x != 0 || direccionMov.z != 0);
-                animador.SetBool ("tocandoSuelo", sueleado);
+                animador.SetBool ("tocandoSuelo", sueleado == true && deslizar == false && saltado == false);
 
                 break;
             case Estado.trepando:
@@ -591,6 +605,11 @@ public class MovimientoHistoria3 : MonoBehaviour
 
                 break;
             default:
+                animador.SetBool ("escalando", false);
+                animador.SetBool ("balanceandose", false);
+                animador.SetBool ("moviendose", direccionMov.x != 0 || direccionMov.z != 0);
+                animador.SetBool ("tocandoSuelo", true);
+
                 break;
         }
     }
@@ -631,18 +650,76 @@ public class MovimientoHistoria3 : MonoBehaviour
 
 
     // .
-    private void DecidirRotacionBalanceo (Vector2 velocidadXZ) 
+    private bool EnPendiente ()
     {
-        if ((Mathf.Abs (velocidadXZ.x) > Mathf.Abs (velocidadXZ.y) && (Mathf.Sign (velocidadXZ.x) == 1) == adelanteBalXZ[0]) || (Mathf.Abs (velocidadXZ.y) > Mathf.Abs (velocidadXZ.x) && (Mathf.Sign (velocidadXZ.y) == 1) == adelanteBalXZ[1])) 
+        if (direccionMov.y > 0)
         {
-            this.transform.rotation = Quaternion.Slerp (this.transform.rotation, Quaternion.Euler (0, Mathf.Atan2 (velocidadXZ.x, velocidadXZ.y) * Mathf.Rad2Deg + 90, 0), Time.deltaTime * rotacionVel);
+            return false;
+        }
+
+        if (Physics.Raycast (personajeCtr.bounds.center + offsetCenCtr, Vector3.down, out RaycastHit datosRay, pendienteRayLon, capasSue, QueryTriggerInteraction.Ignore) == true)
+        {
+            normales.Add (datosRay.normal);
+
+            return datosRay.normal != Vector3.up;
+        }
+        else
+        {
+            return false;
         }
     }
 
 
     // .
-    public Vector3 DireccionDeAngulo (float gradosAng)
+    private float ObtenerMenorPendiente () 
     {
-        return new Vector3 (Mathf.Sin (gradosAng * Mathf.Deg2Rad), 0, Mathf.Cos (gradosAng * Mathf.Deg2Rad));
+        if (sueleado == true)
+        {
+            List<Vector3> ignorar = new List<Vector3> ();
+            foreach (Vector3 v in normales)
+            {
+                if (Mathf.Abs (Vector3.Angle (Vector3.up, v) - 90) < 1)
+                {
+                    ignorar.Add (v);
+                }
+            }
+            foreach (Vector3 v in ignorar)
+            {
+                normales.Remove (v);
+            }
+        }
+
+        if (normales.Count != 0)
+        {
+            float angulo;
+
+            float inclinacion = 90;
+
+            foreach (Vector3 n in normales)
+            {
+                angulo = Vector3.Angle (Vector3.up, n);
+                if (angulo < inclinacion)
+                {
+                    inclinacion = angulo;
+                    normal = n;
+                }
+            }
+
+            return inclinacion;
+        }
+        else
+        {
+            return 0;
+        }
     }
+
+
+    // .
+    /*private void DecidirRotacionBalanceo (Vector2 velocidadXZ) 
+    {
+        if ((Mathf.Abs (velocidadXZ.x) > Mathf.Abs (velocidadXZ.y) && (Mathf.Sign (velocidadXZ.x) == 1) == adelanteBalXZ[0]) || (Mathf.Abs (velocidadXZ.y) > Mathf.Abs (velocidadXZ.x) && (Mathf.Sign (velocidadXZ.y) == 1) == adelanteBalXZ[1])) 
+        {
+            this.transform.rotation = Quaternion.Slerp (this.transform.rotation, Quaternion.Euler (0, Mathf.Atan2 (velocidadXZ.x, velocidadXZ.y) * Mathf.Rad2Deg + 90, 0), Time.deltaTime * rotacionVel);
+        }
+    }*/
 }

@@ -36,7 +36,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     private Naife naifeScr;
     private HashSet<BichoPegajoso> bichosPeg;
     private List<Vector3> normales;
-    private NavMeshPath camino;
+    //private NavMeshPath camino;
 
 
     // Inicialización de variables.
@@ -72,7 +72,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         saludScr = this.GetComponent<Salud> ();
         bichosPeg = new HashSet<BichoPegajoso> ();
         normales = new List<Vector3> ();
-        camino = new NavMeshPath ();
+        //camino = new NavMeshPath ();
 
         huesos.RemoveAt (0);
         foreach (Transform h in huesos) 
@@ -169,7 +169,6 @@ public class MovimientoHistoria2 : MonoBehaviour
             case "Hablable":
                 if (sueleado == false && empujadoFrm == false) 
                 {
-                    //print ("Wenas jeje");
                     empujadoFrm = true;
                     if (Physics.Raycast (hit.point, Vector3.right, out RaycastHit datosRay1, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
                     {
@@ -243,13 +242,13 @@ public class MovimientoHistoria2 : MonoBehaviour
     }
 
 
-    // Pal debug y tal.
+    // Debug.
     private void OnDrawGizmosSelected ()
     {
         Gizmos.color = Color.red;
 
         Gizmos.DrawWireSphere (this.transform.position + offsetEsfSue, radioEsfSue);
-        //Gizmos.DrawRay (this.transform.position + Vector3.up, Vector3.down * pendienteRayLon);
+        Gizmos.DrawRay (this.transform.position + Vector3.up, Vector3.down * pendienteRayLon);
     }
 
 
@@ -1014,48 +1013,48 @@ public class MovimientoHistoria2 : MonoBehaviour
         }
         else 
         {*/
-            if (sueleado == true)
+        if (sueleado == true)
+        {
+            List<Vector3> ignorar = new List<Vector3> ();
+            foreach (Vector3 v in normales)
             {
-                List<Vector3> ignorar = new List<Vector3> ();
-                foreach (Vector3 v in normales)
+                if (Mathf.Abs (Vector3.Angle (Vector3.up, v) - 90) < 1)
                 {
-                    if (Mathf.Abs (Vector3.Angle (Vector3.up, v) - 90) < 1)
-                    {
-                        //print (this.name + "-- Eliminando " + v + ".");
-                        ignorar.Add (v);
-                    }
-                }
-                foreach (Vector3 v in ignorar)
-                {
-                    normales.Remove (v);
+                    //print (this.name + "-- Eliminando " + v + ".");
+                    ignorar.Add (v);
                 }
             }
-
-            if (normales.Count != 0)
+            foreach (Vector3 v in ignorar)
             {
-                float angulo;
+                normales.Remove (v);
+            }
+        }
 
-                float inclinacion = 90;
+        if (normales.Count != 0)
+        {
+            float angulo;
 
-                foreach (Vector3 n in normales)
+            float inclinacion = 90;
+
+            foreach (Vector3 n in normales)
+            {
+                angulo = Vector3.Angle (Vector3.up, n);
+                //print (this.name + "-- " + n);
+                if (angulo < inclinacion)
                 {
-                    angulo = Vector3.Angle (Vector3.up, n);
-                    //print (this.name + "-- " + n);
-                    if (angulo < inclinacion)
-                    {
-                        inclinacion = angulo;
-                        normal = n;
-                    }
+                    inclinacion = angulo;
+                    normal = n;
                 }
-                //print (this.name + "-- Devuelvo " + inclinacion + " ángulo que forma la normal menos inclinada que he encontrado con Vector3.up.");
+            }
+            //print (this.name + "-- Devuelvo " + inclinacion + " ángulo que forma la normal menos inclinada que he encontrado con Vector3.up.");
 
-                return inclinacion;
-            }
-            else
-            {
-                //print (this.name + "-- No hay normales.");
-                return 0;
-            }
+            return inclinacion;
+        }
+        else
+        {
+            //print (this.name + "-- No hay normales.");
+            return 0;
+        }
         //}
     }
 
