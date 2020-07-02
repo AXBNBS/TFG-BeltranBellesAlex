@@ -515,7 +515,7 @@ NavMeshAgent:
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 14
+  m_Height: 18
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 0
@@ -591,6 +591,17 @@ MonoBehaviour:
   multiplicadorSalBaj: 0
   deslizFrc: 0.3
   pendienteRayLon: 6
+  saltarInp: 0
+  yendo: 0
+  empujando: 0
+  limitadoX: 0
+  enemigosCer: 0
+  saltado: 0
+  cambiando: 0
+  siguiendoAcb: 0
+  deslizar: 0
+  pendiente: 0
+  empujadoFrm: 0
 --- !u!114 &9139600075987871173
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -621,7 +632,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   aturdido: 0
-  salud: 3
+  salud: 5
   invulnerabilidadTmp: 0.75
   aturdimientoVelY: 75
 --- !u!114 &2026491328868539950

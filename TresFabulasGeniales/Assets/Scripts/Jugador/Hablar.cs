@@ -14,33 +14,34 @@ public class Hablar : MonoBehaviour
     public List<Texto> hablables;
 
     [SerializeField] private int rotacionVel;
-    private GameObject panelTxt;
-    private Text[] mostradoTxt;
     private float tiempoPas;
     private int parrafoAct, letrasEsc;
     private string personaje, frase;
     private bool escena0;
+    private Quaternion rotacionObj;
+    private GameObject panelTxt;
+    private Text[] mostradoTxt;
     private CapsuleCollider capsulaNPC;
     private MovimientoHistoria1 personajeMov1Scr;
     private MovimientoHistoria2 personajeMov2Scr;
+    private MovimientoHistoria3 personajeMov3Scr;
     private Ataque ataqueScr;
     private Empujar empujarScr;
     private CambioDePersonajesYAgrupacion cambioScr;
-    private MovimientoHistoria3 personajeMov3Scr;
     private SeguimientoCamara camaraScr;
-    private Quaternion rotacionObj;
+    private Texto textoScr;
 
 
     // Inicialización de variables y desactivación del panel. Además, obtendremos unos componentes u otros dependiendo de la historia en la que nos encontremos.
     private void Start ()
     {
         hablables = new List<Texto> ();
-        panelTxt = GameObject.FindGameObjectWithTag("Interfaz").transform.GetChild(0).GetChild(0).gameObject;
-        mostradoTxt = panelTxt.GetComponentsInChildren<Text> ();
         tiempoPas = 0;
         parrafoAct = 0;
         letrasEsc = 0;
         escena0 = SceneManager.GetActiveScene().name == "CasaBeltranuki";
+        panelTxt = GameObject.FindGameObjectWithTag("Interfaz").transform.GetChild(0).GetChild(0).gameObject;
+        mostradoTxt = panelTxt.GetComponentsInChildren<Text> ();
         if (escena0 == false)
         {
             texto = null;
@@ -72,15 +73,21 @@ public class Hablar : MonoBehaviour
     private void Update ()
     {
         tiempoPas += Time.deltaTime;
+        if (textoScr == null || textoScr.hablando == false) 
+        {
+            textoScr = EncontrarConversacion ();
+        }
 
-        if (input == true && Input.GetButtonDown ("Interacción") == true && (hablables.Count > 0 || texto != null))
+        if (input == true && textoScr != null && Input.GetButtonDown ("Interacción") == true)
         {
             if (panelTxt.activeSelf == false)
             {
                 if (this.IsInvoking ("ConversacionNPC") == false) 
                 {
-                    texto = EncontrarConversacion ();
+                    texto = textoScr.DevolverTexto ();
+                    textoScr.hablando = true;
 
+                    textoScr.ActivarIcono (false);
                     ControlarInput (false);
                     camaraScr.PuntoMedioDialogo (true, this.transform.position, capsulaNPC.bounds.center);
                     this.Invoke ("ConversacionNPC", 0.1f);
@@ -180,6 +187,8 @@ public class Hablar : MonoBehaviour
             }
             else
             {
+                input = false;
+                AlmacenDatos.instancia.muerte = false;
                 Fundido.instancia.FundidoAEscena (AlmacenDatos.instancia.regresarA);
             }
         }
@@ -271,25 +280,49 @@ public class Hablar : MonoBehaviour
 
 
     // De entre todos los NPCs cercanos, encuentra aquel cuyo vector diferencia con el avatar forme un menor ángulo con el vector hacia adelante del mismo. Este será con el que hablemos. 
-    private string[] EncontrarConversacion () 
+    private Texto EncontrarConversacion () 
     {
-        float anguloChc;
-
-        int mejorInd = 0;
-        float mejorAng = Vector3.Angle (new Vector3 (hablables[0].transform.position.x - this.transform.position.x, 0 , hablables[0].transform.position.z - this.transform.position.z), -this.transform.right);
-
-        for (int t = 1 ; t < hablables.Count; t += 1) 
+        if (input == true && hablables.Count > 0) 
         {
-            anguloChc = Vector3.Angle (new Vector3 (hablables[t].transform.position.x - this.transform.position.x, 0, hablables[t].transform.position.z - this.transform.position.z), -this.transform.right);
-            if (anguloChc < mejorAng) 
-            {
-                mejorInd = t;
-                mejorAng = anguloChc;
-            }
-        }
-        capsulaNPC = hablables[mejorInd].GetComponent<CapsuleCollider> ();
-        hablables[mejorInd].hablando = true;
+            int mejorInd = 0;
 
-        return hablables[mejorInd].DevolverTexto ();
+            if (hablables.Count == 1) 
+            {
+                hablables[0].ActivarIcono (true);
+            }
+            else 
+            {
+                float anguloChc;
+
+                float mejorAng = Vector3.Angle (new Vector3 (hablables[0].transform.position.x - this.transform.position.x, 0, hablables[0].transform.position.z - this.transform.position.z), -this.transform.right);
+
+                hablables[0].ActivarIcono (false);
+
+                for (int t = 1; t < hablables.Count; t += 1)
+                {
+                    anguloChc = Vector3.Angle (new Vector3 (hablables[t].transform.position.x - this.transform.position.x, 0, hablables[t].transform.position.z - this.transform.position.z), -this.transform.right);
+                    if (anguloChc < mejorAng)
+                    {
+                        mejorInd = t;
+                        mejorAng = anguloChc;
+                    }
+
+                    hablables[t].ActivarIcono (false);
+                }
+            }
+
+            capsulaNPC = hablables[mejorInd].GetComponent<CapsuleCollider> ();
+
+            hablables[mejorInd].ActivarIcono (true);
+
+            return hablables[mejorInd];
+        }
+
+        for (int t = 0; t < hablables.Count; t += 1) 
+        {
+            hablables[0].ActivarIcono (false);
+        }
+
+        return null;
     }
 }

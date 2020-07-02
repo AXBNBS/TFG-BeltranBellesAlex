@@ -1,6 +1,4 @@
 ﻿
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -15,26 +13,29 @@ public class Texto : MonoBehaviour
     [SerializeField] private string[] texto;
     [SerializeField] private bool moviendose, hablarCmbRot, gira;
     [SerializeField] private float hablarRotX, hablarRotZ;
-    private float rotacionVel;
-    private Hablar[] jugadores;
-    private Hablar jugador;
-    private GameObject panelTxt;
+    [SerializeField] private GameObject bocadilloPrf;
     private bool cercano, esperar;
+    private float rotacionVel;
+    private Quaternion rotacionIni, rotacionObj;
+    private Hablar jugador;
+    private Hablar[] jugadores;
+    private GameObject panelTxt, bocadilloObj;
     private NavMeshAgent agente;
     private Animator animador;
-    private Transform modeloTrf;
-    private Quaternion rotacionIni, rotacionObj;
+    private Transform modeloTrf, camaraTrf;
 
 
     // Obtenemos las referencias al jugador o jugadores.
     private void Start ()
     {
+        CapsuleCollider capsula = this.GetComponent<CapsuleCollider> ();
         SphereCollider[] triggers = this.GetComponents<SphereCollider> ();
 
         rotacionVel = 5;
         jugadores = GameObject.FindObjectsOfType<Hablar> ();
-        jugador = jugadores[0];
         panelTxt = GameObject.FindGameObjectWithTag("Interfaz").transform.GetChild(0).GetChild(0).gameObject;
+        bocadilloObj = GameObject.Instantiate (bocadilloPrf, new Vector3 (capsula.bounds.center.x, capsula.bounds.max.y + 5, capsula.bounds.center.z), Quaternion.identity);
+        bocadilloObj.transform.parent = this.transform;
         if (moviendose == true) 
         {
             agente = this.GetComponent<NavMeshAgent> ();
@@ -42,12 +43,15 @@ public class Texto : MonoBehaviour
         animador = this.GetComponentInChildren<Animator> ();
         modeloTrf = animador.transform;
         rotacionIni = modeloTrf.rotation;
+        camaraTrf = GameObject.FindGameObjectWithTag("CamaraPrincipal").transform;
         foreach (SphereCollider t in triggers) 
         {
             t.isTrigger = true;
         }
         this.tag = "Hablable";
         this.gameObject.layer = LayerMask.NameToLayer ("GenteHabladora");
+
+        bocadilloObj.SetActive (false);
     }
 
 
@@ -86,6 +90,10 @@ public class Texto : MonoBehaviour
         }
 
         Animar ();
+        if (bocadilloObj.activeSelf == true) 
+        {
+            bocadilloObj.transform.LookAt (camaraTrf);
+        }
     }
 
 
@@ -105,6 +113,8 @@ public class Texto : MonoBehaviour
         if (other.CompareTag ("Jugador") == true) 
         {
             cercano = false;
+
+            bocadilloObj.SetActive (false);
         }
     }
 
@@ -127,6 +137,13 @@ public class Texto : MonoBehaviour
     public string[] DevolverTexto () 
     {
         return texto;
+    }
+
+
+    // Activamos el icono sobre la cabeza del NPC o no según se nos indique.
+    public void ActivarIcono (bool activar) 
+    {
+        bocadilloObj.SetActive (activar);
     }
 
 

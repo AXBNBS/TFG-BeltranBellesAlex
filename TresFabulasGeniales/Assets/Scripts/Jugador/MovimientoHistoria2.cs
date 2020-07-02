@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using System.Linq;
+using System.Collections;
 
 
 
@@ -17,7 +18,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     [SerializeField] private LayerMask capas, capasSinAvt;
     [SerializeField] private MovimientoHistoria2 companyeroMov;
     [SerializeField] private float pararDstSeg, ajusteCaiDst, multiplicadorSalBaj, deslizFrc, pendienteRayLon;
-    private int gravedad, movimientoVel, empujeVel;
+    private int gravedad, movimientoVel, empujeVel, bichosRedVel;
     private bool saltarInp, yendo, empujando, limitadoX, enemigosCer, saltado, cambiando, siguiendoAcb, deslizar, pendiente, empujadoFrm;
     private CharacterController characterCtr;
     private float offsetXZ, horizontalInp, verticalInp, offsetBas, radioRotAtq, radioEsfSue, saltoDst, aranyazoDst;
@@ -49,6 +50,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         gravedad = -11;
         movimientoVel = movimientoVelNor;
         empujeVel = movimientoVelNor / 6;
+        bichosRedVel = 4;
         yendo = false;
         empujando = false;
         enemigosCer = false;
@@ -65,6 +67,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         offsetEsfSue = Vector3.up;
         mallaAgtNav = this.GetComponent<NavMeshAgent> ();
         mallaAgtNav.speed = movimientoVelNor;
+        //mallaAgtNav.autoTraverseOffMeshLink = false;
         offsetXZ = this.transform.localScale.x * characterCtr.radius * 6;
         offsetBas = mallaAgtNav.baseOffset;
         estado = Estado.normal;
@@ -385,7 +388,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         bichosPeg.Add (bicho);
         //print (bichosPeg.Count);
 
-        if (bichosPeg.Count > 3) 
+        if (bichosPeg.Count >= bichosRedVel) 
         {
             movimientoVel = movimientoVelRed;
             mallaAgtNav.speed = movimientoVelRed;
@@ -403,7 +406,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         }
         
         //print (bichosPeg.Count);
-        if (bichosPeg.Count < 4)
+        if (bichosPeg.Count < bichosRedVel)
         {
             movimientoVel = movimientoVelNor;
             mallaAgtNav.speed = movimientoVelNor;
@@ -785,7 +788,14 @@ public class MovimientoHistoria2 : MonoBehaviour
 
                 break;
             case Estado.siguiendo:
-                movimiento.y = 0;
+                if (mallaAgtNav.isOnOffMeshLink == false) 
+                {
+                    movimiento.y = 0;
+                }
+                else 
+                {
+                    movimiento.y += gravedad;
+                }
 
                 break;
             default:
@@ -834,12 +844,14 @@ public class MovimientoHistoria2 : MonoBehaviour
                 mallaAgtNav.SetDestination (new Vector3 (posicionPnt.x, this.transform.position.y, posicionPnt.z));
             }
 
-            mirarDir = (posicionPnt - this.transform.position).normalized;
-            objetivoRot = Quaternion.LookRotation(mirarDir).eulerAngles;
-            rotacionY = Quaternion.Euler (this.transform.rotation.eulerAngles.x, objetivoRot.y + 90, this.transform.rotation.eulerAngles.z);
-            this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacionY, rotacionVel / 2 * Time.deltaTime);
+            mirarDir = mallaAgtNav.isOnOffMeshLink == false ? mallaAgtNav.velocity : (mallaAgtNav.currentOffMeshLinkData.endPos - this.transform.position);
+            if (mirarDir != Vector3.zero) 
+            {
+                objetivoRot = Quaternion.LookRotation(mirarDir).eulerAngles;
+                rotacionY = Quaternion.Euler (this.transform.rotation.eulerAngles.x, objetivoRot.y + 90, this.transform.rotation.eulerAngles.z);
+                this.transform.rotation = Quaternion.Lerp (this.transform.rotation, rotacionY, rotacionVel * Time.deltaTime);
+            }
         }
-        print (Vector3.Distance (this.transform.position, companyeroMov.transform.position));
     }
 
 
@@ -849,7 +861,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         if (Vector3.Distance (this.transform.position, companyeroMov.transform.position) > CambioDePersonajesYAgrupacion.instancia.avataresDstMax) 
         {
             GestionarSeguimiento (false);
-            print ("Desagrupado.");
+            //print ("Desagrupado.");
         }
         //NavMesh.CalculatePath (this.transform.position, new Vector3 (objetivoSeg.position.x, this.transform.position.y, objetivoSeg.position.z), NavMesh.AllAreas, camino);
         //print (this.name + ": " + camino.status);
@@ -884,7 +896,8 @@ public class MovimientoHistoria2 : MonoBehaviour
                 break;
             case Estado.siguiendo:
                 animator.SetBool ("moviendose", yendo == true && mallaAgtNav.velocity != Vector3.zero);
-                animator.SetBool ("tocandoSuelo", true);
+                animator.SetBool ("tocandoSuelo", !mallaAgtNav.isOnOffMeshLink);
+                animator.SetFloat ("velocidadY", mallaAgtNav.velocity.y);
 
                 break;
             default:
@@ -1090,5 +1103,29 @@ public class MovimientoHistoria2 : MonoBehaviour
         {
             mallaAgtNav.SetDestination (areaNai.GetComponent<SphereCollider>().bounds.center);
         }
+    }*/
+
+
+    // .
+    /*private IEnumerator SaltoEnlace (Vector3 comienzoPos, Vector3 finPos)
+    {
+        float offsetY;
+
+        float tiempoNor = 0;
+        float altura = Mathf.Abs (finPos.y - comienzoPos.y);
+        float tarda = Vector3.Distance (comienzoPos, finPos) / mallaAgtNav.speed * 1.5f;
+        float puntoMedY = (comienzoPos + (finPos - comienzoPos) / 2).y;
+
+        while (tiempoNor < 1)
+        {
+            offsetY = altura * (tiempoNor - tiempoNor * tiempoNor);
+            this.transform.position = Vector3.Lerp (comienzoPos, finPos, tiempoNor) + offsetY * Vector3.up;
+            tiempoNor += Time.deltaTime / tarda;
+
+            yield return null;
+        }
+
+        mallaAgtNav.CompleteOffMeshLink ();
+        print ("Terminado.");
     }*/
 }

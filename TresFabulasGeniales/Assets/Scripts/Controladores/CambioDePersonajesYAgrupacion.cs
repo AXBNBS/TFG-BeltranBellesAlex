@@ -1,6 +1,4 @@
 ﻿
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -30,7 +28,7 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
         instancia = this;
         juntos = false;
         violetaAct = true;
-        avataresDstMax = 105;
+        avataresDstMax = 300;
         personajesHbl = GameObject.FindObjectsOfType<Hablar> ();
         personajesMov = new MovimientoHistoria2[2];
         personajesMov[0] = personajesHbl[0].GetComponent<MovimientoHistoria2> ();
@@ -95,7 +93,7 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
                     Separar ();
                 }
             }
-            if (Input.GetButtonDown ("Cambio personaje") == true)
+            if (Fundido.instancia.animando == false && Input.GetButtonDown ("Cambio personaje") == true)
             {
                 if (personajesMov[0].input == true)
                 {
@@ -111,15 +109,6 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
             }
         }
     }
-
-
-    // Para ver el radio de agrupación de los gatos.
-    /*private void OnDrawGizmos ()
-    {
-        Gizmos.color = Color.red;
-        
-        Gizmos.DrawWireSphere (personajesCtr[personajeAct].bounds.center, agrupacionRad);
-    }*/
 
 
     // Los personajes dejan de estar juntos.
@@ -182,6 +171,13 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     }
 
 
+    // Actualizamos el medidor de salud para que represente la del personaje controlado.
+    public void ActualizarMedidorSalud () 
+    {
+        personajesSld[personajeAct].ActualizarHUD ();
+    }
+
+
     // La cámara pasa a seguir al nuevo personaje y se desactiva el movimiento del otro, en caso de que el botón de cambio se haya pulsado cuando el personaje desde el que se cambia no está en el aire.
     private void CambiarA (int nuevo, int anterior)
     {
@@ -202,6 +198,8 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
             else 
             {
                 camara.desplazandose = true;
+
+                ActualizarMedidorSalud ();
             }
 
             personajesMov[nuevo].GestionarCambio ();

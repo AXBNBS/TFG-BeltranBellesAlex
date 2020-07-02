@@ -30,6 +30,11 @@ TagManager:
   - Resbaladizo
   - Ruta
   - PlataformaMovil
+  - Natilla
+  - Caida
+  - PanelMenu
+  - CamaraPausa
+  - PanelSalud
   layers:
   - Default
   - TransparentFX
@@ -55,7 +60,7 @@ TagManager:
   - SuperficiesResbaladizas
   - EnemigosIgnoran
   - Morenas
-  - 
+  - Esconder
   - 
   - 
   - 

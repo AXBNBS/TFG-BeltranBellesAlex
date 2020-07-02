@@ -71,7 +71,7 @@ public class Morena : MonoBehaviour
         if (collision.transform.CompareTag ("Jugador") == true) 
         {
             Physics.IgnoreCollision (collision.collider, capsulaCol, true);
-            collision.transform.GetComponent<Salud>().RecibirDanyo (Vector3.zero);
+            collision.transform.GetComponent<Salud>().RecibirDanyo (Vector3.zero, "Morena");
             this.StartCoroutine ("ColisionarDeNuevo", collision.collider);
         }
     }

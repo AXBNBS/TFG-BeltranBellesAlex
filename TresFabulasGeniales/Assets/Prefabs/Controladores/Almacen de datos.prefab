@@ -43,3 +43,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19db4e6add565154489350ae35d9556b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  muerte: 0
+  regresarA: 0
+  menuEsc: CasaBeltranuki
+  avatarMue: 
+  causaMue: 

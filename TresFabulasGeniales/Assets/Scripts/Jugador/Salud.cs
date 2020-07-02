@@ -1,7 +1,8 @@
 ﻿
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 
 
@@ -18,6 +19,7 @@ public class Salud : MonoBehaviour
     private Empujar empujeScr;
     private SeguimientoCamara camaraScr;
     private CharacterController personajeCtr;
+    private Transform saludPanTrf;
 
     
     // Inicialización de variables.
@@ -32,6 +34,10 @@ public class Salud : MonoBehaviour
         empujeScr = this.GetComponent<Empujar> ();
         camaraScr = GameObject.FindGameObjectWithTag("CamaraPrincipal").transform.parent.GetComponent<SeguimientoCamara> ();
         personajeCtr = this.GetComponent<CharacterController> ();
+        saludPanTrf = Fundido.instancia.saludPan.transform;
+
+        saludPanTrf.gameObject.SetActive (true);
+        ActualizarHUD ();
     }
 
 
@@ -66,10 +72,20 @@ public class Salud : MonoBehaviour
     }*/
 
 
-    // Si el jugador no está aturdido, pierde salud si está siendo controlado y no puede moverse durante unos pocos segundos debido al aturdimiento, también activamos una animación que indica que ha recibido daño.
-    public void RecibirDanyo (Vector3 impulso) 
+    // Al entrar en un trigger asociado a la natilla o a una caída, el personaje muere directamente.
+    private void OnTriggerEnter (Collider other)
     {
-        if (invulnerable == false && camaraScr.cambioCmp == true && animador.GetCurrentAnimatorStateInfo(0).IsTag ("Aturdimiento") == false)
+        if (other.CompareTag ("Natilla") == true || other.CompareTag ("Caida") == true) 
+        {
+            this.StartCoroutine (Muerte (other.tag));
+        }
+    }
+
+
+    // Si el jugador no está aturdido, pierde salud si está siendo controlado y no puede moverse durante unos pocos segundos debido al aturdimiento, también activamos una animación que indica que ha recibido daño.
+    public void RecibirDanyo (Vector3 impulso, string causa) 
+    {
+        if (invulnerable == false && aturdido == false && camaraScr.cambioCmp == true && animador.GetCurrentAnimatorStateInfo(0).IsTag ("Aturdimiento") == false)
         {
             //print (this.name + ": IMPACTO");
             if (movimientoScr.input == true)
@@ -79,9 +95,10 @@ public class Salud : MonoBehaviour
 
                 salud -= 1;
 
+                ActualizarHUD ();
                 if (salud < 0) 
                 {
-                    this.StartCoroutine ("Muerte");
+                    this.StartCoroutine (Muerte (causa));
                 }
             }
             aturdido = true;
@@ -99,6 +116,16 @@ public class Salud : MonoBehaviour
         invulnerable = true;
 
         this.Invoke ("InvulnerabilidadPerdida", invulnerabilidadTmp);
+    }
+
+
+    // Actualizamos las barras de salud del HUD de acuerdo a la situación actual del personaje.
+    public void ActualizarHUD ()
+    {
+        for (int b = 0; b < saludPanTrf.childCount; b += 1)
+        {
+            saludPanTrf.GetChild(b).GetComponentInChildren<Image>().enabled = salud > b;
+        }
     }
 
 
@@ -146,12 +173,16 @@ public class Salud : MonoBehaviour
     }
 
 
-    // Si el avatar controlado acaba de ser derrotado, esperamos brevemente y lo mandamos a la escena de muerte.
-    private IEnumerator Muerte () 
+    // Si el avatar controlado acaba de ser derrotado, esperamos brevemente, paramos el tiempo y lo mandamos a la escena de muerte. Almacenaremos también datos como la escena a la que se regresará, el nombre del avatar y la causa de su muerte.
+    private IEnumerator Muerte (string causa) 
     {
         yield return new WaitForSeconds (0.2f);
 
         Time.timeScale = 0;
+        AlmacenDatos.instancia.muerte = true;
+        AlmacenDatos.instancia.regresarA = SceneManager.GetActiveScene().buildIndex;
+        AlmacenDatos.instancia.avatarMue = this.name;
+        AlmacenDatos.instancia.causaMue = causa;
 
         Fundido.instancia.FundidoAEscena (0);
     }

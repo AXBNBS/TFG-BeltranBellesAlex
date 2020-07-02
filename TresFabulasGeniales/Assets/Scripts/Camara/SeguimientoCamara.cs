@@ -1,6 +1,4 @@
 ﻿
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -84,7 +82,7 @@ public class SeguimientoCamara : MonoBehaviour
             if (dialogando == false) 
             {
                 //if (CambioDePersonajesYAgrupacion.instancia != null && Vector3.Distance (this.transform.position, objetivo.position) < 5)
-                if (CambioDePersonajesYAgrupacion.instancia != null && input == false && Vector3.Distance (this.transform.position, objetivo.position) < 5)
+                if (input == false && CambioDePersonajesYAgrupacion.instancia != null && Time.timeScale == 1 && Vector3.Distance (this.transform.position, objetivo.position) < 5)
                 {
                     cambioCmp = true;
                     desplazandose = false;
@@ -163,7 +161,6 @@ public class SeguimientoCamara : MonoBehaviour
 
         Vector3 diferencia1 = puntoMed - (puntoMed + (objetivo.right + objetivo.forward).normalized * 100);
         Vector3 diferencia2 = puntoMed - (puntoMed + (objetivo.right - objetivo.forward).normalized * 100);
-        Vector3 hijoPosAct = hijoTrf.position;
         float rotacionX1 = Mathf.Atan2 (diferencia1.x, diferencia1.z) * Mathf.Rad2Deg + 90;
         float rotacionX2 = Mathf.Atan2 (diferencia2.x, diferencia2.z) * Mathf.Rad2Deg + 90;
         Quaternion rotacionAct = this.transform.rotation;

@@ -85,7 +85,7 @@ public class SuperficieEscalable : MonoBehaviour
     {
         if (other.CompareTag ("Jugador") == true)
         {
-            print ("Debería no escalar xD");
+            //print ("Debería no escalar xD");
             jugadorMovScr.escalarPos = false;
         }
     }

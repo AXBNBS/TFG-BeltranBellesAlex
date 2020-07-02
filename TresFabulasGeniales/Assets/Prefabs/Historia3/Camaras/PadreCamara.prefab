@@ -47,13 +47,19 @@ MonoBehaviour:
   input: 1
   centrar: 0
   transicionando: 0
+  desplazandose: 0
+  cambioCmp: 0
   objetivo: {fileID: 0}
   detras: {fileID: 0}
   movimientoVel: 500
+  cambioPosVel: 0
   abajoLim: -10
   arribaLim: 60
   sensibilidad: 370
   centradoVel: 10
+  dialogoCap:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!1 &5072272426723665860
 GameObject:
   m_ObjectHideFlags: 0
@@ -118,7 +124,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 16777015
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -145,9 +151,12 @@ MonoBehaviour:
   minimoDst: 10
   maximoDst: 90
   suavizado: 20
-  capas:
+  capasVio:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 0
+  capasAbd:
+    serializedVersion: 2
+    m_Bits: 0
   capasSinAvt:
     serializedVersion: 2
     m_Bits: 7479

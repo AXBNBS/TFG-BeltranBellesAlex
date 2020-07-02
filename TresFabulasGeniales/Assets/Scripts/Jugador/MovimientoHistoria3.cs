@@ -15,11 +15,10 @@ public class MovimientoHistoria3 : MonoBehaviour
     public Transform bolaSup;
     [HideInInspector] public Bola bolaScr;
 
-    [SerializeField] private int movimientoVel, rotacionVel, saltoVel, escaladaVel, gravedad, balanceoVelMin, balanceoDstMin, longitudCueVel, interpolacionBalVel, deslizVel;
-    //[SerializeField] private int[] gravedades;
+    [SerializeField] private int movimientoVel, rotacionVel, saltoVel, escaladaVel, gravedad, balanceoVelMin, balanceoDstMin, longitudCueVel, interpolacionBalVel, deslizVel, muerteMinVelY;
     [SerializeField] private float pendienteRayLon, deslizFrc;
     [SerializeField] private Vector3 pendienteFrz;
-    [SerializeField] private Collider escenarioCol;
+    //[SerializeField] private Collider escenarioCol;
     private LayerMask capasSue;
     private Transform camaraTrf, modeloTrf, cuerdaIniTrf;
     private Vector3 direccionMov, previaPos, impulsoBal, impulsoCai, impulsoPar, offsetCenCtr, normal;
@@ -27,7 +26,7 @@ public class MovimientoHistoria3 : MonoBehaviour
     private CharacterController personajeCtr;
     private float radioEsfSue;
     private int verticalInp, horizontalInp;
-    [SerializeField] private bool saltoInp, engancharseInp, cuerdaLonInp, cuerdaLonInpUltFrm, saltado, impulsoMnt, sueleado, alteraCue, paradoBal, pendiente, deslizar;
+    private bool saltoInp, engancharseInp, cuerdaLonInp, cuerdaLonInpUltFrm, saltado, impulsoMnt, sueleado, alteraCue, paradoBal, pendiente, deslizar;
     private LineRenderer renderizadorLin;
     private Quaternion[] rotacionesMod;
     private enum Estado { normal, trepando, rodando, balanceandose };
@@ -85,7 +84,7 @@ public class MovimientoHistoria3 : MonoBehaviour
         {
             case Estado.normal:
                 pendiente = EnPendiente ();
-                print (pendiente);
+                //print (pendiente);
 
                 SaltarSuelo ();
                 Caminar ();
@@ -181,6 +180,7 @@ public class MovimientoHistoria3 : MonoBehaviour
                 {
                     estado = Estado.trepando;
                     impulsoCai = Vector3.zero;
+                    deslizar = false;
 
                     //Physics.IgnoreCollision (characterCtr, escenarioCol, true);
 
@@ -191,6 +191,7 @@ public class MovimientoHistoria3 : MonoBehaviour
                 {
                     estado = Estado.rodando;
                     this.transform.parent = bolaSup;
+                    deslizar = false;
 
                     break;
                 }
@@ -198,12 +199,13 @@ public class MovimientoHistoria3 : MonoBehaviour
                 if (engancharseInp == true && enganchePer == true && this.transform.position.y < limiteBal && sueleado == false && Physics.Raycast (this.transform.position, enganchePnt - this.transform.position, 
                     Vector3.Distance (this.transform.position, enganchePnt), capasSue, QueryTriggerInteraction.Ignore) == false) 
                 {
-                    Vector3 direccion;
+                    //Vector3 direccion;
 
                     estado = Estado.balanceandose;
                     balanceo.twii.velocidad = impulsoBal / 2;
                     renderizadorLin.enabled = true;
-                    direccion = DireccionDeAngulo (this.transform.rotation.eulerAngles.y);
+                    deslizar = false;
+                    //direccion = DireccionDeAngulo (this.transform.rotation.eulerAngles.y);
                     //adelanteBalXZ = new bool[] { Mathf.Sign (direccion.x) == 1, Mathf.Sign (direccion.z) == 1 };
 
                     balanceo.CambiarEnganche (enganchePnt);

@@ -10,7 +10,7 @@ public class Palanca : MonoBehaviour
     [SerializeField] private Transform objetoTrf;
     [SerializeField] private float bajada;
     [SerializeField] private int velocidadMov, colocacionVel;
-    private bool activada, jugadorCer, recolocar;
+    [SerializeField] private bool activada, jugadorCer, recolocar;
     private List<CharacterController> avataresCer;
     private Vector2 centroTrg;
     private Vector3 posicionObj;
@@ -35,18 +35,19 @@ public class Palanca : MonoBehaviour
     }
 
 
-    // Si el movimiento está permitido en las circunstancias actuales, trasladamos el objeto en el sentido que corresponda.
+    // Si el jugador está cerca, sólo es un avatar, se pulsa el botón de interactuar y está siendo controlado, iniciaremos el proceso de recolocarlo para que esté en frente y mire correctamente la válvula. Una vez esto pase, la válvula estará activa y
+    //la natilla asignada descenderá hasta llegar a su límite, momento en el cual desactivamos el script actual. Durante este proceso, el input del jugador se mantiene desactivado.
     private void Update ()
     {
         if (recolocar == false) 
         {
-            if (jugadorCer == true && avataresCer.Count == 1 && Input.GetButtonDown ("Interacción") == true)
+            if (jugadorCer == true && avataresCer.Count == 1 && Input.GetButtonDown ("Interacción") == true && avataresCer[0].GetComponent<MovimientoHistoria2>().input == true)
             {
-                CambioDePersonajesYAgrupacion.instancia.PararInput ();
-
                 recolocar = true;
                 posicionObj = new Vector3 (centroTrg.x, avataresCer[0].transform.position.y, centroTrg.y);
                 objetivoY = objetoTrf.position.y - bajada;
+
+                ActivarInput (false);
             }
         }
         else 
@@ -59,22 +60,23 @@ public class Palanca : MonoBehaviour
 
         if (activada == true) 
         {
-            print (objetoTrf.position.y);
-            print (objetivoY);
+            //print (objetoTrf.position.y);
+            //print (objetivoY);
             if (objetoTrf.position.y > objetivoY) 
             {
                 objetoTrf.Translate (Time.deltaTime * Vector3.down * velocidadMov, Space.World);
             }
             else 
             {
+                ActivarInput (true);
+
                 this.enabled = false;
             }
         }
     }
 
 
-    // Si el jugador pisa el botón, activamos el booleano que inicia el movimiento del objeto asignado, desactivamos el renderizador que representa al botón sin pulsar y activamos el del botón pulsado. Se desactiva también el collider del botón
-    //cuando sobresale.
+    // Si el jugador se acerca a la válvula lo suficiente, añadimos su character controller a la lista y activamos el booleano que indica que el jugador está cerca.
     private void OnTriggerEnter (Collider other)
     {
         if (other.isTrigger == false && other.CompareTag ("Jugador") == true) 
@@ -87,8 +89,7 @@ public class Palanca : MonoBehaviour
     }
 
 
-    // Si el jugador deja de pisar el botón y era necesario mantener este para mover el objeto en cuestión, desactivamos el booleano que inicia el movimiento del objeto asignado, activamos el renderizador que representa al botón sin pulsar y 
-    //desactivamos el del botón pulsado. Se activa también el collider del botón cuando sobresale.
+    // Si el jugador se aleja de la válvula lo suficiente para salir del trigger, eliminamos su character controller de la lista y, si no hay ningún avatar más cerca de la válvula, desactivamos el booleano que indica que hay un jugador cerca.
     private void OnTriggerExit (Collider other)
     {
         if (other.isTrigger == false && other.CompareTag ("Jugador") == true) 
@@ -103,7 +104,7 @@ public class Palanca : MonoBehaviour
     }
 
 
-    // Coloca al avatar en frente de la palanca, trasladándolo y rotándolo.
+    // Coloca al avatar en frente de la palanca, trasladándolo y rotándolo. Una vez se completa este movimiento, la palanca habrá sido activada.
     private void ColocarAvatar () 
     {
         Quaternion rotacionObj = Quaternion.Euler (0, Quaternion.LookRotation(this.transform.position - avataresCer[0].transform.position).eulerAngles.y + 90, 0);
@@ -113,13 +114,19 @@ public class Palanca : MonoBehaviour
             avataresCer[0].transform.rotation = Quaternion.Lerp (avataresCer[0].transform.rotation, rotacionObj, Time.deltaTime * colocacionVel);
 
             avataresCer[0].Move (Vector3.Lerp (avataresCer[0].transform.position, posicionObj, Time.deltaTime * colocacionVel) - avataresCer[0].transform.position);
-            //avataresCer[0].transfposition = Vector3.Lerp(avataresCer[0].position, posicionObj, Time.deltaTime * colocacionVel);
         }
         else 
         {
             activada = true;
-
-            CambioDePersonajesYAgrupacion.instancia.PermitirInput ();
         }
+    }
+
+
+    // Según se le indique, para o permite el input del cambio de personajes, movimiento y ataque.
+    private void ActivarInput (bool activar) 
+    {
+        CambioDePersonajesYAgrupacion.instancia.input = activar;
+        avataresCer[0].GetComponent<MovimientoHistoria2>().input = activar;
+        avataresCer[0].GetComponent<Ataque>().input = activar;
     }
 }

@@ -476,7 +476,7 @@ public class Enemigo : MonoBehaviour
 
                 foreach (Collider a in avataresCol)
                 {
-                    a.GetComponent<Salud>().RecibirDanyo (Vector3.zero);
+                    a.GetComponent<Salud>().RecibirDanyo (Vector3.zero, "Rana");
                 }
 
                 atacado = true;

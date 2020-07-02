@@ -213,7 +213,7 @@ public class Naife : MonoBehaviour
                 if (embestida == true && collision.transform.CompareTag ("Jugador") == true) 
                 {
                     Physics.IgnoreCollision (capsula, collision.collider, true);
-                    collision.transform.GetComponent<Salud>().RecibirDanyo (agente.velocity.normalized);
+                    collision.transform.GetComponent<Salud>().RecibirDanyo (agente.velocity.normalized, "Naife");
                     collidersIgn.Add (collision.collider);
                 }
                 else 
