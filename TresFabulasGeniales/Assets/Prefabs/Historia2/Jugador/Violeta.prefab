@@ -406,24 +406,13 @@ MonoBehaviour:
     m_Bits: 4200449
   capasSinAvt:
     serializedVersion: 2
-    m_Bits: 4196663
+    m_Bits: 4196609
   companyeroMov: {fileID: 0}
   pararDstSeg: 2
   ajusteCaiDst: 95
   multiplicadorSalBaj: 2
   deslizFrc: 0.3
   pendienteRayLon: 6
-  saltarInp: 0
-  yendo: 0
-  empujando: 0
-  limitadoX: 0
-  enemigosCer: 0
-  saltado: 0
-  cambiando: 0
-  siguiendoAcb: 0
-  deslizar: 0
-  pendiente: 0
-  empujadoFrm: 0
 --- !u!114 &1105000601539949260
 MonoBehaviour:
   m_ObjectHideFlags: 0

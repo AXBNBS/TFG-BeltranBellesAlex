@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class SeguimientoCamara : MonoBehaviour
 {
-    public bool input, centrar, transicionando, desplazandose, cambioCmp;
+    public bool input, centrar, transicionando, desplazandose, cambioCmp, paroMnt;
     public Transform objetivo, detras;
 
     [SerializeField] private int movimientoVel, cambioPosVel, abajoLim, arribaLim, sensibilidad, centradoVel;
@@ -23,7 +23,7 @@ public class SeguimientoCamara : MonoBehaviour
         // ACTIVAR AL FINAL
         //Cursor.lockState = CursorLockMode.Locked;
         //Cursor.visible = false;
-        centrar = true;
+        //centrar = true;
         transicionando = false;
         cambioCmp = true;
         dialogando = false;
@@ -82,7 +82,7 @@ public class SeguimientoCamara : MonoBehaviour
             if (dialogando == false) 
             {
                 //if (CambioDePersonajesYAgrupacion.instancia != null && Vector3.Distance (this.transform.position, objetivo.position) < 5)
-                if (input == false && CambioDePersonajesYAgrupacion.instancia != null && Time.timeScale == 1 && Vector3.Distance (this.transform.position, objetivo.position) < 5)
+                if (input == false && paroMnt == false && CambioDePersonajesYAgrupacion.instancia != null && Time.timeScale == 1 && Vector3.Distance (this.transform.position, objetivo.position) < 5)
                 {
                     cambioCmp = true;
                     desplazandose = false;

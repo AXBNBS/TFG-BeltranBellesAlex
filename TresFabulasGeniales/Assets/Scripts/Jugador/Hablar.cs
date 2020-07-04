@@ -78,7 +78,7 @@ public class Hablar : MonoBehaviour
             textoScr = EncontrarConversacion ();
         }
 
-        if (input == true && textoScr != null && Input.GetButtonDown ("Interacción") == true)
+        if (input == true && (textoScr != null || escena0 == true) && Input.GetButtonDown ("Interacción") == true)
         {
             if (panelTxt.activeSelf == false)
             {

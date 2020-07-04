@@ -21,7 +21,7 @@ public class Naife : MonoBehaviour
     private Vector3 destino, destinoSal, objetivoDir, deceleracion, saltoDir;
     private Quaternion rotacionObj;
     private List<Collider> collidersIgn;
-    private EspaldaEnemigo[] espalda;
+    //private EspaldaEnemigo[] espalda;
     //private NavMeshPath camino;
 
 
@@ -43,7 +43,7 @@ public class Naife : MonoBehaviour
         padreRot.parent = padreScr.transform;
         modelo = animador.transform;
         collidersIgn = new List<Collider> ();
-        espalda = new EspaldaEnemigo[] { this.transform.GetChild(1).GetComponent<EspaldaEnemigo> (), this.transform.GetChild(2).GetComponent<EspaldaEnemigo> () };
+        //espalda = new EspaldaEnemigo[] { this.transform.GetChild(1).GetComponent<EspaldaEnemigo> (), this.transform.GetChild(2).GetComponent<EspaldaEnemigo> () };
         //camino = new NavMeshPath ();
     }
 
@@ -57,6 +57,10 @@ public class Naife : MonoBehaviour
         if (collidersIgn.Count != 0)
         {
             DejarDeIgnorar ();
+        }
+        if (Estado.normal != estado && Estado.muriendo != estado) 
+        {
+            ComprobarChoque ();
         }
         switch (estado) 
         {
@@ -112,7 +116,6 @@ public class Naife : MonoBehaviour
                     //agente.velocity = Vector3.zero;
                     deceleracion = Vector3.zero;
                     agente.enabled = false;
-                    //print ("Suposadament.");
 
                     if (espera == false) 
                     {
@@ -174,24 +177,10 @@ public class Naife : MonoBehaviour
         {
             Gizmos.color = Color.red;
 
-            //capsula.bounds.size.z * 1.75f + padreScr.radioGirRan + aleatoriedad
-            Gizmos.DrawWireCube (this.transform.position, new Vector3 ((capsula.bounds.extents.z + padreScr.radioGirRan + 10) * 2, 0, (capsula.bounds.extents.z + padreScr.radioGirRan + 10) * 2));
-            Gizmos.DrawRay (capsula.bounds.center, capsula.bounds.size.y * Vector3.down);
+            //Gizmos.DrawWireCube (this.transform.position, new Vector3 ((capsula.bounds.extents.z + padreScr.radioGirRan + 10) * 2, 0, (capsula.bounds.extents.z + padreScr.radioGirRan + 10) * 2));
+            //Gizmos.DrawRay (capsula.bounds.center, capsula.bounds.size.y * Vector3.down);
+            Gizmos.DrawWireSphere (capsula.bounds.center + (Estado.saltando != estado ? this.transform.forward : saltoDir.normalized) * padreScr.offsetEsfChc, capsula.bounds.extents.x);
         }
-        /*Gizmos.DrawRay (this.transform.position, this.transform.forward * saltoDstMax);
-        Gizmos.DrawRay (this.transform.position, -this.transform.forward * saltoDstMax);
-        Gizmos.DrawWireSphere (destinoSal, 5);
-        if (capsula != null) 
-        {
-
-            Gizmos.DrawWireSphere (padreRot.position, 5);
-            Gizmos.DrawWireSphere (Vector3.forward * radio + padreRot.position, 5);
-            Gizmos.DrawWireSphere (Vector3.right * radio + padreRot.position, 5);
-            Gizmos.DrawWireSphere (Vector3.back * radio + padreRot.position, 5);
-            Gizmos.DrawWireSphere (Vector3.left * radio + padreRot.position, 5);
-            Gizmos.DrawWireCube (padreRot.position, new Vector3 (radio + capsula.bounds.size.x * 3.5f, 0.5f, radio + capsula.bounds.size.z * 3.5f));
-            Gizmos.DrawWireSphere (capsula.bounds.center, capsula.bounds.extents.x);
-        }*/
     }
 
 
@@ -216,19 +205,18 @@ public class Naife : MonoBehaviour
                     collision.transform.GetComponent<Salud>().RecibirDanyo (agente.velocity.normalized, "Naife");
                     collidersIgn.Add (collision.collider);
                 }
-                else 
+                /*else 
                 {
                     if (embestida == true && collision.transform.CompareTag ("Enemigo") == false) 
                     {
-                        //print ("Weno cuidao.");
                         embestida = false;
                         estado = Estado.frenando;
                         agente.velocity = Vector3.zero;
                     }
-                }
+                }*/
 
                 break;
-            case Estado.frenando:
+            /*case Estado.frenando:
                 agente.velocity = Vector3.zero;
 
                 break;
@@ -238,7 +226,7 @@ public class Naife : MonoBehaviour
                     chocado = true;
                 }
 
-                break;
+                break;*/
         }
     }
 
@@ -347,7 +335,7 @@ public class Naife : MonoBehaviour
                 agente.velocity = Vector3.zero;
                 agente.enabled = false;
                 this.transform.parent = padreRot;
-                rotacionObj = Quaternion.Euler (this.transform.rotation.eulerAngles.x, Quaternion.LookRotation(this.transform.position - padreRot.position).eulerAngles.y + (sentidoHor == false ? +90 : -90), this.transform.rotation.z);
+                rotacionObj = Quaternion.Euler (0, Quaternion.LookRotation(this.transform.position - padreRot.position).eulerAngles.y + (sentidoHor == false ? +90 : -90), 0);
             }
         }
         else
@@ -608,16 +596,67 @@ public class Naife : MonoBehaviour
     }
 
 
-    // Devuelve verdadero si encontramos un camino completo desde la posición del naife a la de su objetivo, suponiendo que este se encuentre a su misma altura.
-    /*private bool CaminoHaciaObjetivo (Vector3 avatarPos) 
+    // Comprueba si el naife va a chocar muy pronto con algún obstaculo mientras realiza su movimiento, y se asegura de pararlo si es el caso.
+    private void ComprobarChoque ()
     {
-        Vector3 naifePosSue = this.transform.position + sueloOff;
+        if (Physics.CheckSphere (capsula.bounds.center + (Estado.saltando != estado ? this.transform.forward : saltoDir.normalized) * padreScr.offsetEsfChc, capsula.bounds.extents.x, padreScr.choquesCap, QueryTriggerInteraction.Ignore) == true) 
+        {
+            switch (estado) 
+            {
+                case Estado.atacando:
+                    if (embestida == true)
+                    {
+                        embestida = false;
+                        estado = Estado.frenando;
+                        agente.velocity = Vector3.zero;
+                        print ("Atacando");
+                    }
 
-        NavMesh.CalculatePath (naifePosSue, new Vector3 (avatarPos.x, naifePosSue.y, avatarPos.z), NavMesh.AllAreas, camino);
-        print (this.name + ": " + camino.status);
+                    break;
+                case Estado.frenando:
+                    agente.velocity = Vector3.zero;
+                    print ("Frenando");
 
-        return NavMeshPathStatus.PathComplete == camino.status;
-    }*/
+                    break;
+                default:
+                    chocado = true;
+                    print ("Saltando.");
+
+                    break;
+            }
+        }
+
+        /*case Estado.atacando:
+                if (embestida == true && collision.transform.CompareTag("Jugador") == true)
+        {
+            Physics.IgnoreCollision(capsula, collision.collider, true);
+            collision.transform.GetComponent<Salud>().RecibirDanyo(agente.velocity.normalized, "Naife");
+            collidersIgn.Add(collision.collider);
+        }
+        else
+        {
+            if (embestida == true && collision.transform.CompareTag("Enemigo") == false)
+            {
+                //print ("Weno cuidao.");
+                embestida = false;
+                estado = Estado.frenando;
+                agente.velocity = Vector3.zero;
+            }
+        }
+
+        break;
+            case Estado.frenando:
+                agente.velocity = Vector3.zero;
+
+        break;
+            case Estado.saltando:
+                if (espalda[this.transform.forward == saltoDir ? 1 : 0].obstaculos.Contains(collision.collider) == true)
+        {
+            chocado = true;
+        }
+
+        break;*/
+    }
 
 
     // Tras haber frenado completamente después de una embestida, reactivamos el agente para que se prepare para volver a embestir al jugador. 

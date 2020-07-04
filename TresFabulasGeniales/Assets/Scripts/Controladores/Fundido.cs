@@ -10,9 +10,8 @@ public class Fundido : MonoBehaviour
     [HideInInspector] public bool animando;
     [HideInInspector] public Scene escena;
     [HideInInspector] public Animator animador;
-    public GameObject saludPan;
+    public GameObject saludPan, textoPan;
 
-    [SerializeField] private GameObject textoPan;
     private int escenaInd;
     private bool escena3;
     private enum TipoFundido { posicion, escena, pausa };
@@ -30,6 +29,7 @@ public class Fundido : MonoBehaviour
         {
             instancia.escena = SceneManager.GetActiveScene ();
 
+            instancia.saludPan.SetActive (false);
             instancia.EncontrarReferencias ();
             GameObject.Destroy (this.transform.parent.parent.gameObject);
         }
@@ -51,8 +51,6 @@ public class Fundido : MonoBehaviour
     private void OnLevelWasLoaded () 
     {
         instancia.animador.speed = 1;
-
-        saludPan.SetActive (false);
     }
 
 

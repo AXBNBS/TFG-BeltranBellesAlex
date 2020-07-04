@@ -10,8 +10,8 @@ public class AreaNaifes : MonoBehaviour
 {
     public float[] segundosCmbLim;
     public float radioGirRan, radioGirVar, giroVel, tiempoMinEmb;
-    public LayerMask capasGirAtq, capasSal, sueloCap;
-    public int velocidadRotNor, velocidadRotGir, velocidadRotModEmbFrn, velocidadRotModEsp, velocidadRotModMue, distanciaMinObj, distanciaParIgn, frenadoVel, pararVel, salud, longitudRaySal, saltoVelMax;
+    public LayerMask capasGirAtq, capasSal, sueloCap, choquesCap;
+    public int velocidadRotNor, velocidadRotGir, velocidadRotModEmbFrn, velocidadRotModEsp, velocidadRotModMue, distanciaMinObj, distanciaParIgn, frenadoVel, pararVel, salud, longitudRaySal, saltoVelMax, offsetEsfChc;
     [HideInInspector] public Quaternion[] modeloRotLoc;
     [HideInInspector] public float muertePosYLoc;
     [HideInInspector] public Naife[] naifes;
@@ -105,6 +105,18 @@ public class AreaNaifes : MonoBehaviour
                 }
                 avataresPer.Remove (other.transform);
             }
+        }
+    }
+
+
+    // Debug.
+    private void OnDrawGizmosSelected ()
+    {
+        if (trigger != null) 
+        {
+            Gizmos.color = Color.red;
+
+            Gizmos.DrawWireSphere (trigger.bounds.center, radioTrg);
         }
     }
 

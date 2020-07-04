@@ -5,7 +5,7 @@ ModelImporter:
   internalIDToNameTable:
   - first:
       74: 7709686125681325085
-    second: Armature|Armature.001Action
+    second: Correr Abedul
   - first:
       74: -7597983235715544647
     second: Armature|Armature.001Action.001
@@ -20,7 +20,7 @@ ModelImporter:
     second: Armature|Armature.001Action.004
   - first:
       74: 4781951162920444690
-    second: Armature|ArmatureAction
+    second: Idle Abedul
   - first:
       74: -1422011007694221501
     second: Armature|ArmatureAction.001
@@ -56,7 +56,7 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Armature|Armature.001Action
+      name: Correr Abedul
       takeName: Armature|Armature.001Action
       internalID: 0
       firstFrame: 0
@@ -201,7 +201,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|ArmatureAction
+      name: Idle Abedul
       takeName: Armature|ArmatureAction
       internalID: 0
       firstFrame: 0

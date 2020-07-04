@@ -23,7 +23,7 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
 
 
     // Inicialización de elementos.
-    private void Start ()
+    private void Awake ()
     {
         instancia = this;
         juntos = false;
@@ -141,6 +141,7 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     {
         input = true;
         camara.input = true;
+        camara.paroMnt = false;
         personajesHbl[personajeAct].input = true;
         personajesMov[personajeAct].input = true;
         personajesAtq[personajeAct].input = true;
@@ -156,10 +157,11 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
 
     // Al cambiar de personaje, dejamos de permitir el input en este script, impedimos el movimiento de la cámara, que el personaje controlado hasta ahora pueda moverse y atacar (también empujar si este era Abedul) y que la cámara se ajuste en base
     //a las colisiones con el entorno.
-    public void PararInput () 
+    public void PararInput (bool mantener = true) 
     {
         input = false;
         camara.input = false;
+        camara.paroMnt = mantener;
         personajesHbl[personajeAct].input = false;
         personajesMov[personajeAct].input = false;
         personajesAtq[personajeAct].input = false;
@@ -183,7 +185,7 @@ public class CambioDePersonajesYAgrupacion : MonoBehaviour
     {
         if (personajesMov[anterior].EstaEnElAire () == false)
         {
-            PararInput ();
+            PararInput (false);
 
             camara.objetivo = personajesTrf[nuevo];
             camara.detras = detrases[nuevo];

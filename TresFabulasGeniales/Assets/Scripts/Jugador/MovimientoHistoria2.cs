@@ -21,7 +21,7 @@ public class MovimientoHistoria2 : MonoBehaviour
     private int gravedad, movimientoVel, empujeVel, bichosRedVel;
     private bool saltarInp, yendo, empujando, limitadoX, enemigosCer, saltado, cambiando, siguiendoAcb, deslizar, pendiente, empujadoFrm;
     private CharacterController characterCtr;
-    private float offsetXZ, horizontalInp, verticalInp, offsetBas, radioRotAtq, radioEsfSue, saltoDst, aranyazoDst;
+    private float horizontalInp, verticalInp, offsetBas, radioRotAtq, radioEsfSue, saltoDst, aranyazoDst;
     private Transform camaraTrf, objetivoSeg, companyeroTrf, enemigoTrf;
     private Animator animator;
     private Vector3 empuje, normal, offsetEsfSue;
@@ -68,7 +68,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         mallaAgtNav = this.GetComponent<NavMeshAgent> ();
         mallaAgtNav.speed = movimientoVelNor;
         //mallaAgtNav.autoTraverseOffMeshLink = false;
-        offsetXZ = this.transform.localScale.x * characterCtr.radius * 6;
+        //offsetXZ = this.transform.localScale.x * characterCtr.radius * 6;
         offsetBas = mallaAgtNav.baseOffset;
         estado = Estado.normal;
         ataqueScr = this.GetComponent<Ataque> ();
@@ -164,7 +164,6 @@ public class MovimientoHistoria2 : MonoBehaviour
     // Si el avatar jugable ha caído sobre otro, empujarlo hacia el primer lado de este que se encuentre libre.
     private void OnControllerColliderHit (ControllerColliderHit hit)
     {
-        //print (hit.transform.name);
         switch (hit.transform.tag) 
         {
             case "Jugador":
@@ -172,6 +171,8 @@ public class MovimientoHistoria2 : MonoBehaviour
             case "Hablable":
                 if (sueleado == false && empujadoFrm == false) 
                 {
+                    float offsetXZ = hit.collider.bounds.extents.x + hit.collider.bounds.extents.z;
+
                     empujadoFrm = true;
                     if (Physics.Raycast (hit.point, Vector3.right, out RaycastHit datosRay1, offsetXZ, capas, QueryTriggerInteraction.Ignore) == false)
                     {
@@ -201,9 +202,9 @@ public class MovimientoHistoria2 : MonoBehaviour
                         return;
                     }
 
-                    RaycastHit[] datosRay = new RaycastHit[] { datosRay1, datosRay2, datosRay3, datosRay4 };
                     float mayorDst = 0;
                     int mejor = 0;
+                    RaycastHit[] datosRay = new RaycastHit[] { datosRay1, datosRay2, datosRay3, datosRay4 };
 
                     for (int d = 0; d < datosRay.Length; d += 1) 
                     {
@@ -246,13 +247,13 @@ public class MovimientoHistoria2 : MonoBehaviour
 
 
     // Debug.
-    private void OnDrawGizmosSelected ()
+    /*private void OnDrawGizmosSelected ()
     {
         Gizmos.color = Color.red;
 
         Gizmos.DrawWireSphere (this.transform.position + offsetEsfSue, radioEsfSue);
         Gizmos.DrawRay (this.transform.position + Vector3.up, Vector3.down * pendienteRayLon);
-    }
+    }*/
 
 
     // Independiente de si el jugador o el compañero ha entrado en la zona peligrosa, el compañero empieza a atacar si estaba siguiendo al jugador.
@@ -676,7 +677,7 @@ public class MovimientoHistoria2 : MonoBehaviour
         }
         if (characterCtr.collisionFlags != CollisionFlags.None) 
         {
-            movimiento += empuje * movimientoVel / 2;
+            movimiento += empuje * movimientoVel;
         }
 
         if (empujando == false) 
@@ -693,16 +694,25 @@ public class MovimientoHistoria2 : MonoBehaviour
                 //print (this.name + "-> normal usada: " + normal);
                 movimiento.x = (1 - normal.y) * normal.x * (1 - deslizFrc) * deslizVel;
                 movimiento.z = (1 - normal.y) * normal.z * (1 - deslizFrc) * deslizVel;
-                if (Mathf.Sign (movimiento.x) == Mathf.Sign (inputX))
+                if (Mathf.Approximately (Time.deltaTime * movimiento.x, 0) == false || Mathf.Approximately (Time.deltaTime * movimiento.z, 0) == false)
                 {
-                    movimiento.x += inputX;
+                    if (Mathf.Sign (movimiento.x) == Mathf.Sign (inputX))
+                    {
+                        movimiento.x += inputX;
+                    }
+                    if (Mathf.Sign (movimiento.z) == Mathf.Sign (inputZ))
+                    {
+                        movimiento.z += inputZ;
+                    }
                 }
-                if (Mathf.Sign (movimiento.z) == Mathf.Sign (inputZ))
+
+                Vector3 provisional = movimiento * Time.deltaTime;
+
+                if (provisional.x == 0 && provisional.z == 0)
                 {
-                    movimiento.z += inputZ;
+                    movimiento.x = inputX;
+                    movimiento.z = inputZ;
                 }
-                //print (this.name + "-> movimiento en X después del desliz: " + movimiento.x);
-                //print (this.name + "-> movimiento en Z después del desliz: " + movimiento.z);
             }
             if (saludScr.aturdido == true) 
             {

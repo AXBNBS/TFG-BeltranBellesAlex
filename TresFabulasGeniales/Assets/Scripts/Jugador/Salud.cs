@@ -21,7 +21,7 @@ public class Salud : MonoBehaviour
     private CharacterController personajeCtr;
     private Transform saludPanTrf;
 
-    
+
     // Inicialización de variables.
     private void Start ()
     {
@@ -34,10 +34,27 @@ public class Salud : MonoBehaviour
         empujeScr = this.GetComponent<Empujar> ();
         camaraScr = GameObject.FindGameObjectWithTag("CamaraPrincipal").transform.parent.GetComponent<SeguimientoCamara> ();
         personajeCtr = this.GetComponent<CharacterController> ();
+
+        ActualizarHUD ();
+    }
+
+
+    // Si se habilita el script, también lo hace la barra de salud.
+    private void OnEnable ()
+    {
         saludPanTrf = Fundido.instancia.saludPan.transform;
 
         saludPanTrf.gameObject.SetActive (true);
-        ActualizarHUD ();
+    }
+
+
+    // Si se deshabilita el script, también lo hace la barra de salud.
+    private void OnDisable ()
+    {
+        if (saludPanTrf != null) 
+        {
+            saludPanTrf.gameObject.SetActive (false);
+        }
     }
 
 
@@ -56,20 +73,6 @@ public class Salud : MonoBehaviour
             InvulnerabilidadTemporal ();
         }
     }
-
-
-    // Más debug.
-    /*private void OnControllerColliderHit (ControllerColliderHit hit)
-    {
-        if (this.name == "Abedul" && hit.transform.CompareTag ("Enemigo") == true) 
-        {
-            print (hit.transform.name);
-        }
-        if (aturdido == true && hit.transform.CompareTag ("Enemigo") == true) 
-        {
-            hit.transform.Translate (new Vector3(-hit.normal.x, 0, -hit.normal.z).normalized);
-        }
-    }*/
 
 
     // Al entrar en un trigger asociado a la natilla o a una caída, el personaje muere directamente.
@@ -96,7 +99,7 @@ public class Salud : MonoBehaviour
                 salud -= 1;
 
                 ActualizarHUD ();
-                if (salud < 0) 
+                if (salud < 1) 
                 {
                     this.StartCoroutine (Muerte (causa));
                 }
