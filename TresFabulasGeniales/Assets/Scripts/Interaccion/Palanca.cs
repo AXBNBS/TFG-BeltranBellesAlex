@@ -7,10 +7,11 @@ using UnityEngine;
 
 public class Palanca : MonoBehaviour
 {
-    [SerializeField] private Transform objetoTrf;
     [SerializeField] private float bajada;
     [SerializeField] private int velocidadMov, colocacionVel;
     [SerializeField] private bool activada, jugadorCer, recolocar;
+    [SerializeField] private Transform objetoTrf;
+    [SerializeField] private Camera natillaCam;
     private List<CharacterController> avataresCer;
     private Vector2 centroTrg;
     private Vector3 posicionObj;
@@ -70,6 +71,7 @@ public class Palanca : MonoBehaviour
             {
                 ActivarInput (true);
 
+                natillaCam.enabled = false;
                 this.enabled = false;
             }
         }
@@ -118,6 +120,7 @@ public class Palanca : MonoBehaviour
         else 
         {
             activada = true;
+            natillaCam.enabled = true;
         }
     }
 

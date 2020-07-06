@@ -48,7 +48,7 @@ public class Fundido : MonoBehaviour
 
 
     // Cuando el nivel se haya cargado completamente, nos aseguramos de que el animador vuelve a su velocidad normal.
-    private void OnLevelWasLoaded () 
+    private void OnLevelWasLoaded (int level) 
     {
         instancia.animador.speed = 1;
     }
@@ -172,7 +172,10 @@ public class Fundido : MonoBehaviour
                 pausaCam.enabled = pausa;
 
                 Menu.instancia.MenuVisible (pausa);
-                saludPan.SetActive (!saludPan.activeSelf);
+                if (escena3 == false) 
+                {
+                    saludPan.SetActive (!saludPan.activeSelf);
+                }
 
                 if (pausa == false) 
                 {
